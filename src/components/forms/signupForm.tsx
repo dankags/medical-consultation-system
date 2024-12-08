@@ -113,7 +113,7 @@ console.log(form)
 
       <div className="w-full flex flex-col items-start gap-3">
       <div className="pt-4">
-        <span className="text-sm font-medium">
+        <span className="text-sm font-medium shad-input-label">
           What&apos;s your gender?
         </span>
         </div>

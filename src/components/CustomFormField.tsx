@@ -128,7 +128,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
               id={props.label}
               className="shad-input border-0"
             />
-            <label htmlFor={props.label} className="checkbox-label first-letter:capitalize">
+            <label htmlFor={props.label} className="text-white text-sm first-letter:capitalize">
             {props.label}
             </label>
           </div>
