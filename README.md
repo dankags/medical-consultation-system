@@ -2,6 +2,22 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+beforedoing nything ensure you hav this keys in your .env.local/.env file if not get them  from [AppWrite](https://appwrite.io/)
+
+```bash
+PROJECT_ID=
+DATABASE_ID=
+API_KEY=
+PATIENT_COLLECTION_ID=
+USER_COLLECTION_ID=
+PAYMENT_COLLECTION_ID=
+DOCTOR_COLLECTION_ID=
+APPOINTMENT_COLLECTION_ID=
+NEXT_PUBLIC_BUCKET_ID=
+NEXT_PUBLIC_ENDPOINT=https://cloud.appwrite.io/v1
+
+```
+
 First, run the development server:
 
 ```bash
