@@ -20,7 +20,7 @@ const GeneralAppointmentView = ({children,appointment}:{children:ReactNode,appoi
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className=" shad-dialog sm:max-w-md">
+      <DialogContent className=" shad-dialog sm:max-w-md bg-dark-300 border-neutral-700">
         <DialogHeader className="mb-4 space-y-3">
           <DialogTitle className="capitalize">
             {" "}
@@ -46,13 +46,13 @@ const GeneralAppointmentView = ({children,appointment}:{children:ReactNode,appoi
                   <span className="capitalize font-semibold text-3xl truncate">
                     Dr. {appointment?.doctor?.name ?? "John Doe"}
                   </span>
-                  <span className="capitalize truncate font-medium text-gray-400">
+                  <span className="capitalize truncate font-medium  text-gray-400">
                     radiology | peditrician
                   </span>
                 </div>
               </div>
               <div className="flex flex-col gap-3 mt-6">
-                <h4 className="font-semibold text-xl">Purpose of Meeting</h4>
+                <h4 className="font-semibold text-xl">Purpose of appointment</h4>
                 <p className="font-thin">
                   Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sit
                   veniam hic impedit, nostrum, reprehenderit odit quas odio, ut

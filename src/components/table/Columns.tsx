@@ -227,12 +227,12 @@ if (status!=="autheticated") {
  if(user?.role!=="doctor"){
   return (
     <div className=" flex items-center gap-3">
-      {isMeetActive&&<Button variant={"secondary"} className={`capitalize  bg-green-500`} onClick={()=>{router.push(`/appointments/meetup/${appointment?.id}`)}}>
+      {isMeetActive&&<Button variant={"secondary"} className={`capitalize  bg-green-500`} onClick={()=>{router.push(`/appointments/${appointment?.id}/meetup`)}}>
         Meet
       </Button>}
       <GeneralAppointmentView appointment={appointment}>
         <Button variant="default" className={`capitalize py-1 px-2 text-green-500`} >
-          view
+          Overview
         </Button>
       </GeneralAppointmentView>
     </div>

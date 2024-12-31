@@ -48,7 +48,6 @@ export const getUserAppointments=async(limit?:number)=>{
                 Query.equal("patient", user.documents[0].$id),
                 Query.select([
                     "appointmentDate",
-                    "videoLink",
                     "confirmed",
                     "status",
                     "$id",
@@ -75,7 +74,6 @@ export const getUserAppointments=async(limit?:number)=>{
             return {
                 id: doc.$id, // Rename $id to id
                 appointmentDate: doc.appointmentDate,
-                videoLink: doc.videoLink,
                 confirmed: doc.confirmed,
                 status: doc.status,
                 doctor: {
