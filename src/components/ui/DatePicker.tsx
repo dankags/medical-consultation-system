@@ -20,7 +20,7 @@ type Props = {
 export default function DatePickerDemo({ setFormDate }: Props) {
   const [date, setDate] = useState<Date>()
   const [month, setMonth] = useState(new Date());
-  const [inputValue,setInputValue]=useState("Pick a date")
+  const [inputValue,setInputValue]=useState("")
 
   useEffect(()=>{
     if(date){
@@ -55,10 +55,10 @@ export default function DatePickerDemo({ setFormDate }: Props) {
     }
   };
 
-console.log(date,inputValue)
+
   return (
     <Popover  >
-      <div className='flex'>
+      <div className='flex w-full'>
         <PopoverTrigger asChild>
         <Button
           variant={"outline"}
@@ -71,7 +71,7 @@ console.log(date,inputValue)
           <CalendarIcon/>
         </Button>
         </PopoverTrigger>
-        <Input value={inputValue} onChange={handleInputChange} className='bg-transparent border-none pl-0 focus-within:ring-transparent focus-within:ring-offset-transparent'/>
+        <Input value={inputValue}  placeholder="Pick a date: MM/dd/yyyy" onChange={handleInputChange} className='w-5/12 bg-transparent border-none pl-0 focus-within:ring-transparent focus-within:ring-offset-transparent'/>
       </div>
     
       <PopoverContent className="w-auto p-0 bg-dark-300 shadow-[0_4px_60px_0] shadow-black/50  data-[state=open]:border-neutral-700 focus-within:outline-bg-neutral-500" align="start" >

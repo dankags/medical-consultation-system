@@ -12,7 +12,6 @@ export const convertFileToUrl = (file: File) => URL.createObjectURL(file);
 // FORMAT DATE TIME
 export const formatDateTime = (dateString: Date | string) => {
   const dateTimeOptions: Intl.DateTimeFormatOptions = {
-    // weekday: "short", // abbreviated weekday name (e.g., 'Mon')
     month: "short", // abbreviated month name (e.g., 'Oct')
     day: "numeric", // numeric day of the month (e.g., '25')
     year: "numeric", // numeric year (e.g., '2023')
@@ -24,7 +23,7 @@ export const formatDateTime = (dateString: Date | string) => {
   const dateDayOptions: Intl.DateTimeFormatOptions = {
     weekday: "short", // abbreviated weekday name (e.g., 'Mon')
     year: "numeric", // numeric year (e.g., '2023')
-    month: "2-digit", // abbreviated month name (e.g., 'Oct')
+    month: "2-digit", // numeric month (e.g., '10')
     day: "2-digit", // numeric day of the month (e.g., '25')
   };
 
@@ -40,33 +39,61 @@ export const formatDateTime = (dateString: Date | string) => {
     hour12: true, // use 12-hour clock (true) or 24-hour clock (false)
   };
 
-  const formattedDateTime: string = new Date(dateString).toLocaleString(
-    "en-US",
-    dateTimeOptions
+  const inputDate = new Date(dateString);
+  const now = new Date();
+
+  // Calculate the difference in calendar days
+  const daysDifference = Math.round(
+    (inputDate.setHours(0, 0, 0, 0) - now.setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24)
   );
 
-  const formattedDateDay: string = new Date(dateString).toLocaleString(
-    "en-US",
-    dateDayOptions
-  );
+  // Determine relative date (Today, Tomorrow, or Day of the Week)
+  let relativeDate: string;
+  if (daysDifference < 0) {
+    relativeDate = inputDate.toLocaleString("en-US", dateOptions); 
+  } else if (daysDifference === 0) {
+    relativeDate = "Today";
+  } else if (daysDifference === 1) {
+    relativeDate = "Tomorrow";
+  } else if (daysDifference > 1 && daysDifference <= 7) {
+    relativeDate = inputDate.toLocaleString("en-US", { weekday: "long" }); // e.g., "Wednesday"
+  } else {
+    relativeDate = inputDate.toLocaleString("en-US", dateOptions); // Default format
+  }
 
-  const formattedDate: string = new Date(dateString).toLocaleString(
-    "en-US",
-    dateOptions
-  );
-
-  const formattedTime: string = new Date(dateString).toLocaleString(
-    "en-US",
-    timeOptions
-  );
+  // Format date and time
+  const formattedDateTime: string = inputDate.toLocaleString("en-US", dateTimeOptions);
+  const formattedDateDay: string = inputDate.toLocaleString("en-US", dateDayOptions);
+  const formattedDate: string = inputDate.toLocaleString("en-US", dateOptions);
+  const formattedTime: string = inputDate.toLocaleString("en-US", timeOptions);
 
   return {
-    dateTime: formattedDateTime,
-    dateDay: formattedDateDay,
-    dateOnly: formattedDate,
-    timeOnly: formattedTime,
+    relativeDate, // e.g., "Today", "Tomorrow", or "Wednesday"
+    dateTime: formattedDateTime, // e.g., "Dec 31, 2024, 4:31 PM"
+    dateDay: formattedDateDay, // e.g., "Tue, 12/31/2024"
+    dateOnly: formattedDate, // e.g., "Dec 31, 2024"
+    timeOnly: formattedTime, // e.g., "4:31 PM"
   };
 };
+
+export const isToday = (dbDate:Date|string) => {
+  const inputDate = new Date(dbDate); // Convert the DB date to a Date object
+  const today = new Date(); // Get today's date
+
+  // Use Intl.DateTimeFormat to normalize both dates to 'YYYY-MM-DD'
+  const dateFormatter = new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+
+  const formattedInputDate = dateFormatter.format(inputDate);
+  const formattedToday = dateFormatter.format(today);
+
+  // Compare the formatted strings
+  return formattedInputDate === formattedToday;
+};
+
 
 export function encryptKey(passkey: string) {
   return btoa(passkey);
@@ -74,4 +101,35 @@ export function encryptKey(passkey: string) {
 
 export function decryptKey(passkey: string) {
   return atob(passkey);
+}
+
+export function formatNumber(num=0) {
+  if (num >= 1000000) {
+    // Format numbers 1,000,000 and above as "1m"
+    return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "m";
+  } else if (num >= 100000) {
+    // Format numbers 100,000 to 999,999 as "900k"
+    return (num / 1000).toFixed(0) + "k";
+  } else if (num >= 1000) {
+    // Format numbers 1,000 to 99,999 as "1,000"
+    return num.toLocaleString();
+  } else {
+    // Format numbers below 1,000 as they are
+    return num.toString();
+  }
+}
+
+export function getTimeOfDay() {
+  const now = new Date();
+  const hour = now.getHours();
+
+  if (hour >= 5 && hour < 12) {
+    return "Morning";
+  } else if (hour >= 12 && hour < 17) {
+    return "Afternoon";
+  } else if (hour >= 17 && hour < 21) {
+    return "Evening";
+  } else {
+    return "Night";
+  }
 }

@@ -14,13 +14,38 @@ import "react-phone-number-input/style.css";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import SubmitButton from "../SubmitButton";
 import { useSignUp } from "@clerk/nextjs";
-import { months } from "@/constants";
+import ConfirmEmail from "../Dialogs/ConfirmEmail";
+import { useToast } from "@/hooks/use-toast";
 
+
+type User={
+  name: string;
+    email: string;
+    phone: string;
+    gender: "male"|"female";
+    birthDate:Date;
+    
+}
 
 const SignUpForm = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const {signUp,isLoaded,setActive}=useSignUp()
+  const [userDetails,setUserDetails]=useState<User>({
+    name: "",
+    email: "",
+    phone: "",
+    gender: "male",
+    birthDate:new Date()
+  })
+  const [showConfirmDialog,setShowConfirmDialog]=useState(false)
+  const { toast } = useToast()
+  const [verification, setVerification] = useState({
+    state:"default",
+    error:"",
+    code:""
+  })
+  
 
 
   const form = useForm<z.infer<typeof UserFormValidation>>({
@@ -33,24 +58,22 @@ const SignUpForm = () => {
       password:"",
     },
   });
-console.log(form)
+
+
   const onSubmit = async (values: z.infer<typeof UserFormValidation>) => {
     setIsLoading(true);
-    console.log(values)
+    const {password,...others}=values
     try {
-      const user = {
-        name: values.name,
-        email: values.email,
-        phone: values.phone,
-      };
-      //  await signUp?.create({
-      //   emailAddressOrPhoneNumber
-      //  })
-      const newUser = await createUser(user);
-
-      if (newUser) {
-        router.push(`/patients/${newUser.$id}/register`);
-      }
+      setUserDetails({...others})
+       const signUpRes=await signUp?.create({
+        emailAddress:values.email,
+        password:values.password
+       })
+       console.log(signUpRes)
+       await signUp?.prepareEmailAddressVerification({ strategy: 'email_code' })
+       setShowConfirmDialog(true)
+       setVerification({...verification,state:"pending"})
+    
     } catch (error) {
       console.log(error);
     }
@@ -58,6 +81,52 @@ console.log(form)
     setIsLoading(false);
   };
 
+  const confirmEmail=async()=>{
+    if (!isLoaded) return;
+
+    try {
+       
+
+      const completeSignUp = await signUp.attemptEmailAddressVerification({
+        code:verification.code,
+      })
+ 
+      if (completeSignUp.status === 'complete') {
+        
+        const user = {
+         ...userDetails,
+          clerkId:completeSignUp?.createdUserId
+        };
+        
+        const newUser = await createUser(user); 
+        
+        if (newUser) {
+          toast({
+            description:"User created successfully",
+          })
+          router.push(`/auth/sign-in`);
+        }
+        await setActive({ session: completeSignUp.createdSessionId })
+        setVerification({...verification,state:"success"})
+        setShowConfirmDialog(false)
+      } else {
+        toast({
+          title: "!Ooops something went wrong.",
+           variant: "destructive",
+          description:"Verification failed",
+        })
+        setVerification({...verification,error:`Verification failed`,state:"failed"})
+      }
+    } catch (err: any) {
+      toast({
+        title: "!Ooops something went wrong.",
+         variant: "destructive",
+        description:err.errors[0].longMessage,
+      })
+      setVerification({...verification,error:err.errors[0].longMessage,state:"failed"})
+    }
+  }
+ 
   return (
     <Form {...form}>
     <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 space-y-6">
@@ -137,12 +206,18 @@ console.log(form)
 
         </div>
         </div>
-
-
+         
+            {/* CAPTCHA Widget */}
+        <div id="clerk-captcha"></div>
+        
       <SubmitButton isLoading={isLoading}>Get Started</SubmitButton>
+    <ConfirmEmail opened={showConfirmDialog} setIsOpened={setShowConfirmDialog} setConfirmationCode={(code)=>setVerification(prev=>({...prev,code}))} handleOTPConfirmation={confirmEmail}/>
     </form>
   </Form>
   )
 }
+
+
+
 
 export default SignUpForm

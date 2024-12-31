@@ -14,10 +14,13 @@ import {
   FormLabel,
   FormMessage,
 } from "./ui/form";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectTrigger, SelectValue } from "./ui/select";
 import { Textarea } from "./ui/textarea";
 import DatePickerDemo from "./ui/DatePicker";
+import { useState } from "react";
+import { Button } from "./ui/button";
 
 
 export enum FormFieldType {
@@ -34,6 +37,7 @@ export enum FormFieldType {
 interface CustomProps {
   control: Control<any>;
   name: string;
+  type?:string;
   label?: string;
   placeholder?: string;
   iconSrc?: string;
@@ -48,9 +52,7 @@ interface CustomProps {
 
 const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
  
-  // const handleDateChange=(date:Date)=>{
-  //   fie
-  // }
+  const [showPassword,setShowPassword]=useState(false)
 
   switch (props.fieldType) {
     case FormFieldType.INPUT:
@@ -66,11 +68,21 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
             />
           )}
           <FormControl>
+            <div className="w-full flex items-center">
             <Input
               placeholder={props.placeholder}
               {...field}
+              type={showPassword?"text":props.type}
               className="shad-input border-0"
             />
+            {props?.type==="password"&&<Button type="button" onClick={()=>setShowPassword(!showPassword)}>
+               {!showPassword?
+               <FaRegEye size={24}/>
+               :
+               <FaRegEyeSlash size={24}/> 
+              }
+            </Button>}
+            </div>
           </FormControl>
         </div>
       );

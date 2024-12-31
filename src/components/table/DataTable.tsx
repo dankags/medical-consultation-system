@@ -36,13 +36,13 @@ export function DataTable<TData, TValue>({
       ? window.localStorage.getItem("accessKey")
       : null;
 
-  useEffect(() => {
-    const accessKey = encryptedKey && decryptKey(encryptedKey);
+  // useEffect(() => {
+  //   const accessKey = encryptedKey && decryptKey(encryptedKey);
 
-    if (accessKey !== process.env.NEXT_PUBLIC_ADMIN_PASSKEY!.toString()) {
-      redirect("/");
-    }
-  }, [encryptedKey]);
+  //   if (accessKey !== process.env.NEXT_PUBLIC_ADMIN_PASSKEY!.toString()) {
+  //     redirect("/");
+  //   }
+  // }, [encryptedKey]);
 
   const table = useReactTable({
     data,
@@ -96,7 +96,7 @@ export function DataTable<TData, TValue>({
           )}
         </TableBody>
       </Table>
-      <div className="table-actions">
+      {data.length>10&&<div className="table-actions">
         <Button
           variant="outline"
           size="sm"
@@ -126,7 +126,7 @@ export function DataTable<TData, TValue>({
             className="rotate-180"
           />
         </Button>
-      </div>
+      </div>}
     </div>
   );
 }

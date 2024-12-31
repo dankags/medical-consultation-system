@@ -1,3 +1,4 @@
+
 export const GenderOptions = ["Male", "Female", "Other"];
 
 export const PatientFormDefaultValues = {
@@ -85,17 +86,4 @@ export const StatusIcon = {
   cancelled: "/assets/icons/cancelled.svg",
 };
 
-export const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
+

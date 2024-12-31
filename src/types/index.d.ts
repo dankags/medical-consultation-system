@@ -1,17 +1,37 @@
+
 /* eslint-disable no-unused-vars */
+
+declare type NavigationLink={
+  name:string;
+  href:string;
+  active:boolean;
+  Icon?: () => JSX.Element;
+}
+declare interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  phone?: string;
+}
+
+
 
 declare type SearchParamProps = {
     params: { [key: string]: string };
     searchParams: { [key: string]: string | string[] | undefined };
   };
   
-  declare type Gender = "Male" | "Female" | "Other";
+  declare type Gender = "male" | "female" ;
   declare type Status = "pending" | "scheduled" | "cancelled";
   
   declare interface CreateUserParams {
     name: string;
     email: string;
     phone: string;
+    gender: Gender;
+    birthDate:Date;
+    clerkId:string|null
   }
   declare interface User extends CreateUserParams {
     $id: string;
@@ -19,8 +39,6 @@ declare type SearchParamProps = {
   
   declare interface RegisterUserParams extends CreateUserParams {
     userId: string;
-    birthDate: Date;
-    gender: Gender;
     address: string;
     occupation: string;
     emergencyContactName: string;

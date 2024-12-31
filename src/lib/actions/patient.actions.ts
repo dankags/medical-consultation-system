@@ -8,22 +8,26 @@ import {
   ENDPOINT,
   PATIENT_COLLECTION_ID,
   PROJECT_ID,
+  USER_COLLECTION_ID,
   databases,
   storage,
   users,
 } from "../appwrite.config";
 import { parseStringify } from "../utils";
 
+
 // CREATE APPWRITE USER
-export const createUser = async (user: CreateUserParams) => {
+export const createUser = async (user: CreateUserParams) => { 
+ 
   try {
     // Create new user -> https://appwrite.io/docs/references/1.5.x/server-nodejs/users#create
-    const newuser = await users.create(
+    const newuser = await databases.createDocument(
+      DATABASE_ID!,
+      USER_COLLECTION_ID!,
       ID.unique(),
-      user.email,
-      user.phone,
-      undefined,
-      user.name
+      {
+       ...user
+      }
     );
 
     return parseStringify(newuser);

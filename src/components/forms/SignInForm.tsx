@@ -5,14 +5,17 @@ import { Form } from '../ui/form'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { UserFormValidation, userSignInValidation } from '@/lib/validation'
+import { userSignInValidation } from '@/lib/validation'
 import CustomFormField, { FormFieldType } from '../CustomFormField'
 import SubmitButton from '../SubmitButton'
 import { useRouter } from 'next/navigation'
-import { Button } from '../ui/button'
+import { createUserCookie } from '@/lib/actions/user.actions'
+
+
+
 
 function SignInForm() {
-    const {signIn,isLoaded,setActive}=useSignIn()
+   const { signIn, setActive, isLoaded } = useSignIn()
     const [isLoading,setIsLoading]=useState(false)
     const router=useRouter()
 
@@ -23,30 +26,25 @@ function SignInForm() {
          password:""
         },
       });
-console.log(form)
+
 
 
       const onSubmit = async (values: z.infer<typeof userSignInValidation>) => {
         setIsLoading(true);
         console.log(values)
         try {
-        //   const user = {
-        //     name: values.name,
-        //     email: values.email,
-        //     phone: values.phone,
-        //   };
-          //  await signUp?.create({
-          //   emailAddressOrPhoneNumber
-          //  })
-        //   const newUser = await createUser(user);
+          
+          const signInAttempt= await signIn?.create({
+            identifier:values.email,
+            password:values.password
+           })
+          
     
-        const signInAttempt = await signIn?.create({
-            identifier: values.email,
-            password:values.password,
-          })
+         console.log(signInAttempt)
     
           if (signInAttempt?.status === 'complete') {
-            await setActive({ session: signInAttempt?.createdSessionId })
+            await setActive({ session:signInAttempt?.createdSessionId })
+            await createUserCookie()
             router.replace('/')
           } else {
             // See https://clerk.com/docs/custom-flows/error-handling
@@ -74,8 +72,8 @@ console.log(form)
         fieldType={FormFieldType.INPUT}
         control={form.control}
         name="email"
-        label="Email or Phone number"
-        placeholder="John Doe"
+        label="Email"
+        placeholder="Johndoe@example.com"
         iconSrc="/assets/icons/user.svg"
         iconAlt="user"
       />
@@ -83,6 +81,7 @@ console.log(form)
       <CustomFormField
         fieldType={FormFieldType.INPUT}
         control={form.control}
+        type='password'
         name="password"
         label="Password"
         placeholder="Password"

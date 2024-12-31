@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +23,8 @@ export const AppointmentModal = ({
   userId,
   appointment,
   type,
+  setIsOpened,
+  parentClosed,
 }: {
   patientId: string;
   userId: string;
@@ -30,11 +32,23 @@ export const AppointmentModal = ({
   type: "schedule" | "cancel";
   title: string;
   description: string;
+  setIsOpened:Dispatch<SetStateAction<boolean>>;
+  parentClosed:boolean
 }) => {
-  const [open, setOpen] = useState(false);
+
+  const [isOpen,setIsOpen]=useState(parentClosed)
+
+  const handleOpenChange=()=>{
+      if (isOpen) {
+          setIsOpened(false)
+          setIsOpen(false)
+          return
+      }
+  }
+  
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button
           variant="ghost"
@@ -56,7 +70,7 @@ export const AppointmentModal = ({
           patientId={patientId}
           type={type}
           appointment={appointment}
-          setOpen={setOpen}
+          setOpen={setIsOpen}
         />
       </DialogContent>
     </Dialog>

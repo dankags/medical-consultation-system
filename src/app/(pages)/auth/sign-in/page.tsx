@@ -1,10 +1,18 @@
 import SignInForm from '@/components/forms/SignInForm'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+import { auth } from '@clerk/nextjs/server'
 import Image from 'next/image'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import React from 'react'
 
-export default function Login() {
+export default async function Login() {
+ const {userId}=await auth()
+
+ if(userId){
+  redirect("/")
+ }
+
   return (
     <div className="w-full h-screen min-h-screen flex ">
       <ScrollArea className='w-full md:w-1/2'>
@@ -13,7 +21,10 @@ export default function Login() {
       <Image src="/assets/icons/logo-full.svg" alt="patient" width={1000} height={1000} className="h-10 w-fit mb-12" />
 
      <SignInForm/>
-
+     <div className="w-full flex items-center justify-center gap-2 mt-8">
+      <span className="text-dark-700">Do not have an account?</span>
+      <Link href={"/auth/sign-up"} className='text-green-500 font-semibold hover:underline hover:text-green-400'>Sign-up</Link>
+     </div>
       <div className="text-14-regular mt-20 flex justify-between">
         <p className="justify-items-end text-dark-600 xl:text-left">
           © 2024 CarePluse
