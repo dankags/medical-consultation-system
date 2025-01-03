@@ -1,7 +1,14 @@
+import { DefaultEventsMap, Socket } from "socket.io"
 import { create } from "zustand"
 
-export const useSocket = create((set) => ({
-    socket: null,
-    setSocketId: (newSocketId:string) => set({ socket: newSocketId }), 
-    removeSocket:()=>set({socket:null})
+interface SocketStore {
+    socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> | null; 
+    setSocket: (newSocket: Socket<DefaultEventsMap, DefaultEventsMap>) => void; 
+    removeSocket: () => void; 
+  }
+
+export const useSocket = create<SocketStore>((set) => ({
+    socket: null, 
+    setSocket: (newSocket) => set({ socket: newSocket }), 
+    removeSocket: () => set({ socket: null }),
 }))

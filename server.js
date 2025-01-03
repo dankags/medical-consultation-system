@@ -23,23 +23,27 @@ app.prepare().then(() => {
   };
   const addUser = (socketId, newUserId,role) => {
       if (!users.some((user) => user.newUserId === newUserId)) {
-        users.push({ socketId, newUserId,role });
+        users.push({ socketId, newUserId,role});
       }
   };
   const getUser = (userId) => {
     return users.find((user) => user.newUserId === userId);
   };
 
+  // const isUserOnline=(userId)=>{
+  //    return users.some((user) => user.newUserId === userId)
+  // }
+
   io.on("connection", (socket) => {
-    socket.on("newUser", (userId) => {
-      addUser(socket.id, userId);
+    socket.on("newUser", ({ userId, role }) => {
+      addUser(socket.id,userId,role);
       io.emit("getUsers", users);
-     io.emit("getOnlineDoctors",()=>{
-      const onlineDoctors=users.filter((user)=> user.role === "doctor")
-      return onlineDoctors
-     })
+      const onlineDoctors = users.filter((user) => user.role === "doctor");
+  io.emit("getOnlineDoctors", onlineDoctors);
       
     });
+
+ 
      
      socket.on("message", (message) => {
        io.emit("received",message)
@@ -48,19 +52,24 @@ app.prepare().then(() => {
      
      
        socket.on(
-         "sendMessage",
-         ({ senderId, receiverId, message }) => {
-           const receiver = getUser(receiverId);
-           io.to(receiver?.socketId).emit("getMessage", {
-             senderId,
-             message
-           });
+         "sendPatientNotification",
+         ({ patientId, doctorId, message }) => {
+         
+           const receiver = getUser(doctorId);
+           if (receiver) {
+            io.to(receiver.socketId).emit("receivePatientNotification", {
+              patientId,
+              message,
+            });
+          } else {
+            console.log(`Doctor with ID ${doctorId} is not online.`);
+          }
          }
      );
      
-      socket.on("sendOpenedConv", ({ senderId, receiverId, condition }) => {
+      socket.on("sendNotification", ({ senderId, receiverId, condition }) => {
         const receiver = getUser(receiverId);
-        io.to(receiver?.socketId).emit("getOpenedConv", {
+        io.to(receiver?.socketId).emit("getPatient", {
           senderId,
           condition,
         });
@@ -69,17 +78,13 @@ app.prepare().then(() => {
       socket.on("logout", () => {
         removeUser(socket.id);
         io.emit("getUsers", users);
-        io.emit("getOnlineDoctors",()=>{
-          const onlineDoctors=users.filter((user)=> user.role === "doctor")
-          return onlineDoctors
-         })
+        const onlineDoctors = users.filter((user) => user.role === "doctor");
+  io.emit("getOnlineDoctors", onlineDoctors);
       });
       socket.on("disconnect", () => {
         removeUser(socket.id);
-        io.emit("getOnlineDoctors",()=>{
-          const onlineDoctors=users.filter((user)=> user.role === "doctor")
-          return onlineDoctors
-         })
+        const onlineDoctors = users.filter((user) => user.role === "doctor");
+        io.emit("getOnlineDoctors", onlineDoctors);
         io.emit("getUsers", users);
       });
    });

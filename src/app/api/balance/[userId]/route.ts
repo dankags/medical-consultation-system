@@ -8,8 +8,6 @@ export const GET =async ( req:NextApiRequest,{ params }: { params: Promise<{ use
     const user = (await params).userId
     const { userId } =await getAuth(req)
 
-    console.log(userId)
-
     if (!userId) {
         return new Response(JSON.stringify({ error: "UnAutheticated" }), { status: 401 });
     }

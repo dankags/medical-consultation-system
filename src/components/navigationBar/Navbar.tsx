@@ -23,9 +23,11 @@ const Navbar = () => {
     const pathname=usePathname()
     const {userId}=useAuth()
     const {user,status}=useCurrentUser()
-    const updateSocket = useSocket((state) => state.setSocketId);
+    const updateSocket = useSocket((state) => state.setSocket);
     const removeSocket = useSocket((state) => state.removeSocket);
     const [accountBalance,setAccountBalance]=useState<number>(0)
+    
+    
 
     const navlinks=useMemo<NavigationLink[]>(()=>{
       if(user?.role==="doctor"){
@@ -95,6 +97,21 @@ const Navbar = () => {
       
     },[pathname,userId,user])
 
+
+    useEffect(()=>{
+      
+
+      if ("Notification" in window) {
+        if (Notification.permission === "default") {
+          Notification.requestPermission().catch((err) => {
+            console.error("Notification permission request failed:", err);
+          });
+        }
+      }
+
+      
+  }, []);
+
     // fetch balance if user has logged in
     useEffect(()=>{
       const fetchAccountBalance=async()=>{
@@ -124,16 +141,37 @@ const Navbar = () => {
     // push user to socket server
     useEffect(() => {
       if (user&& socket.connected) {
-        socket && updateSocket(socket);
-        socket?.emit("newUser", user.id,user?.role);
+       
+        if(socket) updateSocket(socket);
+        socket?.emit("newUser", { userId: user.id, role: user?.role });
+        socket?.on("receivePatientNotification",(data)=>{
+
+          if (Notification.permission === "granted") {
+            const notification = new Notification("Appointment Notification", {
+              body: data.message.description,
+              icon: "/assets/icons/logo-icon.svg", // Optional: Add a relevant icon
+            });
+             
+            
+
+          // Add a click event to the notification (e.g., redirect to appointment page)
+          notification.onclick = () => {
+            window.open(`/appointments/${data?.message.appointmentId}/meetup`, "_blank");
+          };
+        } else {
+          console.log("Notifications are not allowed by the user.");
+        }
+
+        })
         return () => {
           socket?.off("newUser");
+          socket?.off("receivePatientNotification")
         };
       }
 
      
       removeSocket()
-    }, [userId,socket])
+    }, [user,socket])
    
   
 

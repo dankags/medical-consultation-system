@@ -2,9 +2,13 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-beforedoing nything ensure you hav this keys in your .env.local/.env file if not get them  from [AppWrite](https://appwrite.io/)
+Before doing anything ensure you have this keys in your .env.local or .env file if not get them  from [AppWrite](https://appwrite.io/)
 
 ```bash
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/auth/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/auth/sign-up
 PROJECT_ID=
 DATABASE_ID=
 API_KEY=
@@ -15,6 +19,13 @@ DOCTOR_COLLECTION_ID=
 APPOINTMENT_COLLECTION_ID=
 NEXT_PUBLIC_BUCKET_ID=
 NEXT_PUBLIC_ENDPOINT=https://cloud.appwrite.io/v1
+NEXT_PUBLIC_URL=    #http://localhost:3000 for development or your domain in production
+PORT=3000
+NEXT_PUBLIC_ADMIN_PASSKEY=1111
+LIVEKIT_API_KEY=
+LIVEKIT_API_SECRET=
+NEXT_PUBLIC_LIVEKIT_URL=
+RESEND_API_KEY=
 
 ```
 

@@ -97,6 +97,48 @@ export const getUserAppointments=async(limit?:number)=>{
     }
 }
 
+// GET appointment by Id
+export const getAppointmentById=async(id:string)=>{
+    const {userId}=await auth()
+
+    if(!userId)  return parseStringify({error:"Not Autheticated"});
+
+    try {
+        const user = await databases.listDocuments(
+            DATABASE_ID!,
+            USER_COLLECTION_ID!,
+            [Query.equal("clerkId", userId!)]
+        );
+
+        if (user.total === 0) return parseStringify({ error: "User does not exist" });
+              
+             
+        const userAppointment = await databases.getDocument(
+            DATABASE_ID!,
+            APPOINTMENT_COLLECTION_ID!,
+            id,
+          );
+        
+         const {$id,doctor,patient,$permissions,$databaseId,$createdAt,$updatedAt,$collectionId,...others}=userAppointment
+
+         const resData={
+            ...others,
+            id:$id,
+            doctor:{
+                id:doctor.$id,
+                name:doctor.name,
+                email:doctor.email
+            }
+         }
+        
+
+        return parseStringify({appointments:resData})
+    } catch (err:any) {
+        console.log("Appointments Error: ",err)
+        return parseStringify({error:"internal server error"})
+    }
+}
+
 //GET user info
 export const fetchUserData=async()=>{
     const { userId } = await auth();
