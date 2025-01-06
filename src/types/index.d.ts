@@ -1,6 +1,14 @@
 
 /* eslint-disable no-unused-vars */
 
+declare interface CalendarEvent {
+  title: string;
+  description: string;
+  locationUrl: string;  // URL that will be used as the location (link)
+  startDate: string; // ISO 8601 format: '2025-01-20T10:00:00Z'
+  endDate: string; 
+}
+
 declare type NavigationLink={
   name:string;
   href:string;

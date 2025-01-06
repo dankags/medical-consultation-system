@@ -1,7 +1,16 @@
 import React from 'react'
 import { Body, Button, Column, Container, Head, Heading, Hr, Html, Img, Link, Preview, Row, Section, Text, Tailwind } from '@react-email/components';
 
-const AppointmentEmail = () => {
+
+interface AppointmentEmailProps{
+    doctor:User;
+    patient:User;
+    appointmentId:string
+}
+const baseUrl=process.env.NEXT_PUBLIC_UR!
+const AppointmentEmail = ({doctor,patient,appointmentId}:AppointmentEmailProps) => {
+    const previewText = `Notification from CarePulse by ${patient?.name} !`;
+   
   return (
     <Html>
     <Head />
@@ -19,28 +28,26 @@ const AppointmentEmail = () => {
           />
         </Section>
         <Heading className="text-2xl font-normal text-center p-0 my-8 mx-0">
-          Welcome to <strong>{company}</strong>, {username}!
+        <strong>CarePulse</strong>, appointment with  {patient.name}!
         </Heading>
         <Text className="text-sm">
-          Hello {username},
+          Hello Dr. {doctor?.name},
         </Text>
         <Text className="text-sm">
-          We're excited to have you onboard at <strong>{company}</strong>. We hope you enjoy your journey with us. If you have any questions or need assistance, feel free to reach out.
+          We're excited to infor you that you have an appointment with {patient?.name}.
         </Text>
         <Section className="text-center mt-[32px] mb-[32px]">
             <Button
               pX={20}
               pY={12}
-              className="bg-[#00A3FF] rounded text-white text-xs font-semibold no-underline text-center"
-              href={`${baseUrl}/get-started`}
+              className="bg-green-500 rounded text-white text-xs font-semibold no-underline text-center"
+              href={`${baseUrl}/appointments/${appointmentId}/meetup`}
             >
-              Get Started
+              Create meeting
             </Button>
         </Section>
         <Text className="text-sm">
-          Cheers,
-          <br/>
-          The {company} Team
+          The CarePulse Team appreciate you for your service.
         </Text>
       </Container>
     </Body>

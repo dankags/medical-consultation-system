@@ -5,6 +5,50 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function generateCalendarLinks(event: CalendarEvent) {
+  const { title, description, locationUrl, startDate, endDate } = event;
+
+  // Google Calendar Link
+  const googleCalendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
+    title
+  )}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(
+    locationUrl
+  )}&dates=${startDate.replace(/[-:]/g, '').replace('.000Z', 'Z')}/${endDate
+    .replace(/[-:]/g, '')
+    .replace('.000Z', 'Z')}`;
+
+  // Outlook Calendar Link
+  const outlookCalendarLink = `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(
+    title
+  )}&body=${encodeURIComponent(description)}&location=${encodeURIComponent(
+    locationUrl
+  )}&startdt=${startDate}&enddt=${endDate}`;
+
+  // iCal File Content
+  const icalContent = `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:${title}
+DESCRIPTION:${description}
+LOCATION:${locationUrl}
+DTSTART:${startDate.replace(/[-:]/g, '').replace('.000Z', 'Z')}
+DTEND:${endDate.replace(/[-:]/g, '').replace('.000Z', 'Z')}
+END:VEVENT
+END:VCALENDAR`;
+
+  // Generate iCal Link
+  const icalFileName = `${title.replace(/\s+/g, '_')}.ics`;
+  const icalFileLink = `data:text/calendar;charset=utf-8,${encodeURIComponent(
+    icalContent
+  )}`;
+
+  return {
+    googleCalendarLink,
+    outlookCalendarLink,
+    icalFileLink,
+  };
+}
+
 export const parseStringify = (value: any) => JSON.parse(JSON.stringify(value));
 
 export const convertFileToUrl = (file: File) => URL.createObjectURL(file);

@@ -11,6 +11,7 @@ import { toast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import clsx from 'clsx';
 import { Button } from '../ui/button';
+import emailjs from "@emailjs/browser";
 
 
 
@@ -91,6 +92,36 @@ const Patient : React.FC<VideoLayoutProps> = ({appointmentId,doctor}) => {
             description:`Hello Dr. ${doctor.name??"John Doe"} you have an appointment today with ${user?.name??"John Doe"}`
         }
         socket?.emit("sendPatientNotification",{patientId:user?.id,doctorId:doctor?.id,message})
+        const res = await emailjs.send(
+          process.env.NEXT_PUBLIC_SERVICE_ID!,
+          process.env.NEXT_PUBLIC_TEMPLATE_ID!,
+          {
+            from_email: user?.email.toString(),
+            patient_name: user?.name,
+            doctor_name: doctor?.name ?? "John Doe",
+            appointment_id: appointmentId,
+            to_email: doctor?.email.toString(),
+          },
+          {
+            publicKey: process.env.NEXT_PUBLIC_PUBLIC_KEY!,
+          }
+        );
+        console.log(res)
+        // const res=await fetchAPI(`/api/send?appointmentId=${appointmentId}&subject=${encodeURIComponent("CarePulse: Kindly Create the Meeting Room")}`,{
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        // })
+        // if(res){
+        //   console.log(res)
+        //   toast({
+        //     variant: "default", // Use "success" for positive feedback
+        //     title: "Notification Sent",
+        //     description: "The doctor was notified successfully.",
+        //   });
+        //   return
+        // }
       } catch (error) {
         console.log(error)
       }
@@ -98,7 +129,7 @@ const Patient : React.FC<VideoLayoutProps> = ({appointmentId,doctor}) => {
 
     if(  token === ""){
         return (
-          <div className="w-full h-full flex items-center justify-center">
+          <div className="w-full h-full flex items-center justify-center ">
            <div className='w-10/12 md:w-6/12 lg:w-4/12 aspect-square flex flex-col items-center justify-center gap-3 p-3 rounded-md bg-dark-400'>
                 <div className="w-6/12 aspect-square relative rounded-full flex items-center justify-center ">
                   <Image
@@ -118,8 +149,8 @@ const Patient : React.FC<VideoLayoutProps> = ({appointmentId,doctor}) => {
           
 
             <Button
-              variant={isDoctorAvailable?"secondary":"disabled"}
-              className={`capitalize  ${isDoctorAvailable&&"bg-green-500"}`}
+              variant={"secondary"}
+              className={`capitalize  ${isDoctorAvailable?"bg-green-500":"text-gray-300 bg-neutral-500/30  disabled:cursor-not-allowed"}`}
               onClick={handleJoin}
               disabled={!isDoctorAvailable}
             >
