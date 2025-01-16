@@ -31,7 +31,7 @@ function SignInForm() {
 
       const onSubmit = async (values: z.infer<typeof userSignInValidation>) => {
         setIsLoading(true);
-        console.log(values)
+        
         try {
           
           const signInAttempt= await signIn?.create({
@@ -40,7 +40,7 @@ function SignInForm() {
            })
           
     
-         console.log(signInAttempt)
+      
     
           if (signInAttempt?.status === 'complete') {
             await setActive({ session:signInAttempt?.createdSessionId })

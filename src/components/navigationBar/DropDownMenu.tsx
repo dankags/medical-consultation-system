@@ -1,5 +1,4 @@
 import React from "react"
-import { Button } from "../ui/button"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,7 +11,7 @@ import { LogOut, User } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useAuth, useClerk } from "@clerk/nextjs"
 import { useSocket } from "@/stores/useSocket"
-import { socket } from '../../socket';
+
 
 const DropDownMenu = ({children}:{children:React.ReactNode}) => {
     const router=useRouter()
