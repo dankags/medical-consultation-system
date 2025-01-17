@@ -25,6 +25,6 @@ export const GET =async ( req:NextApiRequest,{ params }: { params: Promise<{ use
      return new Response(JSON.stringify({balance:userBalance.documents[0].balance}), { status: 200 });
     }catch(err:any){
       console.log(err)
-      new Response(JSON.stringify({error:err}), { status: 500 })
+     return new Response(JSON.stringify({error:err}), { status: 500 })
     }
  }

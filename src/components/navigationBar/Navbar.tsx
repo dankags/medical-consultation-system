@@ -211,10 +211,10 @@ const Navbar = () => {
       </div>
       :
       <div className="hidden md:flex items-center gap-3 xl:gap-8 2xl:gap-12 ">
-        <Skeleton className="w-[100px] h-7 rounded-full bg-neutral-400"/>
-        <Skeleton className="w-[100px] h-7  rounded-full bg-neutral-400"/>
-        <Skeleton className="w-[100px] h-7  rounded-full bg-neutral-400"/>
-        <Skeleton className="w-[100px] h-7  rounded-full bg-neutral-400"/>
+        <Skeleton className="w-[100px] h-7 rounded-full bg-dark-500"/>
+        <Skeleton className="w-[100px] h-7  rounded-full bg-dark-500"/>
+        <Skeleton className="w-[100px] h-7  rounded-full bg-dark-500"/>
+        <Skeleton className="w-[100px] h-7  rounded-full bg-dark-500"/>
       </div>
       }
 

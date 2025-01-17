@@ -1,7 +1,6 @@
 "use client"
 import { fetchAPI } from '@/lib/fetch';
 import { useSocket } from '@/stores/useSocket'
-import { useAuth } from '@clerk/nextjs';
 import Image from 'next/image';
 import React, { useEffect,useState } from 'react'
 import { Button } from '../ui/button';
@@ -16,14 +15,20 @@ type OnlineDoctor={
   newUserId:string;
   role:"doctor"
 }
+type DoctorCard={
+  id:string;
+  name:string;
+  specialty:string[];
+  description:string;
+}
 
 const OnlineDoctorsCards = () => {
     const {socket}=useSocket()
     const [onlineDoctors,setOnlineDoctors]=useState<OnlineDoctor[]>([])
-    const [doctors,setDoctors]=useState<User[]>([])
-    const [isFetchingDoctorsInfo,setIsFetchingDoctorsInfo]=useState(false)
+    const [doctors,setDoctors]=useState<DoctorCard[]>([])
+    const [isFetchingDoctorsInfo,setIsFetchingDoctorsInfo]=useState(true)
     const [searchInput,setSearchInput]=useState("")
-    const [filteredDoctors,setFilteredDoctors]=useState<User[]>([])
+    const [filteredDoctors,setFilteredDoctors]=useState<DoctorCard[]>([])
   
     useEffect(()=>{
       
@@ -37,16 +42,17 @@ const OnlineDoctorsCards = () => {
   
       const fetchDoctorInfo=async()=>{
         setIsFetchingDoctorsInfo(true)
-        const doctorsIds = onlineDoctors.map((item) => item.newUserId)
+        // const doctorsIds = onlineDoctors.map((item) => item.newUserId)
          try {
             const res =await fetchAPI("/api/getDoctorsInfo",{
               method:"POST",
               headers:{
                 "Content-Type": "application/json"
               },
-              body:JSON.stringify({ doctorsIds }),
+              body:JSON.stringify({ doctorsIds:["user_2qw0z3vJSiAZEDuW6QNTfFGBKYB"]}),
               signal:controller.signal
             })
+            console.log(res)
             setDoctors(res)
             setIsFetchingDoctorsInfo(false)
          } catch (error) {
@@ -57,9 +63,9 @@ const OnlineDoctorsCards = () => {
 
       socket?.on("getOnlineDoctors",handleGetOnlineDoctors)
 
-      if (onlineDoctors.length > 0) {
+      // if (onlineDoctors.length > 0) {
         fetchDoctorInfo();
-      }
+      // }
 
       const intervalId = setInterval(() => {
         // Request the latest list of online doctors from the socket every 5 minutes (300000ms)
@@ -88,40 +94,45 @@ const OnlineDoctorsCards = () => {
               <Input
                 type="text"
                 onChange={(e)=>setSearchInput(e.target.value)}
-                placeholder="Search by specialty..."
+                placeholder="Search by doctor specialty..."
                 className="border-none ring-0 ring-offset-0 bg-transparent focus-visible:ring-offset-0 focus-visible:ring-0 "
               />
               <Button
                 variant={"secondary"}
                 onClick={handleSearchSpecialty}
-                className={`p-3 capitalize bg-green-500 rounded-full `}
+                className={`p-3 capitalize bg-green-500 rounded-full active:bg-green-500/75`}
               >
                 <BiSearch size={24} />
               </Button>
             </div>
           </div>
-          <div className="w-full  grid grid-flow-row md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-3  p-3">
+          {onlineDoctors.length===0?(<div className="w-full  grid grid-flow-row md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-3  p-3">
             {!isFetchingDoctorsInfo ? (
               <>
                {(filteredDoctors.length > 0 ? filteredDoctors : doctors).map((doctor) => (
-      <OnlineDoctorCard key={doctor.id} />
+      <OnlineDoctorCard key={doctor.id} doctor={doctor}/>
     ))}
               </>
             ) : (
               <>
-                 {Array.from({ length: 6 }).map((_, index) => (
+                 {Array.from({ length: 10 }).map((_, index) => (
       <OnlineDoctorCardSkeleton key={index} />
     ))}
               </>
             )}
-          </div>
+          </div>):(
+            <div className="w-full h-[400px] flex flex-col items-center justify-center gap-3">
+               <span className="text-3xl text-gray-400 font-semibold">!Ooops</span>
+               <span className="">There no doctors who are currently online.</span>
+            </div>
+          )}
         </div>
       </ScrollArea>
     </div>
   );
 }
 
-const OnlineDoctorCard=({doctor}:{doctor?:User})=>{
+const OnlineDoctorCard=({doctor}:{doctor:DoctorCard})=>{
   return (
     <div className="col-span-1 p-3 flex flex-col gap-3 bg-dark-400 rounded-md">
     <div className="w-full flex items-center gap-3 relative">
@@ -138,12 +149,22 @@ const OnlineDoctorCard=({doctor}:{doctor?:User})=>{
       </div>
       <div className="flex-1 flex flex-col gap-1">
         <h4 className="capitalize font-semibold  truncate">
-          Dr. John Doe
+          Dr. {doctor?.name||"john doe"}
         </h4>
-        <span className="capitalize truncate text-sm font-medium  text-gray-400">
-          Peditrician | Surgeon
-        </span>
-       
+        <p className="flex items-center gap-1">
+        {doctor?.specialty.map((item,i)=>{
+          if((doctor?.specialty.length-1)===i){
+            return(
+              <span key={i} className="capitalize truncate text-sm font-medium  text-gray-400">
+              {` ${item}`}
+            </span>
+            )
+          }
+         return(<span key={i} className="capitalize truncate text-sm font-medium  text-gray-400">
+          {`${item} | `}
+        </span>) 
+      })}
+       </p>
        
       </div>
       <div className="absolute top-3 right-3">
@@ -151,16 +172,13 @@ const OnlineDoctorCard=({doctor}:{doctor?:User})=>{
       </div>
     </div>
     <p className="text-sm font-thin line-clamp-2">
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sit veniam
-          hic impedit, nostrum, reprehenderit odit quas odio, ut voluptatem rem
-          cupiditate dolorem molestiae similique temporibus obcaecati corporis
-          ipsam eveniet deserunt.
+          {doctor?.description||""}
         </p>
         <div className="flex items-center justify-end gap-3">
           <Button variant={"link"} className={`capitalize`}>
             Preview Doctor
           </Button>
-          <Button variant={"secondary"} className={`capitalize bg-green-500`}>
+          <Button variant={"secondary"} className={`capitalize bg-green-500 active:bg-green-500/75`}>
             Book Doctor
           </Button>
         </div>

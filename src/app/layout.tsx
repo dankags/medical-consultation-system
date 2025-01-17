@@ -18,8 +18,8 @@ const fontSans = FontSans({
 
 export const metadata: Metadata = {
   title: {
-    template: 'PulseCare . %s',
-    default: 'PulseCare',
+    template: 'CarePulse . %s',
+    default: 'CarePulse',
   },
   description: 'Heatlth care consultation system',
 };
