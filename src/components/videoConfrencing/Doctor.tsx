@@ -9,6 +9,7 @@ type VideoLayoutProps={
     appointmentId:string;
     doctor:User|null
     role?:"doctor"|null
+    status:"free"|"occupied"
 }
 
 const Doctor = ({appointmentId,doctor,role}:VideoLayoutProps) => {

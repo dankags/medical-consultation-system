@@ -10,7 +10,8 @@ import { useAuth } from '@clerk/nextjs'
 type SocketUser={
     socketId:string;
     newUserId:string;
-    role:"doctor"|"user"|"admin"
+    role:"doctor"|"user"|"admin";
+    status:"free"|"occupied"
 }
 
 
@@ -19,15 +20,27 @@ const BookingBtn = ({doctorId}:{doctorId:string}) => {
     const router=useRouter()
     const {userId}=useAuth()
      const [isDoctorAvailable, setIsDoctorAvailable] = useState(false);
+     const [isDoctorOccupied,setIsDoctorOccupied]=useState(false)
       const {balance,setBalance}=useBalance()
     useEffect(() => {
           if(!socket) return
           const handleDoctorOnline = (socketUsers:SocketUser[]) => {
+            const doctor=socketUsers.filter((item)=>item.newUserId===doctorId)
+
             if(socketUsers?.some((user) => user.newUserId === doctorId)){
                 setIsDoctorAvailable(true)
+                if(doctor.length>0){
+                  if(doctor[0].status==="occupied"){
+                    setIsDoctorOccupied(true)
+                    return
+                  }
+                  setIsDoctorOccupied(false)
+                  return
+                } 
                 return
             }
             setIsDoctorAvailable(false)
+            setIsDoctorOccupied(false)
             return
         };
         
@@ -43,20 +56,28 @@ const BookingBtn = ({doctorId}:{doctorId:string}) => {
              toast({
                variant:"destructive",
                title:"!Ooops something went wrong",
-               description:"The doctor you tryng to book is currently offline."
+               description:"The doctor you trying to book is currently offline."
              })
              return
           }
-          if(!balance || balance < 500){
+          if(isDoctorOccupied){
             toast({
               variant:"destructive",
               title:"!Ooops something went wrong",
-              description:"You have insufficient funds to book this session.",
-              action:<Button variant={"outline"} onClick={()=>router.push(`/deposit/${userId}`)}>Recharge</Button>
+              description:"The doctor you trying to book is currently in a session."
             })
             return
-          }
-      
+         }
+          // if(!balance || balance < 500){
+          //   toast({
+          //     variant:"destructive",
+          //     title:"!Ooops something went wrong",
+          //     description:"You have insufficient funds to book this session.",
+          //     action:<Button variant={"outline"} onClick={()=>router.push(`/deposit/${userId}`)}>Recharge</Button>
+          //   })
+          //   return
+          // }
+          
         }
   return (
     <Button onClick={handleBooking} variant={"secondary"} disabled={!isDoctorAvailable} className={`capitalize bg-green-500 active:bg-green-500/75 ${!isDoctorAvailable&&"text-gray-300 bg-neutral-500/30  disabled:cursor-not-allowed"}`}>

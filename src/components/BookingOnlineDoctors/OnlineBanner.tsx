@@ -6,6 +6,7 @@ type OnlineUsers={
   id:string;
   newUserId:string;
   role:"doctor"
+  status:"free"|"occupied"
   }
 
 const OnlineBanner = ({userId}:{userId:string}) => {

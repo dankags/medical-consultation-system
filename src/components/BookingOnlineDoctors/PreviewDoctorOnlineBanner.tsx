@@ -7,6 +7,7 @@ type SocketUser={
     socketId:string;
     newUserId:string;
     role:"doctor"|"user"|"admin"
+    status:"free"|"occupied"
 }
 
 const PreviewDoctorOnlineBanner = ({doctorId}:{doctorId:string}) => {

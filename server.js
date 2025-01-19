@@ -23,7 +23,7 @@ app.prepare().then(() => {
   };
   const addUser = (socketId, newUserId,role) => {
       if (!users.some((user) => user.newUserId === newUserId)) {
-        users.push({ socketId, newUserId,role});
+        users.push({ socketId, newUserId,role,status:"free"});
       }
   };
   const getUser = (userId) => {
@@ -44,12 +44,41 @@ app.prepare().then(() => {
     });
 
  
-     
-     socket.on("message", (message) => {
-       io.emit("received",message)
-     })
+     socket.on("sendBookingRequest", ({ patientId, doctorId,message }) => {
+      const receiver = getUser(doctorId);
+      if (receiver) {
+        console.log(message)
+        io.to(receiver.socketId).emit("receiveBookingRequest", {
+          patientId,
+          message,
+        });
+      } else {
+        console.log(`Doctor with ID ${doctorId} is not online.`);
+      }
+     });
 
+     socket.on("sendBookingResponse", ({ patientId, doctorId, urlPath }) => {
+      const receiver = getUser(patientId);
+      if (receiver) {
+        io.to(receiver.socketId).emit("receiveBookingResponse", {
+          doctorId,
+          urlPath,
+        });
+      } else {
+        console.log(`Patient with ID ${patientId} is not online.`);
+      }
+     });
      
+
+     socket.on("updateStatus", ({ userId, status }) => {
+      const user = getUser(userId);
+      user.status = status;
+      const otherUsers=users.filter((user)=>user.newUserId!==userId)
+      users=[...otherUsers,user]
+      const onlineDoctors = users.filter((user) => user.role === "doctor");
+      io.emit("getOnlineDoctors", onlineDoctors);
+      io.emit("getUsers", users);
+     })
      
        socket.on(
          "sendPatientNotification",
@@ -81,6 +110,7 @@ app.prepare().then(() => {
         const onlineDoctors = users.filter((user) => user.role === "doctor");
   io.emit("getOnlineDoctors", onlineDoctors);
       });
+
       socket.on("disconnect", () => {
         removeUser(socket.id);
         const onlineDoctors = users.filter((user) => user.role === "doctor");

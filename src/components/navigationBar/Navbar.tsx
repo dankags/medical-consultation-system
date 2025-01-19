@@ -1,7 +1,7 @@
 "use client"
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import React, { useEffect, useMemo, useState } from 'react'
 import { Button } from '../ui/button'
 import { IoNotifications, IoNotificationsOutline } from "react-icons/io5";
@@ -15,6 +15,7 @@ import { socket } from '@/socket'
 import { useSocket } from '@/stores/useSocket'
 import { Skeleton } from '../ui/skeleton'
 import { useBalance } from '@/stores/useBalance'
+import { toast } from '@/hooks/use-toast'
 
 
 
@@ -22,6 +23,7 @@ import { useBalance } from '@/stores/useBalance'
 
 const Navbar = () => {
     const pathname=usePathname()
+    const router=useRouter()
     const {userId}=useAuth()
     const {user,status}=useCurrentUser()
     const updateSocket = useSocket((state) => state.setSocket);
@@ -99,6 +101,20 @@ const Navbar = () => {
       
     },[pathname,userId,user])
 
+    const handleCreateAppointment=async(patientId:string)=>{
+      if(user?.role!=="doctor") return
+      
+      try{
+        socket?.emit("sendBookingResponse", {
+          patientId,
+          doctorId: user?.id,
+          urlPath: `/appointments/${"67740d51000f99c8806d"}/meetup`,
+        });
+       router.push(`/appointments/${"67740d51000f99c8806d"}/meetup`)
+      }catch(error:any){
+        console.log(error)
+      }
+    }
 
     useEffect(()=>{
       
@@ -147,6 +163,16 @@ const Navbar = () => {
        
         if(socket) updateSocket(socket);
         socket?.emit("newUser", { userId: user.id, role: user?.role });
+         
+        socket.on("receiveBookingResponse",(data)=>{
+          toast({
+            variant:"default",
+            title:"Booking Response",
+            description:`The doctor accepted your booking request. Now you will be redirected to meet the doctor.`,
+          })
+          router.push(data.urlPath);
+        })
+
         socket?.on("receivePatientNotification",(data)=>{
 
           if (Notification.permission === "granted") {
@@ -166,6 +192,37 @@ const Navbar = () => {
         }
 
         })
+
+        socket?.on("receiveBookingRequest",(data)=>{
+
+          toast({
+            variant:"default",
+            title:"Booking Request",
+            description:`${data.message}`,
+            action:<Button onClick={()=>handleCreateAppointment(data?.patientId)} variant={"outline"}>Accept</Button>
+
+          })
+
+          if (Notification.permission === "granted") {
+            const notification = new Notification("Booking Session request.", {
+              body: data.message,
+              icon: "/assets/icons/logo-icon.svg", // Optional: Add a relevant icon
+            });
+             
+            
+
+          // Add a click event to the notification (e.g., redirect to appointment page)
+          notification.onclick = () => {
+            window.open(`/appointments/${data?.message.appointmentId}/meetup`, "_blank");
+          };
+        } else {
+          console.log("Notifications are not allowed by the user.");
+        }
+
+        })
+
+
+
         return () => {
           socket?.off("newUser");
           socket?.off("receivePatientNotification")

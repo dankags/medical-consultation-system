@@ -14,11 +14,13 @@ import { toast } from '@/hooks/use-toast';
 import { useBalance } from '@/stores/useBalance';
 import { useAuth } from '@clerk/nextjs';
 import { DefaultEventsMap, Socket } from 'socket.io';
+import { useCurrentUser } from '../providers/UserProvider';
 
 type OnlineDoctor={
   id:string;
   newUserId:string;
   role:"doctor"
+  status:"free"|"occupied"
 }
 type DoctorCard={
   id:string;
@@ -167,6 +169,7 @@ const OnlineDoctorCard=({doctor,socket}:{doctor:DoctorCard,socket:Socket<Default
   const router=useRouter()
   const {balance,setBalance}=useBalance()
   const {userId}=useAuth();
+  const {user}=useCurrentUser()
   const [isUserOnline,setIsUserOnline]=useState(true)
 
   
@@ -201,15 +204,21 @@ const OnlineDoctorCard=({doctor,socket}:{doctor:DoctorCard,socket:Socket<Default
        })
        return
     }
-    if(!balance || balance < 500){
-      toast({
-        variant:"destructive",
-        title:"!Ooops something went wrong",
-        description:"You have insufficient funds to book this session.",
-        action:<Button variant={"outline"} onClick={()=>router.push(`/deposit/${userId}`)}>Recharge</Button>
-      })
-      return
-    }
+    // if(!balance || balance < 500){
+    //   toast({
+    //     variant:"destructive",
+    //     title:"!Ooops something went wrong",
+    //     description:"You have insufficient funds to book this session.",
+    //     action:<Button variant={"outline"} onClick={()=>router.push(`/deposit/${userId}`)}>Recharge</Button>
+    //   })
+    //   return
+    // }
+
+    socket?.emit("sendBookingRequest", {
+      patientId: user?.id,
+      doctorId: doctor?.id,
+      message: `Hello Dr. ${doctor?.name} its ${user?.name} and I would like to book a session with you argently.`,
+    });
 
   }
 

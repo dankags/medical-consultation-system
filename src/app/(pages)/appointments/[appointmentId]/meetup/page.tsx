@@ -23,8 +23,8 @@ export default async function VideoMeetUpPage(props: {
 }) {
   const params = await props.params
   const searchParams = await props.searchParams
-  const {user}=await fetchUserData()
-  const appointment=await getAppointmentById(params.appointmentId)
+  const [{user},appointment]=await Promise.all([fetchUserData(),getAppointmentById(params.appointmentId)])
+  
 
  
 
