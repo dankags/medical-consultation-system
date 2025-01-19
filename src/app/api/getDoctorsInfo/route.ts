@@ -16,11 +16,13 @@ export async function POST(req: NextRequest) {
         DATABASE_ID!,
         USER_COLLECTION_ID!,
         [
-          Query.equal("clerkId", body?.doctorsIds),
+          Query.equal("$id", body?.doctorsIds),
         //   Query.select(['$id', 'doctorInfo'])
         ]);
+      
         const filteredData=users?.documents.map(({ $id, doctorInfo }) => ({
             id: $id,
+            doctorId:doctorInfo?.$id,
             name:doctorInfo?.name,
             description:doctorInfo?.description,
             specialty:doctorInfo?.speciality,

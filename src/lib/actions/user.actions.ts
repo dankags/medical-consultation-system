@@ -157,7 +157,7 @@ export const fetchUserData=async()=>{
         const {gender,balance,patient,myPayments,$databaseId,$collectionId,birthDate,clerkId,$id,$permissions,$updatedAt,$createdAt,...userData} = user.documents[0];
         return parseStringify({ user: {...userData,id:$id} });
 
-     } catch (error:any) {
+     } catch (err:any) {
         return parseStringify({ error: "Internal Server Error" });
      }
 }

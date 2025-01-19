@@ -9,6 +9,11 @@ import { Input } from '../ui/input';
 import { BiSearch } from "react-icons/bi";
 import { ScrollArea } from '../ui/scroll-area';
 import { Skeleton } from '../ui/skeleton';
+import { useRouter } from 'next/navigation';
+import { toast } from '@/hooks/use-toast';
+import { useBalance } from '@/stores/useBalance';
+import { useAuth } from '@clerk/nextjs';
+import { DefaultEventsMap, Socket } from 'socket.io';
 
 type OnlineDoctor={
   id:string;
@@ -17,6 +22,7 @@ type OnlineDoctor={
 }
 type DoctorCard={
   id:string;
+  doctorId:string;
   name:string;
   specialty:string[];
   description:string;
@@ -28,62 +34,87 @@ const OnlineDoctorsCards = () => {
     const [doctors,setDoctors]=useState<DoctorCard[]>([])
     const [isFetchingDoctorsInfo,setIsFetchingDoctorsInfo]=useState(true)
     const [searchInput,setSearchInput]=useState("")
+    const [isInitialRender,setIsInitialRender]=useState(true)
     const [filteredDoctors,setFilteredDoctors]=useState<DoctorCard[]>([])
   
     useEffect(()=>{
       
-      const controller=new AbortController()
+      if (!socket) return;
+      setIsInitialRender(false)
+  const controller = new AbortController();
 
-      const handleGetOnlineDoctors=(doctors:OnlineDoctor[])=>{
-        if(doctors?.length >0){
-          setOnlineDoctors(doctors.flat())
-        }
+  const handleGetOnlineDoctors = (doctors: OnlineDoctor[]) => {
+    if(!isInitialRender){
+      setOnlineDoctors(doctors);
+      return
     }
-  
-      const fetchDoctorInfo=async()=>{
-        setIsFetchingDoctorsInfo(true)
-        // const doctorsIds = onlineDoctors.map((item) => item.newUserId)
-         try {
-            const res =await fetchAPI("/api/getDoctorsInfo",{
-              method:"POST",
-              headers:{
-                "Content-Type": "application/json"
-              },
-              body:JSON.stringify({ doctorsIds:["user_2qw0z3vJSiAZEDuW6QNTfFGBKYB"]}),
-              signal:controller.signal
-            })
-            console.log(res)
-            setDoctors(res)
-            setIsFetchingDoctorsInfo(false)
-         } catch (error) {
-          console.log("Error fetching Doctor Info: ",error)
-          setIsFetchingDoctorsInfo(false)
-         }
+    setTimeout(() => {
+    setOnlineDoctors(doctors);
+    },10000)
+
+  };
+
+  const fetchDoctorInfo = async () => {
+    if (onlineDoctors.length === 0) {
+      setDoctors([]);
+      return;
+    }
+
+    setIsFetchingDoctorsInfo(true);
+    const doctorsIds = onlineDoctors.map((item) => item.newUserId);
+
+    try {
+      const res = await fetchAPI("/api/getDoctorsInfo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ doctorsIds }),
+        signal: controller.signal
+      });
+      if (res.error) {
+        throw new Error(res.error);
       }
+      setDoctors(res);
+    } catch (error) {
+      console.log("Error fetching Doctor Info:", error);
+    } finally {
+      setIsFetchingDoctorsInfo(false);
+    }
+  };
 
-      socket?.on("getOnlineDoctors",handleGetOnlineDoctors)
+  // Initial load
+  socket.on("getOnlineDoctors", handleGetOnlineDoctors);
 
-      // if (onlineDoctors.length > 0) {
-        fetchDoctorInfo();
-      // }
+  // Fetch doctor info whenever onlineDoctors changes
+  fetchDoctorInfo();
 
-      const intervalId = setInterval(() => {
-        // Request the latest list of online doctors from the socket every 5 minutes (300000ms)
-        socket?.emit("getOnlineDoctors");  // You can emit a message to request the update
-      }, 300000);
+  // Poll for online doctors every 10 seconds
+  const intervalId = setInterval(() => {
+    console.log("refreshing online doctors");
+    socket.off("getOnlineDoctors", handleGetOnlineDoctors);
+    socket.on("getOnlineDoctors", handleGetOnlineDoctors);
+  }, 10000);
 
-      return () => {
-        socket?.on("getOnlineDoctors",handleGetOnlineDoctors)
-        clearInterval(intervalId)
-        controller.abort()
-      }
+  // Cleanup
+  return () => {
+    socket.off("getOnlineDoctors", handleGetOnlineDoctors);
+    clearInterval(intervalId);
+    controller.abort();
+  };
     },[socket,onlineDoctors])
+
+  
+
+   console.log(onlineDoctors)
 
     const handleSearchSpecialty=()=>{
       const regex = new RegExp(`${searchInput}`, "i");
       const searchedDoctors=doctors.filter(item => item.specialty.some(spec => regex.test(spec)))
       setFilteredDoctors(searchedDoctors)
     }
+
+
 
   return (
     <div className=" w-full h-[calc(100vh-80px)] ">
@@ -106,11 +137,11 @@ const OnlineDoctorsCards = () => {
               </Button>
             </div>
           </div>
-          {onlineDoctors.length===0?(<div className="w-full  grid grid-flow-row md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-3  p-3">
+          {onlineDoctors.length>0?(<div className="w-full  grid grid-flow-row md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-3  p-3">
             {!isFetchingDoctorsInfo ? (
               <>
                {(filteredDoctors.length > 0 ? filteredDoctors : doctors).map((doctor) => (
-      <OnlineDoctorCard key={doctor.id} doctor={doctor}/>
+      <OnlineDoctorCard key={doctor.id} doctor={doctor} doctors={onlineDoctors} socket={socket}/>
     ))}
               </>
             ) : (
@@ -132,7 +163,56 @@ const OnlineDoctorsCards = () => {
   );
 }
 
-const OnlineDoctorCard=({doctor}:{doctor:DoctorCard})=>{
+const OnlineDoctorCard=({doctor,socket}:{doctor:DoctorCard,socket:Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> | null})=>{
+  const router=useRouter()
+  const {balance,setBalance}=useBalance()
+  const {userId}=useAuth();
+  const [isUserOnline,setIsUserOnline]=useState(true)
+
+  
+    useEffect(()=>{
+       if(!socket) return
+       
+      const handleGetUsers = (users:OnlineDoctor[]) => {
+        if(users?.some((user) => user.newUserId === userId)){
+          setIsUserOnline(true)
+          return
+      }
+      setIsUserOnline(false)
+      return
+        };
+  
+      socket?.on("getOnlineDoctors",handleGetUsers)
+      return () => {
+          if (socket) {
+            socket.off("getOnlineDoctors", handleGetUsers);
+          }
+        };
+     },[socket,doctor])
+
+ 
+
+  const handleBooking=async()=>{
+    if(!isUserOnline){
+       toast({
+         variant:"destructive",
+         title:"!Ooops something went wrong",
+         description:"The doctor you tryng to book is currently offline."
+       })
+       return
+    }
+    if(!balance || balance < 500){
+      toast({
+        variant:"destructive",
+        title:"!Ooops something went wrong",
+        description:"You have insufficient funds to book this session.",
+        action:<Button variant={"outline"} onClick={()=>router.push(`/deposit/${userId}`)}>Recharge</Button>
+      })
+      return
+    }
+
+  }
+
   return (
     <div className="col-span-1 p-3 flex flex-col gap-3 bg-dark-400 rounded-md">
     <div className="w-full flex items-center gap-3 relative">
@@ -168,17 +248,17 @@ const OnlineDoctorCard=({doctor}:{doctor:DoctorCard})=>{
        
       </div>
       <div className="absolute top-3 right-3">
-      <OnlineBanner userId='uiewutyg2378'/>
+      <OnlineBanner userId={doctor?.id}/>
       </div>
     </div>
     <p className="text-sm font-thin line-clamp-2">
           {doctor?.description||""}
         </p>
         <div className="flex items-center justify-end gap-3">
-          <Button variant={"link"} className={`capitalize`}>
+          <Button variant={"link"} className={`capitalize`} onClick={()=>router.push(`/book-doctor/preview/${doctor.id}?doctorId=${doctor.doctorId}`)}>
             Preview Doctor
           </Button>
-          <Button variant={"secondary"} className={`capitalize bg-green-500 active:bg-green-500/75`}>
+          <Button onClick={handleBooking} variant={"secondary"} className={`capitalize bg-green-500 active:bg-green-500/75`}>
             Book Doctor
           </Button>
         </div>

@@ -14,6 +14,7 @@ import { fetchAPI } from '@/lib/fetch'
 import { socket } from '@/socket'
 import { useSocket } from '@/stores/useSocket'
 import { Skeleton } from '../ui/skeleton'
+import { useBalance } from '@/stores/useBalance'
 
 
 
@@ -26,6 +27,7 @@ const Navbar = () => {
     const updateSocket = useSocket((state) => state.setSocket);
     const removeSocket = useSocket((state) => state.removeSocket);
     const [accountBalance,setAccountBalance]=useState<number>(0)
+     const {setBalance}=useBalance()
     
     
 
@@ -125,6 +127,7 @@ const Navbar = () => {
             },
             signal: controller.signal,
           })
+          setBalance(balance?.balance)
           setAccountBalance(balance?.balance)
         } catch (error:any) {
           console.log(error)

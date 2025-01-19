@@ -5,6 +5,7 @@ import { ID, Query,  } from 'node-appwrite';
 import {
   BUCKET_ID,
   DATABASE_ID,
+  DOCTOR_COLLECTION_ID,
   ENDPOINT,
   PATIENT_COLLECTION_ID,
   PROJECT_ID,
@@ -14,6 +15,8 @@ import {
   users,
 } from "../appwrite.config";
 import { parseStringify } from "../utils";
+import { auth } from '@clerk/nextjs/server';
+
 
 
 // CREATE APPWRITE USER
@@ -115,3 +118,35 @@ export const getPatient = async (userId: string) => {
     );
   }
 };
+
+// GET Doctors Preview profile
+export const getDoctorPreview=async(id:string,doctorId:string)=>{
+  const {userId}=await auth()
+
+  if (!userId) return parseStringify({ error: "Not Authenticated" });
+
+  try {
+    const [user, doctor] = await Promise.all([
+      databases.getDocument(DATABASE_ID!, USER_COLLECTION_ID!, id,[Query.select([])]),
+      databases.getDocument(DATABASE_ID!, DOCTOR_COLLECTION_ID!, doctorId),
+    ]);
+
+   if (!user || !doctor) return parseStringify({ error: "This Doctor Does not exist" });
+
+
+    const resData={
+      name:doctor?.name,
+      rating:doctor?.rating,
+      specialty:doctor?.speciality,
+      title:doctor?.title,
+      description:doctor?.description,
+      doctorClerkId:user?.clerkId
+    }
+
+    return parseStringify(resData);
+  } catch (err:any) {
+    console.log(err)
+    return parseStringify({ error: "Internal Server Error" });
+  }
+
+}

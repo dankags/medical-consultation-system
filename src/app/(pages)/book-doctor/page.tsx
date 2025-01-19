@@ -2,6 +2,7 @@ import Loading from '@/app/loading'
 import OnlineDoctorsCards from '@/components/BookingOnlineDoctors/OnlineDoctorCard'
 import { fetchUserData } from '@/lib/actions/user.actions'
 import { auth } from '@clerk/nextjs/server'
+import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import React, { Suspense } from 'react'
 
@@ -11,13 +12,17 @@ export const metadata: Metadata = {
 };
 
 export default async function BookOnlineDoctors() {
-  const {userId}=await auth()
-  const {user}=await fetchUserData()
-  if(!userId){
+  const [user,data]=await Promise.all([
+    auth(),
+    fetchUserData()
+  ])
+
+
+  if(!user.userId){
     redirect("/auth/sign-in")
   }
 
- if(user.role !== "user"){
+ if(data?.user.role !== "user"){
   redirect("/not-found")
  }
 
