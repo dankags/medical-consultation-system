@@ -9,26 +9,46 @@ import {
   APPOINTMENT_COLLECTION_ID,
   DATABASE_ID,
   databases,
+  DOCTOR_COLLECTION_ID,
   messaging,
 } from "../appwrite.config";
 import { formatDateTime, parseStringify } from "../utils";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+
+
+
 
 //  CREATE APPOINTMENT
 export const createAppointment = async (
   appointment: CreateAppointmentParams
 ) => {
+  const user=await auth()
+  if (!user.userId) {
+    return parseStringify({error:"not autheticated"})
+  }
   try {
+    const doctor = await databases.listDocuments(
+      DATABASE_ID!,
+      DOCTOR_COLLECTION_ID!,
+      [Query.equal("user",appointment.doctor)]
+    );
+    if(doctor.documents.length===0){
+      return parseStringify({error:"Doctor not found"})
+    }
+    appointment.doctor=doctor.documents[0].$id
     const newAppointment = await databases.createDocument(
       DATABASE_ID!,
       APPOINTMENT_COLLECTION_ID!,
       ID.unique(),
       appointment
     );
-
-    revalidatePath("/admin");
-    return parseStringify(newAppointment);
+     
+   
+    return parseStringify(newAppointment.$id);
   } catch (error) {
     console.error("An error occurred while creating a new appointment:", error);
+    return parseStringify({error:"Internal server error"})
   }
 };
 

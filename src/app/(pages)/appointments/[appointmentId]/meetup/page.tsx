@@ -1,6 +1,5 @@
 import Doctor from '@/components/videoConfrencing/Doctor';
 import Patient from '@/components/videoConfrencing/Patient';
-import VideoLayout from '@/components/videoConfrencing/VideoLayout';
 import { fetchUserData, getAppointmentById } from '@/lib/actions/user.actions';
 import { Metadata } from 'next';
 import React from 'react'
@@ -22,7 +21,6 @@ export default async function VideoMeetUpPage(props: {
   searchParams: SearchParams
 }) {
   const params = await props.params
-  const searchParams = await props.searchParams
   const [{user},appointment]=await Promise.all([fetchUserData(),getAppointmentById(params.appointmentId)])
   
 

@@ -1,44 +1,85 @@
+import { generateMpesaToken, generateSTKPassword } from '@/lib/actions/user.actions';
 import { NextResponse } from 'next/server';
-import { generateMpesaToken } from '@/utils/mpesaToken';
+import { E164Number } from "libphonenumber-js/core";
+
+interface MpesaRequest {
+  time: Date;
+  price: number;
+  phoneNumber: E164Number;
+}
+
+interface MpesaResponse {
+  ResponseCode: string;
+  CustomerMessage: string;
+  CheckoutRequestID: string;
+  ResponseDescription: string;
+  MerchantRequestID: string;
+}
 
 export async function POST(req: Request) {
-  const { amount, phoneNumber } = await req.json();
+  // 1. Validate request body
+  const body: MpesaRequest = await req.json();
+    
+    if (!body.price || !body.phoneNumber || !body.time) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+    console.log(body)
+  
+    const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
 
-  try {
-    const token = await generateMpesaToken();
+    try {
+    const { password, timestamp } = await generateSTKPassword(body.time);
+    // 2. Format phone number
+    const phone = body.phoneNumber.toString().replace('+', '');
+    if (!/^254\d{9}$/.test(phone)) {
+      return NextResponse.json({ error: 'Invalid phone number format' }, { status: 400 });
+    }
+    
+    // 3. Generate STK password and token
+    const tokenResponse = await generateMpesaToken();
+    
+    
+    if (tokenResponse?.error) {
+      throw new Error(tokenResponse.error);
+    }
+   
+    const response =await fetch("https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest", {
+      method: 'POST',
+      headers:{
+        'Authorization': `Bearer ${tokenResponse.token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        "BusinessShortCode": process.env.M_PESA_SHORTCODE,
+        "Password": `${password}`,
+        "Timestamp": `${timestamp}`,
+        "TransactionType": "CustomerPayBillOnline",
+        "Amount": Math.round(1),
+        "PartyA": phone,
+        "PartyB": process.env.M_PESA_SHORTCODE,
+        "PhoneNumber": phone,
+        "CallBackURL": "https://43db-102-215-33-50.ngrok-free.app/",
+        "AccountReference": "CarePulse consoltation.",
+        "TransactionDesc": "Recharge of CarePulse account." 
+      }),
+      signal: controller.signal,
+    })
+      
 
-    const response = await fetch(
-      `${process.env.MPESA_API_URL}/mpesa/stkpush/v1/processrequest`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          BusinessShortCode: process.env.MPESA_SHORTCODE,
-          Password: process.env.MPESA_PASSWORD,
-          Timestamp: new Date().toISOString().replace(/[-:.TZ]/g, ''), // YYYYMMDDHHMMSS
-          TransactionType: 'CustomerPayBillOnline',
-          Amount: amount,
-          PartyA: phoneNumber,
-          PartyB: process.env.MPESA_SHORTCODE,
-          PhoneNumber: phoneNumber,
-          CallBackURL: process.env.MPESA_CALLBACK_URL,
-          AccountReference: 'MedicalConsultation',
-          TransactionDesc: 'Payment for Consultation',
-        }),
-      }
-    );
-
-    const data = await response.json();
+    const data: MpesaResponse = await response.json();
+    clearTimeout(timeout);
 
     if (data.ResponseCode === '0') {
-      return NextResponse.json({ message: 'Payment initiated successfully', data });
-    } else {
-      return NextResponse.json({ message: 'Payment initiation failed', data }, { status: 400 });
+      return NextResponse.json({ success: true, data },{status: 200});
     }
+
+    throw new Error(data.ResponseDescription || 'Payment initiation failed');
   } catch (error) {
+    clearTimeout(timeout);
     console.error(error);
     return NextResponse.json({ message: 'Internal server error', error }, { status: 500 });
   }

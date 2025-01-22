@@ -1,3 +1,4 @@
+import { Phone } from "lucide-react";
 import { z } from "zod";
 
 
@@ -147,3 +148,10 @@ export function getAppointmentSchema(type: string) {
       return ScheduleAppointmentSchema;
   }
 }
+
+export const CreateDepositSchema = z.object({
+  price: z.number().min(0, "Price must be a positive number"),
+  phoneNumber: z
+    .string()
+    .refine((phone) => /^\+\d{10,15}$/.test(phone), "Invalid phone number"),
+});

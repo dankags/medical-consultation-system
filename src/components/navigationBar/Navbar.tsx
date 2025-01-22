@@ -16,6 +16,7 @@ import { useSocket } from '@/stores/useSocket'
 import { Skeleton } from '../ui/skeleton'
 import { useBalance } from '@/stores/useBalance'
 import { toast } from '@/hooks/use-toast'
+import { createAppointment, getDoctorId } from '@/lib/actions/appointment.actions'
 
 
 
@@ -105,12 +106,30 @@ const Navbar = () => {
       if(user?.role!=="doctor") return
       
       try{
+        
+        const appointment=await createAppointment({
+          doctor:user.id,
+          user:patientId,
+          schedule:new Date(),
+          status:"scheduled",
+          reason:"it was an urgent appointment",
+          note:""
+        })
+        if(appointment.error){
+          toast({
+            variant:"destructive",
+            title:"!Ooops something went wrong",
+            description:appointment.error
+          })
+          return
+        }
         socket?.emit("sendBookingResponse", {
           patientId,
           doctorId: user?.id,
-          urlPath: `/appointments/${"67740d51000f99c8806d"}/meetup`,
+          urlPath: `/appointments/${appointment}/meetup`,
         });
-       router.push(`/appointments/${"67740d51000f99c8806d"}/meetup`)
+       socket?.emit("updateStatus", {userId:user.id,status:"occupied"})
+       router.push(`/appointments/${appointment}/meetup`)
       }catch(error:any){
         console.log(error)
       }

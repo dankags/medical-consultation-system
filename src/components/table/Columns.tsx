@@ -124,7 +124,7 @@ export const userAppointmentColumns: ColumnDef<Appointment>[]=[
     accessorKey: "primaryPhysician",
     header: "Doctor",
     cell: ({ row }) => {
-
+      
       const appointment = row.original;
 
       const doctor = Doctors.find(
@@ -132,17 +132,7 @@ export const userAppointmentColumns: ColumnDef<Appointment>[]=[
       );
 
       return (
-        <div className="flex items-center gap-3">
-          <Image
-            src={doctor?.image??'/assets/images/noavatar.jpg'}
-            alt="doctor"
-            width={100}
-            height={100}
-            priority
-            className="size-8 rounded"
-          />
-          <p className="whitespace-nowrap capitalize truncate">Dr. {appointment?.doctor?.name}</p>
-        </div>
+        <AppointMentUserColumn doctor={doctor} appointment={appointment}/>  
       );
     },
   },
@@ -180,6 +170,28 @@ export const userAppointmentColumns: ColumnDef<Appointment>[]=[
     },
   },
 ]
+
+
+const AppointMentUserColumn=({doctor,appointment}:{doctor:{
+  image: string;
+  name: string;
+} | undefined,appointment:Appointment})=>{
+  const {user}=useCurrentUser()
+
+  return(
+    <div className="flex items-center gap-3">
+    <Image
+      src={doctor?.image??'/assets/images/noavatar.jpg'}
+      alt="doctor"
+      width={100}
+      height={100}
+      priority
+      className="size-8 rounded"
+    />
+    <p className="whitespace-nowrap capitalize truncate">{user?.role==="doctor"?`${appointment?.doctor?.name}`:`Dr. ${appointment?.doctor?.name}`}</p>
+  </div>
+  )
+}
 
 const AppointmentActions=({appointment}:{appointment:CoreRow<Appointment>})=>{
   const [activeRow, setActiveRow] = useState(null)

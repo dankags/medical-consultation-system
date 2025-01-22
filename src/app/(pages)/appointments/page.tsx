@@ -19,8 +19,7 @@ import {  userAppointmentColumns } from '../../../components/table/Columns';
   }
 
 export default async function AppointmentsPage() {
-     const {userId}=await auth()
-    const allAppointments= await getUserAppointments()
+    const [{userId},allAppointments]=await Promise.all([auth(),getUserAppointments()])
  
       if(!userId){
          redirect("/auth/sign-in")

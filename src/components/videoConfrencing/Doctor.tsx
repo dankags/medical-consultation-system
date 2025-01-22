@@ -4,16 +4,21 @@ import React, { useEffect, useState } from 'react'
 import { LiveKitRoom, RoomAudioRenderer, VideoConference } from '@livekit/components-react';
 import '@livekit/components-styles';
 import { FaVideoSlash } from 'react-icons/fa';
+import { useSocket } from '@/stores/useSocket';
+import { useCurrentUser } from '../providers/UserProvider';
 
 type VideoLayoutProps={
     appointmentId:string;
     doctor:User|null
     role?:"doctor"|null
-    status:"free"|"occupied"
+   
 }
 
 const Doctor = ({appointmentId,doctor,role}:VideoLayoutProps) => {
     const [token, setToken] = useState('')
+    const {socket}=useSocket()
+    const {user}=useCurrentUser()  
+    
 
    //  create room token
     const fetchRoomToken = async (room: string, username: string | undefined, controller?: AbortController): Promise<string> => {
@@ -59,6 +64,9 @@ const Doctor = ({appointmentId,doctor,role}:VideoLayoutProps) => {
                serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
                data-lk-theme="default"
                style={{ height: "100dvh" }}
+               onDisconnected={() => {
+                socket?.emit("updateStatus",{userId:user?.id,status:"free"})
+               }}
              >
                <VideoConference />
                <RoomAudioRenderer />

@@ -33,11 +33,13 @@ const Patient : React.FC<VideoLayoutProps> = ({appointmentId,doctor}) => {
      const [isDoctorAvailable, setIsDoctorAvailable] = useState(false);
      const {socket}=useSocket()
      const router=useRouter()
+   
 
     //   checks if the doctor is available
     useEffect(() => {
-      if(!socket) return
+     
       const handleDoctorOnline = (socketUsers:SocketUser[]) => {
+        
         if(socketUsers?.some((user) => user.newUserId === doctor?.id)){
             setIsDoctorAvailable(true)
             return
@@ -51,7 +53,9 @@ const Patient : React.FC<VideoLayoutProps> = ({appointmentId,doctor}) => {
       return () => {
         socket?.off("getOnlineDoctors", handleDoctorOnline);
       };
-    }, [socket])
+    }, [socket,appointmentId])
+
+    
 
     //  create room token
   const fetchRoomToken = async (room: string, username: string | undefined, controller?: AbortController): Promise<string> => {

@@ -171,16 +171,27 @@ const OnlineDoctorCard=({doctor,socket}:{doctor:DoctorCard,socket:Socket<Default
   const {userId}=useAuth();
   const {user}=useCurrentUser()
   const [isUserOnline,setIsUserOnline]=useState(true)
+ const [isDoctorOccupied,setIsDoctorOccupied]=useState(false)
 
   
     useEffect(()=>{
        if(!socket) return
        
       const handleGetUsers = (users:OnlineDoctor[]) => {
-        if(users?.some((user) => user.newUserId === userId)){
+        const doctors=users.filter((item)=>item.newUserId===doctor.id)
+        if(users?.some((user) => user.newUserId === doctor?.id)){
           setIsUserOnline(true)
+          if(doctors.length>0){
+            if(doctors[0].status==="occupied"){
+              setIsDoctorOccupied(true)
+              return
+            }
+            setIsDoctorOccupied(false)
+            return
+          } 
           return
       }
+      setIsDoctorOccupied(false)
       setIsUserOnline(false)
       return
         };
@@ -200,19 +211,27 @@ const OnlineDoctorCard=({doctor,socket}:{doctor:DoctorCard,socket:Socket<Default
        toast({
          variant:"destructive",
          title:"!Ooops something went wrong",
-         description:"The doctor you tryng to book is currently offline."
+         description:"The doctor you trying to book is currently offline."
        })
        return
     }
-    // if(!balance || balance < 500){
-    //   toast({
-    //     variant:"destructive",
-    //     title:"!Ooops something went wrong",
-    //     description:"You have insufficient funds to book this session.",
-    //     action:<Button variant={"outline"} onClick={()=>router.push(`/deposit/${userId}`)}>Recharge</Button>
-    //   })
-    //   return
-    // }
+    if(!balance || balance < 500){
+      toast({
+        variant:"destructive",
+        title:"!Ooops something went wrong",
+        description:"You have insufficient funds to book this session.",
+        action:<Button variant={"outline"} onClick={()=>router.push(`/deposit/${userId}`)}>Recharge</Button>
+      })
+      return
+    }
+    if(isDoctorOccupied){
+                toast({
+                  variant:"destructive",
+                  title:"!Ooops something went wrong",
+                  description:"The doctor you trying to book is currently in a session."
+                })
+                return
+             }
 
     socket?.emit("sendBookingRequest", {
       patientId: user?.id,

@@ -7,8 +7,12 @@ import { Query } from 'node-appwrite';
 // const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
-  const { Body } = await req.json();
+  const callbackData = await req.json();
   const { userId } = await auth();
+
+  console.log('Callback Received:', callbackData);
+
+  const { Body } = callbackData;
 
   const { phoneNumber, amount } = Body.stkCallback.CallbackMetadata.Item.reduce(
     (acc: any, item: any) => {

@@ -8,8 +8,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { userSignInValidation } from '@/lib/validation'
 import CustomFormField, { FormFieldType } from '../CustomFormField'
 import SubmitButton from '../SubmitButton'
-import { useRouter } from 'next/navigation'
-import { createUserCookie } from '@/lib/actions/user.actions'
+import { useRouter, useSearchParams } from 'next/navigation'
+
 
 
 
@@ -18,6 +18,9 @@ function SignInForm() {
    const { signIn, setActive, isLoaded } = useSignIn()
     const [isLoading,setIsLoading]=useState(false)
     const router=useRouter()
+    const searchParams=useSearchParams()
+    const redirectUrl=searchParams.get("redirect_url")
+  
 
     const form = useForm<z.infer<typeof userSignInValidation>>({
         resolver: zodResolver(userSignInValidation),
@@ -45,11 +48,14 @@ function SignInForm() {
           if (signInAttempt?.status === 'complete') {
             await setActive({ session:signInAttempt?.createdSessionId })
             await createUserCookie()
+            if(redirectUrl){
+              router.replace(`${redirectUrl}`)
+            }
             router.replace('/')
           } else {
             // See https://clerk.com/docs/custom-flows/error-handling
             // for more info on error handling
-            console.error(JSON.stringify(signInAttempt, null, 2))
+            console.log(JSON.stringify(signInAttempt, null, 2))
           }
         } catch (error) {
           console.log(error);

@@ -62,10 +62,12 @@ export default async function PreviewDoctor (props: {
     if(!params || !searchParams){
         redirect("/not-found")
     }
-    const data:Doctor|Error=await doctorData(params.id,searchParams.doctorId);
+    const data=await doctorData(params.id,searchParams.doctorId)
     if(data?.error){
       redirect("/not-found")
     }
+    let doctor:Doctor=data as Doctor
+    
 
 
   return (
@@ -84,18 +86,18 @@ export default async function PreviewDoctor (props: {
       </div>
       <div className="w-full flex flex-col gap-3 p-3 relative">
         <div className="w-full flex flex-col gap-3 mb-8 relative">
-          <h4 className="text-4xl font-bold capitalize truncate">Dr. {data?.name||"John Doe"}</h4>
-          <span className="text-2xl">Rarting: {data?.rating}</span>
-          <div className="absolute right-4 -bottom-2 md:top-1/2 md:-translate-y-1/2"> <BookingBtn doctorId={params.id}/></div>
+          <h4 className="text-4xl font-bold capitalize truncate">Dr. {doctor?.name||"John Doe"}</h4>
+          <span className="text-2xl">Rarting: {doctor?.rating}</span>
+          <div className="absolute right-4 -bottom-2 md:top-1/2 md:-translate-y-1/2"> <BookingBtn doctorId={params.id} doctor={doctor}/></div>
           
         </div>
         <div className="flex flex-col gap-3">
-        <h4 className="text-2xl font-bold capitalize">{data?.title||"No title"}</h4>
-        <p className="text-base">{data?.description||""}</p>
+        <h4 className="text-2xl font-bold capitalize">{doctor?.title||"No title"}</h4>
+        <p className="text-base">{doctor?.description||""}</p>
         <h4 className="text-2xl font-bold capitalize">Skills</h4>
          <div className="flex items-center flex-wrap gap-3">
-         {data?.specialty?.length>0
-    ? data.specialty.map((item, i) => (
+         {doctor?.specialty?.length>0
+    ? doctor.specialty.map((item, i) => (
         <div className="px-3 py-2 bg-neutral-600 rounded-full" key={i}>
           {item}
         </div>
