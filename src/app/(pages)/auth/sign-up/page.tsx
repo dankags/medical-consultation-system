@@ -1,6 +1,5 @@
 import SignUpForm from '@/components/forms/signupForm';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { SignUp } from '@clerk/nextjs';
 import { auth } from '@clerk/nextjs/server';
 import { Metadata } from 'next';
 import Image from 'next/image';

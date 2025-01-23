@@ -8,8 +8,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import Image from "next/image";
-import { redirect } from "next/navigation";
-import { useEffect } from "react";
+// import { redirect } from "next/navigation";
+// import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { decryptKey } from "@/lib/utils";
+// import { decryptKey } from "@/lib/utils";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -31,10 +31,10 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const encryptedKey =
-    typeof window !== "undefined"
-      ? window.localStorage.getItem("accessKey")
-      : null;
+  // const encryptedKey =
+  //   typeof window !== "undefined"
+  //     ? window.localStorage.getItem("accessKey")
+  //     : null;
 
   // useEffect(() => {
   //   const accessKey = encryptedKey && decryptKey(encryptedKey);

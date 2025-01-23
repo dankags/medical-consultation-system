@@ -1,5 +1,5 @@
 import React from 'react'
-import { Body, Button, Column, Container, Head, Heading, Hr, Html, Img, Link, Preview, Row, Section, Text, Tailwind } from '@react-email/components';
+import { Body, Button,  Container, Head, Heading,  Html, Img,  Preview,  Section, Text, Tailwind } from '@react-email/components';
 
 interface AppointmentEmailProps{
     doctor:User;
@@ -33,7 +33,7 @@ const DoctorNotificationEmail = ({doctor,patient,appointmentId}:AppointmentEmail
           Hello Dr. {doctor?.name},
         </Text>
         <Text className="text-sm">
-          We're excited to infor you that you have an appointment with {patient?.name}.
+          We&apos;re excited to infor you that you have an appointment with {patient?.name}.
         </Text>
         <Section className="text-center mt-[32px] mb-[32px]">
             <Button

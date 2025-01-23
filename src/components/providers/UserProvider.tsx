@@ -56,6 +56,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 setStatus("unautheticated")  
                 throw new Error(userData.error)
             }   
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error:any) {
             setStatus("unautheticated")  
             console.log(error)

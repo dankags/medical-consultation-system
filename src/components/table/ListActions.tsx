@@ -2,8 +2,17 @@
 
 import React from 'react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '../ui/dropdown-menu'
+import { Appointment } from '@/types/appwrite.types'
 
-const ListActions = ({setActiveRow, item,children,setIsCanceling,setIsEdit}) => {
+interface ListActionType{
+  setActiveRow:(id:string|null)=>void,
+   item:Appointment,
+   children:React.ReactNode,
+   setIsCanceling:(value:boolean)=>void,
+   setIsEdit:(value:boolean)=>void
+}
+
+const ListActions = ({setActiveRow, item,children,setIsCanceling,setIsEdit}:ListActionType) => {
     
     
     const handleOpen=(open:boolean)=>{

@@ -52,6 +52,7 @@ const Doctor = ({appointmentId,doctor,role}:VideoLayoutProps) => {
        return () => {
          controller.abort();
        };
+     // eslint-disable-next-line react-hooks/exhaustive-deps
      }, [doctor, appointmentId]);
 
     if(token !== ''){

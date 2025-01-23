@@ -11,16 +11,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Appointment } from "@/types/appwrite.types.ts";
+import { Appointment } from "@/types/appwrite.types";
 
 
 
 import "react-datepicker/dist/react-datepicker.css";
-import { AppointmentForm } from "./forms/AppointmentForm";
+
 
 export const AppointmentModal = ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   patientId,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   userId,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   appointment,
   type,
   setIsOpened,
@@ -65,13 +68,13 @@ export const AppointmentModal = ({
           </DialogDescription>
         </DialogHeader>
 
-        <AppointmentForm
+        {/* <AppointmentForm
           userId={userId}
           patientId={patientId}
           type={type}
           appointment={appointment}
           setOpen={setIsOpen}
-        />
+        /> */}
       </DialogContent>
     </Dialog>
   );

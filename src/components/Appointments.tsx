@@ -3,7 +3,6 @@ import { MoreHorizontal } from 'lucide-react'
 import React from 'react'
 import { Button } from './ui/button'
 import { TableCell, TableRow } from './ui/table'
-import Link from 'next/link'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
 

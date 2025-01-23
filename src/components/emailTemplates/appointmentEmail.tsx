@@ -1,5 +1,5 @@
 import React from 'react'
-import { Body, Button, Column, Container, Head, Heading, Hr, Html, Img, Link, Preview, Row, Section, Text, Tailwind } from '@react-email/components';
+import { Body, Button,  Container, Head, Heading,  Html, Img, Preview,  Section, Text, Tailwind } from '@react-email/components';
 
 
 interface AppointmentEmailProps{
@@ -34,13 +34,11 @@ const AppointmentEmail = ({doctor,patient,appointmentId}:AppointmentEmailProps) 
           Hello Dr. {doctor?.name},
         </Text>
         <Text className="text-sm">
-          We're excited to infor you that you have an appointment with {patient?.name}.
+          We&apos;re excited to infor you that you have an appointment with {patient?.name}.
         </Text>
         <Section className="text-center mt-[32px] mb-[32px]">
             <Button
-              pX={20}
-              pY={12}
-              className="bg-green-500 rounded text-white text-xs font-semibold no-underline text-center"
+              className="px-5 py-3 bg-green-500 rounded text-white text-xs font-semibold no-underline text-center"
               href={`${baseUrl}/appointments/${appointmentId}/meetup`}
             >
               Create meeting

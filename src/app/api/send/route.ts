@@ -1,5 +1,4 @@
 
-import { EmailTemplate } from '@/components/email-template';
 import DoctorNotificationEmail from '@/components/emailTemplates/doctorNotification';
 import { APPOINTMENT_COLLECTION_ID, DATABASE_ID, databases } from '@/lib/appwrite.config';
 import { NextRequest, NextResponse } from 'next/server';
@@ -54,6 +53,7 @@ export async function POST(req: NextRequest) {
     }
     
     return Response.json(data);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error:any) {
        return NextResponse.json(
       { error: error?.message || 'Internal server error' },

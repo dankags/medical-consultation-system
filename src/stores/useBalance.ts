@@ -1,4 +1,3 @@
-import { DefaultEventsMap, Socket } from "socket.io"
 import { create } from "zustand"
 
 interface SocketStore {

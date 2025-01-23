@@ -1,5 +1,5 @@
+import { generateMpesaToken } from "@/lib/actions/user.actions";
 import { DATABASE_ID, databases, USER_COLLECTION_ID } from "@/lib/appwrite.config";
-import { generateMpesaToken } from "@/utils/mpesaToken";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {

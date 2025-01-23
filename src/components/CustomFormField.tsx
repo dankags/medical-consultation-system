@@ -35,6 +35,7 @@ export enum FormFieldType {
 }
 
 interface CustomProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: Control<any>;
   name: string;
   type?:string;
@@ -46,10 +47,12 @@ interface CustomProps {
   dateFormat?: string;
   showTimeSelect?: boolean;
   children?: React.ReactNode;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   renderSkeleton?: (field: any) => React.ReactNode;
   fieldType: FormFieldType;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
  
   const [showPassword,setShowPassword]=useState(false)

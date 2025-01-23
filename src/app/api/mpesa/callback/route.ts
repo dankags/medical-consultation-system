@@ -1,21 +1,19 @@
 import { DATABASE_ID, databases, USER_COLLECTION_ID } from '@/lib/appwrite.config';
-import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { Query } from 'node-appwrite';
-// import { PrismaClient } from '@prisma/client';
 
-// const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   const callbackData = await req.json();
-  const { userId } = await auth();
+
 
   console.log('Callback Received:', callbackData);
 
   const { Body } = callbackData;
 
   const { phoneNumber, amount } = Body.stkCallback.CallbackMetadata.Item.reduce(
-    (acc: any, item: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (acc:any, item:any) => {
       acc[item.Name.toLowerCase()] = item.Value;
       return acc;
     },

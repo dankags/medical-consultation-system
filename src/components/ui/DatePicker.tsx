@@ -29,6 +29,7 @@ export default function DatePickerDemo({ setFormDate }: Props) {
      return
     }
     return
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[date])
 
   const handleDayPickerSelect = (date: Date | undefined) => {

@@ -62,6 +62,7 @@ const SignUpForm = () => {
 
   const onSubmit = async (values: z.infer<typeof UserFormValidation>) => {
     setIsLoading(true);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const {password,...others}=values
     try {
       setUserDetails({...others})
@@ -117,7 +118,8 @@ const SignUpForm = () => {
         })
         setVerification({...verification,error:`Verification failed`,state:"failed"})
       }
-    } catch (err: any) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err:any) {
       toast({
         title: "!Ooops something went wrong.",
          variant: "destructive",

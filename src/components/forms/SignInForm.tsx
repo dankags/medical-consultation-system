@@ -15,7 +15,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 
 function SignInForm() {
-   const { signIn, setActive, isLoaded } = useSignIn()
+   const { signIn, setActive } = useSignIn()
     const [isLoading,setIsLoading]=useState(false)
     const router=useRouter()
     const searchParams=useSearchParams()
@@ -36,7 +36,9 @@ function SignInForm() {
         setIsLoading(true);
         
         try {
-          
+          if (!signIn || !setActive) {
+            throw new Error("Sign-in functionality is unavailable.");
+          }
           const signInAttempt= await signIn?.create({
             identifier:values.email,
             password:values.password
@@ -46,8 +48,9 @@ function SignInForm() {
       
     
           if (signInAttempt?.status === 'complete') {
+            if(signInAttempt?.createdSessionId){
             await setActive({ session:signInAttempt?.createdSessionId })
-            await createUserCookie()
+          }
             if(redirectUrl){
               router.replace(`${redirectUrl}`)
             }

@@ -16,7 +16,7 @@ import { useSocket } from '@/stores/useSocket'
 import { Skeleton } from '../ui/skeleton'
 import { useBalance } from '@/stores/useBalance'
 import { toast } from '@/hooks/use-toast'
-import { createAppointment, getDoctorId } from '@/lib/actions/appointment.actions'
+import { createAppointment } from '@/lib/actions/appointment.actions'
 
 
 
@@ -100,7 +100,8 @@ const Navbar = () => {
        },
       ]
       
-    },[pathname,userId,user])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[pathname,user])
 
     const handleCreateAppointment=async(patientId:string)=>{
       if(user?.role!=="doctor") return
@@ -130,6 +131,7 @@ const Navbar = () => {
         });
        socket?.emit("updateStatus", {userId:user.id,status:"occupied"})
        router.push(`/appointments/${appointment}/meetup`)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       }catch(error:any){
         console.log(error)
       }
@@ -149,13 +151,16 @@ const Navbar = () => {
       
   }, []);
 
+  
+
     // fetch balance if user has logged in
     useEffect(()=>{
+      if(!user||!userId ) return
+      const controller = new AbortController();
       const fetchAccountBalance=async()=>{
-         const controller = new AbortController();
          if(!userId) return
         try {
-          const balance=await fetchAPI(`/api/balance/${userId}`,{
+          const balance=await fetchAPI(`/api/balance/${user?.id}`,{
             method:"GET",
             headers: {
               'Content-Type': 'application/json'
@@ -164,17 +169,20 @@ const Navbar = () => {
           })
           setBalance(balance?.balance)
           setAccountBalance(balance?.balance)
-        } catch (error:any) {
+        } catch (error) {
           console.log(error)
         }
-        return () => {
-          controller.abort(); // Cancel fetch if userId changes or component unmounts
-        };
+        
       }
-      if(userId){
+      
+       
         fetchAccountBalance()
-      }
-    },[userId])
+    
+      return () => {
+        controller.abort(); // Cancel fetch if userId changes or component unmounts
+      };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[userId,user])
 
     // push user to socket server
     useEffect(() => {
@@ -250,6 +258,7 @@ const Navbar = () => {
 
      
       removeSocket()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user,socket])
    
   

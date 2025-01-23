@@ -1,6 +1,7 @@
 import { generateMpesaToken, generateSTKPassword } from '@/lib/actions/user.actions';
 import { NextResponse } from 'next/server';
 import { E164Number } from "libphonenumber-js/core";
+import axios from 'axios';
 
 interface MpesaRequest {
   time: Date;
@@ -19,6 +20,7 @@ interface MpesaResponse {
 export async function POST(req: Request) {
   // 1. Validate request body
   const body: MpesaRequest = await req.json();
+  
     
     if (!body.price || !body.phoneNumber || !body.time) {
       return NextResponse.json(
@@ -46,14 +48,9 @@ export async function POST(req: Request) {
     if (tokenResponse?.error) {
       throw new Error(tokenResponse.error);
     }
-   
-    const response =await fetch("https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest", {
-      method: 'POST',
-      headers:{
-        'Authorization': `Bearer ${tokenResponse.token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+     
+    const response =await axios.post("https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
+     {
         "BusinessShortCode": process.env.M_PESA_SHORTCODE,
         "Password": `${password}`,
         "Timestamp": `${timestamp}`,
@@ -62,15 +59,25 @@ export async function POST(req: Request) {
         "PartyA": phone,
         "PartyB": process.env.M_PESA_SHORTCODE,
         "PhoneNumber": phone,
-        "CallBackURL": "https://43db-102-215-33-50.ngrok-free.app/",
+        "CallBackURL": `https://6a6b-102-167-138-61.ngrok-free.app/api/mpesa/callback`,
         "AccountReference": "CarePulse consoltation.",
         "TransactionDesc": "Recharge of CarePulse account." 
-      }),
-      signal: controller.signal,
-    })
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${tokenResponse.token}`,
+          'Content-Type': 'application/json',
+        },
+        signal: controller.signal,
+        timeout: 5000
+      }
+    )
       
+    console.log(response.data)
 
-    const data: MpesaResponse = await response.json();
+    const data: MpesaResponse = await response.data;
+
+
     clearTimeout(timeout);
 
     if (data.ResponseCode === '0') {

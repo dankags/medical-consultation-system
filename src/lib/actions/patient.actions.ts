@@ -34,6 +34,7 @@ export const createUser = async (user: CreateUserParams) => {
     );
 
     return parseStringify(newuser);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     // Check existing user
     if (error && error?.code === 409) {
@@ -70,8 +71,7 @@ export const registerPatient = async ({
     // Upload file ->  // https://appwrite.io/docs/references/cloud/client-web/storage#createFile
     let file;
     if (identificationDocument) {
-      const inputFile =
-        identificationDocument 
+      const inputFile = identificationDocument.get("blobFile") as File ;
         // &&
         // InputFile.fromBlob(
         //   identificationDocument?.get("blobFile") as Blob,
@@ -144,6 +144,7 @@ export const getDoctorPreview=async(id:string,doctorId:string)=>{
     }
 
     return parseStringify(resData);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err:any) {
     console.log(err)
     return parseStringify({ error: "Internal Server Error" });

@@ -13,6 +13,7 @@ import { FaMinus, FaPlus } from 'react-icons/fa6'
 import { toast } from '@/hooks/use-toast'
 import 'react-phone-number-input/style.css'
 
+
 const SESSION_PRICE = 500;
 const MAX_SESSIONS = 10;
 const MIN_SESSIONS = 1;
@@ -36,7 +37,9 @@ const onSubmit = async (data: z.infer<typeof CreateDepositSchema>) => {
   try {
     setIsLoading(true);
     // API call implementation here
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const {price,...others}=data
+    
     const response = await fetch('/api/mpesa/pay', {
       method: 'POST',
       body: JSON.stringify({
@@ -50,6 +53,7 @@ const onSubmit = async (data: z.infer<typeof CreateDepositSchema>) => {
     
     toast({description:'Deposit successful'});
     form.reset();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     toast({
       variant:"destructive",

@@ -29,6 +29,7 @@ export const getUserBalance=async()=>{
             [Query.equal("clerkId",userId)]
           );
         return parseStringify({balance:userBalance.documents[0].balance})
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err:any) {
         console.log(err)
         return parseStringify({error:"Internal Server Error"})
@@ -36,7 +37,7 @@ export const getUserBalance=async()=>{
 }
 
 // GET users appointments
-export const getUserAppointments=async(limit?:number)=>{
+export const getUserAppointments=async()=>{
     const {userId}=await auth()
 
     if(!userId)  return parseStringify({error:"Not Autheticated"});
@@ -48,6 +49,7 @@ export const getUserAppointments=async(limit?:number)=>{
             [Query.equal("clerkId",userId) ]
           );
           
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           let appointments: any[] = [];
 
           if(user.total===0)  return parseStringify({error:"User does not exist"})
@@ -103,6 +105,7 @@ export const getUserAppointments=async(limit?:number)=>{
 
 
         return parseStringify({appointments:processedAppointments.sort((a,b)=>new Date(b.appointmentDate).getTime()-new Date(a.appointmentDate).getTime())})
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err:any) {
         console.log("Appointments Error: ",err)
         return parseStringify({error:"internal server error"})
@@ -131,6 +134,7 @@ export const getAppointmentById=async(id:string)=>{
             id,
           );
         
+         // eslint-disable-next-line @typescript-eslint/no-unused-vars
          const {$id,doctor,patient,$permissions,$databaseId,$createdAt,$updatedAt,$collectionId,...others}=userAppointment
          
          const resData={
@@ -145,6 +149,7 @@ export const getAppointmentById=async(id:string)=>{
         
 
         return parseStringify({appointments:resData})
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err:any) {
         console.log("Appointments Error: ",err)
         return parseStringify({error:"internal server error"})
@@ -166,9 +171,11 @@ export const fetchUserData=async()=>{
 
         if (user.total === 0) return parseStringify({ error: "User does not exist" });
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const {gender,balance,reviews,appointments,payments,doctorInfo,patient,myPayments,$databaseId,$collectionId,birthDate,clerkId,$id,$permissions,$updatedAt,$createdAt,...userData} = user.documents[0];
         return parseStringify({ user: {...userData,id:$id} });
 
+     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
      } catch (err:any) {
         return parseStringify({ error: "Internal Server Error" });
      }
@@ -176,6 +183,7 @@ export const fetchUserData=async()=>{
 
 
 //   Generate Mpesa Token
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export const generateMpesaToken = async (): Promise<any> => {
     if (!process.env.M_PESA_CONSUMER_KEY || !process.env.M_PESA_CONSUMER_SECRET) {
       return parseStringify({error:'M-Pesa credentials are not set in the environment variables'});
@@ -220,7 +228,8 @@ export const fetchUserData=async()=>{
       }
       return parseStringify({ token: data.access_token });
   
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error:any) {
       clearTimeout(timeout);
       console.error('Error generating M-Pesa token:', error.message);
       return parseStringify({error:'internal server error'});

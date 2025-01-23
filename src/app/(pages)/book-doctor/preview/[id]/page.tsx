@@ -16,9 +16,7 @@ type Doctor={
   description: string,
   doctorId:string,
 }
-type Error={
-  error:string
-}
+
 
 const doctorData=cache(async(id:string,doctorId:string)=>{
   try {
@@ -38,7 +36,18 @@ export async function generateMetadata(props:{
   const params = await props.params
     const searchParams = await props.searchParams
 
-  const data:Doctor|Error=await doctorData(params.id,searchParams.doctorId);
+    const doctorId =
+    typeof searchParams.doctorId === "string"
+      ? searchParams.doctorId
+      : Array.isArray(searchParams.doctorId)
+      ? searchParams.doctorId[0]
+      : undefined;
+
+  if (!doctorId) {
+    throw new Error("doctorId is missing or invalid.");
+  }
+
+    const data=await doctorData(params.id,doctorId)
   if(data?.error){
     return {
       title: `404 doctor not found`,
@@ -59,14 +68,22 @@ export default async function PreviewDoctor (props: {
 
     const params = await props.params
     const searchParams = await props.searchParams
-    if(!params || !searchParams){
+    const doctorId =
+    typeof searchParams.doctorId === "string"
+      ? searchParams.doctorId
+      : Array.isArray(searchParams.doctorId)
+      ? searchParams.doctorId[0]
+      : undefined;
+
+  
+    if(!params || !searchParams || !doctorId){
         redirect("/not-found")
     }
-    const data=await doctorData(params.id,searchParams.doctorId)
+    const data=await doctorData(params.id,doctorId)
     if(data?.error){
       redirect("/not-found")
     }
-    let doctor:Doctor=data as Doctor
+    const doctor:Doctor=data as Doctor
     
 
 

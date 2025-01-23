@@ -53,6 +53,7 @@ export default async function DepositCash(){
         </section>
       </main>
     );
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
   } catch (error:any) {
     return (
       <main className="w-full min-h-[calc(100vh-80px)] flex items-center justify-center">

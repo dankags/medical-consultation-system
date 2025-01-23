@@ -1,20 +1,18 @@
 "use client"
 import React, { ReactNode } from 'react'
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { CoreRow } from '@tanstack/react-table';
+// import { CoreRow } from '@tanstack/react-table';
 import { Appointment } from '@/types/appwrite.types';
 import Image from 'next/image';
 import { ScrollArea } from './ui/scroll-area';
 
-const GeneralAppointmentView = ({children,appointment}:{children:ReactNode,appointment:CoreRow<Appointment>}) => {
+const GeneralAppointmentView = ({children,appointment}:{children:ReactNode,appointment:Appointment}) => {
   
     
   return (

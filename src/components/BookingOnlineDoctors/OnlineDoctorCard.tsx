@@ -104,11 +104,12 @@ const OnlineDoctorsCards = () => {
     clearInterval(intervalId);
     controller.abort();
   };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[socket,onlineDoctors])
 
   
 
-   console.log(onlineDoctors)
+
 
     const handleSearchSpecialty=()=>{
       const regex = new RegExp(`${searchInput}`, "i");
@@ -143,7 +144,7 @@ const OnlineDoctorsCards = () => {
             {!isFetchingDoctorsInfo ? (
               <>
                {(filteredDoctors.length > 0 ? filteredDoctors : doctors).map((doctor) => (
-      <OnlineDoctorCard key={doctor.id} doctor={doctor} doctors={onlineDoctors} socket={socket}/>
+      <OnlineDoctorCard key={doctor.id} doctor={doctor} socket={socket}/>
     ))}
               </>
             ) : (
@@ -165,9 +166,9 @@ const OnlineDoctorsCards = () => {
   );
 }
 
-const OnlineDoctorCard=({doctor,socket}:{doctor:DoctorCard,socket:Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> | null})=>{
+const OnlineDoctorCard=({doctor,socket}:{doctor:DoctorCard,socket:Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap> | null})=>{
   const router=useRouter()
-  const {balance,setBalance}=useBalance()
+  const {balance}=useBalance()
   const {userId}=useAuth();
   const {user}=useCurrentUser()
   const [isUserOnline,setIsUserOnline]=useState(true)

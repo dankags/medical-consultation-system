@@ -1,17 +1,18 @@
 "use client";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ColumnDef, CoreRow } from "@tanstack/react-table";
 import Image from "next/image";
 
 import { Doctors } from "@/constants";
 import { formatDateTime } from "@/lib/utils";
-import { Appointment } from "@/types/appwrite.types";
 
-import { AppointmentModal } from "../AppointmentModal";
+
+// import { AppointmentModal } from "../AppointmentModal";
 import { StatusBadge } from "../StatusBadge";
 import { TfiMoreAlt } from "react-icons/tfi";
-import Appointments from '../../app/(pages)/appointments/[userId]/page';
-import * as Popover from '@radix-ui/react-popover'
+
+
 import { useEffect, useState } from "react";
 import ListActions from "./ListActions";
 import { Button } from "../ui/button";
@@ -19,6 +20,8 @@ import { useCurrentUser } from "../providers/UserProvider";
 import GeneralAppointmentView from "../GeneralAppointmentView";
 import { isToday } from "date-fns";
 import { useRouter } from "next/navigation";
+import { Appointment } from "@/types/appwrite.types";
+
 
 export const doctorAppointmentscolumns: ColumnDef<Appointment>[] = [
   {
@@ -72,7 +75,7 @@ export const doctorAppointmentscolumns: ColumnDef<Appointment>[] = [
       return (
         <div className="flex items-center gap-3">
           <Image
-            src={doctor?.image!}
+            src={doctor?.image||"/assets/images/noavatar.jpg"}
             alt="doctor"
             width={100}
             height={100}
@@ -87,11 +90,12 @@ export const doctorAppointmentscolumns: ColumnDef<Appointment>[] = [
     id: "actions",
     header: () => <div className="pl-4">Actions</div>,
     cell: ({ row }) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const appointment = row.original;
 
       return (
         <div className="flex gap-1">
-          <AppointmentModal
+          {/* <AppointmentModal
             patientId={appointment.patient.$id}
             userId={appointment.userId}
             appointment={appointment}
@@ -106,7 +110,7 @@ export const doctorAppointmentscolumns: ColumnDef<Appointment>[] = [
             type="cancel"
             title="Cancel Appointment"
             description="Are you sure you want to cancel your appointment?"
-          />
+          /> */}
         </div>
       );
     },
@@ -128,7 +132,7 @@ export const userAppointmentColumns: ColumnDef<Appointment>[]=[
       const appointment = row.original;
 
       const doctor = Doctors.find(
-        (doctor) => doctor.name === appointment?.doctor
+        (doctor) => doctor.name === appointment?.doctor.name
       );
 
       return (
@@ -193,9 +197,12 @@ const AppointMentUserColumn=({doctor,appointment}:{doctor:{
   )
 }
 
-const AppointmentActions=({appointment}:{appointment:CoreRow<Appointment>})=>{
-  const [activeRow, setActiveRow] = useState(null)
+const AppointmentActions=({appointment}:{appointment:Appointment})=>{
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [activeRow, setActiveRow] = useState<string|null>(null)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isCanceling,setIsCanceling]=useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isEdit,setIsEdit]=useState(false)
   const [isMeetActive,setIsMeetActive]=useState(false)
   const {user,status}=useCurrentUser()
@@ -256,9 +263,9 @@ if (status!=="autheticated") {
 
     {/* mobile actions */}
    <div className=" flex md:hidden items-center justify-center">
-   {isEdit&&<AppointmentModal
-        patientId={appointment.patient.id}
-        userId={appointment.userId}
+   {/* {isEdit&&<AppointmentModal
+        patientId={appointment?.patient.id||appointment.id}
+        userId={appointment?.userId}
         appointment={appointment}
         type="schedule"
         title="Schedule Appointment"
@@ -267,15 +274,15 @@ if (status!=="autheticated") {
         setIsOpened={setIsEdit}
       />}
        {isCanceling&&<AppointmentModal
-        patientId={appointment.patient.id}
-        userId={appointment.userId}
+        patientId={appointment?.patient.id||appointment.id}
+        userId={appointment?.userId}
         appointment={appointment}
         type="cancel"
         title="Cancel Appointment"
         description="Are you sure you want to cancel your appointment?"
         parentClosed={isCanceling}
         setIsOpened={setIsCanceling}
-      />}
+      />} */}
              <ListActions setActiveRow={setActiveRow} item={appointment}   setIsCanceling={setIsCanceling} setIsEdit={setIsEdit}>
               <Button variant="ghost" className="h-8 w-8 p-0" >
                 <span className="sr-only">Open menu</span>
@@ -286,22 +293,22 @@ if (status!=="autheticated") {
   {/* desktop actions */}
    <div className="hidden md:flex gap-1">
 
-      <AppointmentModal
-        patientId={appointment.patient.id}
-        userId={appointment.userId}
+      {/* <AppointmentModal
         appointment={appointment}
         type="schedule"
         title="Schedule Appointment"
         description="Please confirm the following details to schedule."
       />
       <AppointmentModal
-        patientId={appointment.patient.id}
-        userId={appointment.userId}
+        patientId={appointment?.patient.id||appointment?.id}
+        userId={appointment?.userId}
         appointment={appointment}
         type="cancel"
         title="Cancel Appointment"
         description="Are you sure you want to cancel your appointment?"
-      />
+      /> */}
+        patientId={appointment?.patient.id||appointment.id}
+        userId={appointment?.userId}
    </div>
   </div>
   )

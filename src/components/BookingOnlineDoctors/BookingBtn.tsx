@@ -31,7 +31,8 @@ const BookingBtn = ({doctorId,doctor}:{doctorId:string,doctor:Doctor}) => {
     const {user}=useCurrentUser()
      const [isDoctorAvailable, setIsDoctorAvailable] = useState(false);
      const [isDoctorOccupied,setIsDoctorOccupied]=useState(false)
-      const {balance,setBalance}=useBalance()
+      const {balance}=useBalance()
+      
     useEffect(() => {
           if(!socket) return
           const handleDoctorOnline = (socketUsers:SocketUser[]) => {
@@ -59,6 +60,7 @@ const BookingBtn = ({doctorId,doctor}:{doctorId:string,doctor:Doctor}) => {
           return () => {
             socket?.off("getOnlineDoctors", handleDoctorOnline);
           };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [socket])
 
         const handleBooking=async()=>{

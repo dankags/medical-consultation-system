@@ -1,9 +1,11 @@
-import { DefaultEventsMap, Socket } from "socket.io"
+
 import { create } from "zustand"
 
 interface SocketStore {
-    socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> | null; 
-    setSocket: (newSocket: Socket<DefaultEventsMap, DefaultEventsMap>) => void; 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    socket: any| null ; 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setSocket: (newSocket: any ) => void; 
     removeSocket: () => void; 
   }
 

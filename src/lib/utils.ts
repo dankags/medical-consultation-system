@@ -37,7 +37,7 @@ END:VEVENT
 END:VCALENDAR`;
 
   // Generate iCal Link
-  const icalFileName = `${title.replace(/\s+/g, '_')}.ics`;
+  // const icalFileName = `${title.replace(/\s+/g, '_')}.ics`;
   const icalFileLink = `data:text/calendar;charset=utf-8,${encodeURIComponent(
     icalContent
   )}`;
@@ -49,6 +49,7 @@ END:VCALENDAR`;
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const parseStringify = (value: any) => JSON.parse(JSON.stringify(value));
 
 export const convertFileToUrl = (file: File) => URL.createObjectURL(file);

@@ -12,7 +12,8 @@ type SocketUser={
 
 const PreviewDoctorOnlineBanner = ({doctorId}:{doctorId:string}) => {
     const {socket}=useSocket()
-         const [isDoctorAvailable, setIsDoctorAvailable] = useState(false);
+    const [isDoctorAvailable, setIsDoctorAvailable] = useState(false);
+    
         useEffect(() => {
               if(!socket) return
               const handleDoctorOnline = (socketUsers:SocketUser[]) => {
@@ -29,8 +30,9 @@ const PreviewDoctorOnlineBanner = ({doctorId}:{doctorId:string}) => {
               return () => {
                 socket?.off("getOnlineDoctors", handleDoctorOnline);
               };
+            // eslint-disable-next-line react-hooks/exhaustive-deps
             }, [socket])
-            console.log(doctorId)
+           
   return (
     <div className={clsx("size-6 rounded-full ring-4 ring-dark-300 bg-green-500",!isDoctorAvailable&&"hidden")}></div>
   )

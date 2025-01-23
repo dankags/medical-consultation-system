@@ -53,6 +53,7 @@ const Patient : React.FC<VideoLayoutProps> = ({appointmentId,doctor}) => {
       return () => {
         socket?.off("getOnlineDoctors", handleDoctorOnline);
       };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [socket,appointmentId])
 
     
@@ -80,7 +81,8 @@ const Patient : React.FC<VideoLayoutProps> = ({appointmentId,doctor}) => {
           // Fetch token from your API
           const data = await fetchRoomToken(appointmentId, user?.name);
           setToken(data);
-        } catch (error) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error:any) {
           toast({
             variant: "destructive",
             title: "Uh oh! Something went wrong.",

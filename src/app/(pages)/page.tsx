@@ -6,12 +6,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { formatNumber } from '../../lib/utils';
 import { FaArrowRight } from "react-icons/fa";
-import Appointments from "@/components/Appointments";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getUserAppointments, getUserBalance } from "@/lib/actions/user.actions";
-import dynamic from "next/dynamic";
-import TableProvider from "@/components/table/TableProvider";
 import { fetchUserData } from '../../lib/actions/user.actions';
 import { DataTable } from "@/components/table/DataTable";
 import { userAppointmentColumns } from "@/components/table/Columns";
@@ -24,19 +21,17 @@ export const metadata: Metadata = {
 
 export const revalidate = 300
 
-const DynamicAppointment=dynamic(() => import('@/components/Appointments'))
+
 
 export default async function Home() {
-  const {userId,}=await auth()
-  const user=await fetchUserData()
-
-  const res=await getUserBalance()
-  const appointments=await getUserAppointments(10)
+  const [{userId},user,res,appointments]=await Promise.all([auth(),fetchUserData(),getUserBalance(),getUserAppointments()])
+  
  
   if(!userId||res?.error==="Not Autheticated"){
     redirect("/auth/sign-in")
   }
   return (
+   
     <div className="w-full h-screen min-h-screen flex-col px-3  xl:px-12 2xl:px-32 ">
      <h3 className="text-2xl md:text-3xl font-semibold">Good {getTimeOfDay()} Daniel</h3>
      <section className="w-full flex items-center justify-between my-6">

@@ -1,5 +1,4 @@
 "use client"
-import { NavigationLink } from '@/types'
 import { usePathname } from 'next/navigation'
 import React, { useMemo } from 'react'
 import { GoHome, GoHomeFill } from "react-icons/go";
@@ -9,6 +8,7 @@ import { useAuth } from '@clerk/nextjs';
 import { PiHandCoinsFill, PiHandCoins } from "react-icons/pi";
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+
 
 const FooterMobileNavigation = () => {
   const pathname=usePathname()
