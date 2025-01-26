@@ -5,7 +5,7 @@ import { Query } from 'node-appwrite';
 
 export async function POST(req: Request) {
   const callbackData = await req.json();
-
+  console.log(callbackData)
 
   console.log('Callback Received:', callbackData);
 
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     //   },
     // });
 
-    return NextResponse.json({ message: 'Payment processed successfully' });
+    return NextResponse.json({ message: 'Payment processed successfully' },{status:200});
   } catch (error) {
     console.error(error);
     return NextResponse.json({ message: 'Internal server error', error }, { status: 500 });
