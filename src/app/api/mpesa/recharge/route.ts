@@ -62,30 +62,35 @@ export async function POST(req: Request) {
     if (tokenResponse?.error) {
       throw new Error(tokenResponse.error);
     }
-     
-    const response =await axios.post(`${process.env.M_PESA_API_URL}/mpesa/stkpush/v1/processrequest`,
-     {
-      BusinessShortCode: process.env.M_PESA_SHORTCODE,
-      Password: password,
-      Timestamp: timestamp,
-      TransactionType: "CustomerPayBillOnline",
-      Amount: Math.round(1),
-      PartyA: phone,
-      PartyB: process.env.M_PESA_SHORTCODE,
-      PhoneNumber: phone,
-      CallBackURL: `${process.env.NEXT_PUBLIC_URL}/api/mpesa/callback/${body.userId}`,
-      AccountReference: "CarePulse consoltation.",
-      TransactionDesc: "Recharge",
+
+    // 4. Make STK push request
+    const response=await axios
+    .post(
+      "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
+      {
+        BusinessShortCode: process.env.M_PESA_SHORTCODE,
+        Password: password,
+        Timestamp: timestamp,
+        TransactionType: "CustomerPayBillOnline",
+        Amount: Math.round(1),
+        PartyA: phone,
+        PartyB: process.env.M_PESA_SHORTCODE,
+        PhoneNumber: phone,
+        CallBackURL: `${process.env.NEXT_PUBLIC_URL}/api/mpesa/callback?userId=${body.userId}`,
+        AccountReference: "CarePulse consoltation.",
+        TransactionDesc: "Recharge",
       },
       {
         headers: {
-          'Authorization': `Bearer ${tokenResponse.token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${tokenResponse.token}`,
         },
         signal: controller.signal,
-        timeout: 5000
       }
     )
+     
+    if (response.status !== 200) {
+      throw new Error('Payment initiation failed');
+    }
 
 
     const data: MpesaResponse = await response.data;
