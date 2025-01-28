@@ -2,7 +2,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { Button } from '../ui/button'
 import { IoNotifications, IoNotificationsOutline } from "react-icons/io5";
 import { useAuth } from '@clerk/nextjs'
@@ -29,11 +29,10 @@ const Navbar = () => {
     const {user,status}=useCurrentUser()
     const updateSocket = useSocket((state) => state.setSocket);
     const removeSocket = useSocket((state) => state.removeSocket);
-    const [accountBalance,setAccountBalance]=useState<number>(0)
-     const {setBalance}=useBalance()
+     const {balance,setBalance}=useBalance()
+  
     
     
-
     const navlinks=useMemo<NavigationLink[]>(()=>{
       if(user?.role==="doctor"){
        
@@ -138,8 +137,6 @@ const Navbar = () => {
     }
 
     useEffect(()=>{
-      
-
       if ("Notification" in window) {
         if (Notification.permission === "default") {
           Notification.requestPermission().catch((err) => {
@@ -147,9 +144,8 @@ const Navbar = () => {
           });
         }
       }
-
-      
   }, []);
+
 
   
 
@@ -168,7 +164,6 @@ const Navbar = () => {
             signal: controller.signal,
           })
           setBalance(balance?.balance)
-          setAccountBalance(balance?.balance)
         } catch (error) {
           console.log(error)
         }
@@ -248,17 +243,23 @@ const Navbar = () => {
 
         })
 
+        socket.on('payment_update', (data) => {
+          if(user?.id===data?.id){
+            setBalance(data?.amount)
+          }
+           
+        });
 
-
-        return () => {
-          socket?.off("newUser");
-          socket?.off("receivePatientNotification")
-        };
       }
-
-     
+      
+      
       removeSocket()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+      return () => {
+        socket?.off("newUser");
+        socket?.off("receivePatientNotification")
+      };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user,socket])
    
   
@@ -312,7 +313,7 @@ const Navbar = () => {
 {/* account balance in ksh in desktop */}
       {pathname!=="/"&&<div className="flex items-center gap-2">
         <span className='text-base text-neutral-400 font-semibold'>Ksh</span>
-        <span className="font-mono">{formatNumber(accountBalance)}</span>
+        <span className="font-mono">{formatNumber(balance)}</span>
       </div>}
 
        <TooltipDemo title='Notifications'>

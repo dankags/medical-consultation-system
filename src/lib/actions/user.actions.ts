@@ -232,7 +232,7 @@ export const fetchUserData=async()=>{
     } catch (error:any) {
       clearTimeout(timeout);
       console.error('Error generating M-Pesa token:', error.message);
-      return parseStringify({error:'internal server error'});
+      return parseStringify({error:error?.message?`Error generating M-Pesa token:,${ error.message}`:'internal server error'});
     }
   };
 

@@ -1,5 +1,6 @@
 import { generateMpesaToken } from "@/lib/actions/user.actions";
 import { DATABASE_ID, databases, USER_COLLECTION_ID } from "@/lib/appwrite.config";
+import axios from "axios";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -23,29 +24,32 @@ export async function POST(req: Request) {
   
       const token = await generateMpesaToken();
   
-      const response = await fetch(
-        `${process.env.MPESA_API_URL}/mpesa/b2c/v1/paymentrequest`,
+      const response = await axios.post(
+        `${process.env.M_PESA_API_URL}/mpesa/b2c/v1/paymentrequest`,
         {
-          method: 'POST',
+          InitiatorName: process.env.MPESA_INITIATOR_NAME,
+          SecurityCredential: process.env.MPESA_SECURITY_CREDENTIAL,
+          CommandID: 'BusinessPayment',
+          Amount: amount,
+          PartyA: process.env.MPESA_SHORTCODE,
+          PartyB: doctor.phoneNumber,
+          Remarks: 'Doctor Withdrawal',
+          QueueTimeOutURL: `${process.env.MPESA_CALLBACK_URL}/timeout`,
+          ResultURL: `${process.env.MPESA_CALLBACK_URL}/result`,
+        },
+        {
+          
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            InitiatorName: process.env.MPESA_INITIATOR_NAME,
-            SecurityCredential: process.env.MPESA_SECURITY_CREDENTIAL,
-            CommandID: 'BusinessPayment',
-            Amount: amount,
-            PartyA: process.env.MPESA_SHORTCODE,
-            PartyB: doctor.phoneNumber,
-            Remarks: 'Doctor Withdrawal',
-            QueueTimeOutURL: `${process.env.MPESA_CALLBACK_URL}/timeout`,
-            ResultURL: `${process.env.MPESA_CALLBACK_URL}/result`,
-          }),
+         
         }
       );
+
+      const data= await response.data;
   
-      if (!response.ok) {
+      if (!data) {
         return NextResponse.json({ message: 'Withdrawal failed' }, { status: 400 });
       }
   

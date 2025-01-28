@@ -40,12 +40,13 @@ const onSubmit = async (data: z.infer<typeof CreateDepositSchema>) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const {price,...others}=data
     
-    const response = await fetch('/api/mpesa/pay', {
+    const response = await fetch('/api/mpesa/recharge', {
       method: 'POST',
       body: JSON.stringify({
         ...others,
         price: sessionNumber * SESSION_PRICE,
-        time:new Date().toISOString()
+        time:new Date().toISOString(),
+        userId:user?.id
       })
     });
 
@@ -58,7 +59,7 @@ const onSubmit = async (data: z.infer<typeof CreateDepositSchema>) => {
     toast({
       variant:"destructive",
       title:"!Ooops",
-      description:'Something went wrong'
+      description:'Internal server error'
     });
   } finally {
     setIsLoading(false);

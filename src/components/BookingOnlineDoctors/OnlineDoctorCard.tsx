@@ -41,7 +41,6 @@ const OnlineDoctorsCards = () => {
   
     useEffect(()=>{
       
-      if (!socket) return;
       setIsInitialRender(false)
   const controller = new AbortController();
 
@@ -86,7 +85,7 @@ const OnlineDoctorsCards = () => {
   };
 
   // Initial load
-  socket.on("getOnlineDoctors", handleGetOnlineDoctors);
+  socket?.on("getOnlineDoctors", handleGetOnlineDoctors);
 
   // Fetch doctor info whenever onlineDoctors changes
   fetchDoctorInfo();
@@ -94,13 +93,13 @@ const OnlineDoctorsCards = () => {
   // Poll for online doctors every 10 seconds
   const intervalId = setInterval(() => {
     console.log("refreshing online doctors");
-    socket.off("getOnlineDoctors", handleGetOnlineDoctors);
-    socket.on("getOnlineDoctors", handleGetOnlineDoctors);
+    socket?.off("getOnlineDoctors", handleGetOnlineDoctors);
+    socket?.on("getOnlineDoctors", handleGetOnlineDoctors);
   }, 10000);
 
   // Cleanup
   return () => {
-    socket.off("getOnlineDoctors", handleGetOnlineDoctors);
+    socket?.off("getOnlineDoctors", handleGetOnlineDoctors);
     clearInterval(intervalId);
     controller.abort();
   };

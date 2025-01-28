@@ -1,12 +1,12 @@
 import { create } from "zustand"
 
 interface SocketStore {
-    balance: number | null; 
+    balance: number ; 
     setBalance: (newBalance: number) => void; 
   }
 
 export const useBalance = create<SocketStore>((set) => ({
-    balance: null, 
+    balance: 0, 
     setBalance: (newBalance) => set({ balance: newBalance }), 
     
 }))
