@@ -19,7 +19,7 @@ export async function generateMetadata() {
   if(data?.error){
     return {
       title: `404 user not found`,
-      description:`This page is dedicated for users to preview the doctor before booking a session with the doctor.`
+      description:`This page is dedicated for users to payment history but it seems that the user wasn't found.`
     }
   }
 
