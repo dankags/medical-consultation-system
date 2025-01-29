@@ -72,7 +72,7 @@ export async function POST(req: Request) {
         Password: password,
         Timestamp: timestamp,
         TransactionType: "CustomerPayBillOnline",
-        Amount: Math.round(1),
+        Amount: body.price,
         PartyA: phone,
         PartyB: process.env.M_PESA_SHORTCODE,
         PhoneNumber: phone,

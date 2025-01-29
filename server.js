@@ -27,7 +27,6 @@ return users.find((user) => user.newUserId === userId);
 //app server and socket preperation
 app.prepare().then(async() => {
   const httpServer = createServer(handler);
-
   await initSocket(httpServer)
 
 
