@@ -15,7 +15,7 @@ const getUser=cache(async()=>{
 
 export async function generateMetadata() {
 
-  const data=await fetchUserData()
+  const data=await getUser()
   if(data?.error){
     return {
       title: `404 user not found`,
