@@ -17,6 +17,7 @@ import { Skeleton } from '../ui/skeleton'
 import { useBalance } from '@/stores/useBalance'
 import { toast } from '@/hooks/use-toast'
 import { createAppointment } from '@/lib/actions/appointment.actions'
+import { makeAppointmentPayment } from '@/lib/actions/user.actions'
 
 
 
@@ -106,23 +107,38 @@ const Navbar = () => {
       if(user?.role!=="doctor") return
       
       try{
-        
-        const appointment=await createAppointment({
+        const date=new Date()
+        const [updatedBalances,appointment]=await Promise.all([makeAppointmentPayment(user?.id,patientId,date),createAppointment({
           doctor:user.id,
           user:patientId,
-          schedule:new Date(),
+          schedule:date,
           status:"scheduled",
           reason:"it was an urgent appointment",
           note:""
-        })
-        if(appointment.error){
+        })])
+       
+        if(updatedBalances.error||updatedBalances.error){
+          toast({
+            variant:"destructive",
+            title:"!Ooops something went wrong",
+            description:updatedBalances.error
+          })
           toast({
             variant:"destructive",
             title:"!Ooops something went wrong",
             description:appointment.error
           })
           return
-        }
+        }     
+
+        
+        toast({
+          title:"Success",
+          description:"Appointment created successfully"
+        })
+
+        setBalance(balance+500)
+        
         socket?.emit("sendBookingResponse", {
           patientId,
           doctorId: user?.id,
@@ -192,6 +208,9 @@ const Navbar = () => {
             title:"Booking Response",
             description:`The doctor accepted your booking request. Now you will be redirected to meet the doctor.`,
           })
+          if(user?.role==="user"){
+            setBalance(balance-500)
+          }
           router.push(data.urlPath);
         })
 

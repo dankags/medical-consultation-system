@@ -1,7 +1,7 @@
 "use server"
 
 import { auth } from "@clerk/nextjs/server";
-import { generateTimestamp, parseStringify } from "../utils";
+import { generateTimestamp, parseStringify } from '../utils';
 import {
     APPOINTMENT_COLLECTION_ID,
     DATABASE_ID,
@@ -10,7 +10,7 @@ import {
     USER_COLLECTION_ID,
     databases,
   } from "../appwrite.config";
-import { Query } from "node-appwrite";
+import { ID, Query } from "node-appwrite";
 
 interface MpesaTokenResponse {
     access_token: string;
@@ -319,3 +319,35 @@ export const getUserPayments=async(id:string)=>{
     return parseStringify({error:"Internal Server Error"})
   }
 }  
+
+export const makeAppointmentPayment=async(doctorId:string,patientId:string,time:Date)=>{
+  const {userId}=await auth()
+  if(!userId) return parseStringify({error:"user not autheticated"})
+  
+  if(!doctorId || !patientId || !time) return parseStringify({error:"Doctor , time and Patient Id is required"})
+  
+    try {
+      const [doctor,patient]=await Promise.all([databases.getDocument(DATABASE_ID!,USER_COLLECTION_ID!,doctorId),databases.getDocument(DATABASE_ID!,USER_COLLECTION_ID!,patientId)])
+      if(!doctor || !patient) return parseStringify({error:"User does not exist"})
+      if(patient.balance===0) return parseStringify({error:"You cannot create an appointment due to funds issue."})  
+      await databases.updateDocument(DATABASE_ID!,USER_COLLECTION_ID!,patient.$id,{ balance:patient.balance-500})
+     await databases.updateDocument(DATABASE_ID!,USER_COLLECTION_ID!,doctor.$id,{ balance:doctor.balance+500})
+     const createPaymentInvoice=await databases.createDocument(
+      DATABASE_ID!,
+      PAYMENT_COLLECTION_ID!,
+      ID.unique(),
+      {
+        amount: 500,
+        date:new Date(time),
+        status: "paid",
+        user:patient.$id,
+        doctor:doctor.$id
+      })
+      if(!createPaymentInvoice) return parseStringify({error:"Failed to create payment invoice."})
+      return parseStringify({success:"Payment made successfully"})
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error:any) {
+      console.log(error)
+      return parseStringify({error:"Internal server error."})
+    }
+}
