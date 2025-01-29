@@ -6,6 +6,7 @@ import {
     APPOINTMENT_COLLECTION_ID,
     DATABASE_ID,
     DOCTOR_COLLECTION_ID,
+    PAYMENT_COLLECTION_ID,
     USER_COLLECTION_ID,
     databases,
   } from "../appwrite.config";
@@ -15,6 +16,8 @@ interface MpesaTokenResponse {
     access_token: string;
     expires_in: string;
   }
+
+
 
 //  GET user amount balance 
 export const getUserBalance=async()=>{
@@ -247,3 +250,72 @@ export const generateSTKPassword = async (time:Date): Promise<{ password: string
   
     return { password, timestamp };
   };
+
+export const getUserPayments=async(id:string)=>{
+  const {userId}=await auth()
+
+  if(!userId)  return parseStringify({error:"Not Autheticated"});
+  if(!id) return parseStringify({error:"User Id is required"});
+  try {
+    const [user,userPayments]=await Promise.all([databases.getDocument(
+      DATABASE_ID!,
+      USER_COLLECTION_ID!,
+     id
+  ),
+  databases.listDocuments(DATABASE_ID!,PAYMENT_COLLECTION_ID!,[Query.or([Query.equal("user",id),Query.equal("doctor",id)])])
+]) 
+    if(!user) return parseStringify({error:"User does not exist"})
+    if(userPayments.total===0) return parseStringify({payments:[]})
+
+      const filteredPayments: ProcessedPayment[] = [];
+
+      for (const doc of userPayments.documents) {
+        try {
+          if (doc.user.$id === id && doc.doctor!==null) {
+            const doctor = await databases.getDocument(
+              DATABASE_ID!,
+              USER_COLLECTION_ID!,
+              doc.doctor
+            );
+          
+            filteredPayments.push({
+              id: doc.$id,
+              status: doc.status,
+              paidBy: {
+                name: doctor.name,
+                id: doctor.$id,
+                role:doctor.role,
+              },
+              amount: doc.amount,
+              date:doc.date,
+            });
+            
+          }else{
+
+            filteredPayments.push({
+              id: doc.$id,
+              status: doc.status,
+              paidBy: {
+                name: doc.user.name,
+                id: doc.user.$id,
+                role:doc.user.role,
+              },
+              amount: doc.amount,
+              date:doc.date,
+            });
+          }
+        } catch (error) {
+          console.error('Error processing payment:', error);
+          throw error;
+        }
+      }
+    
+    
+    
+    return parseStringify({payments:filteredPayments.sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime())})
+
+  } catch (error) {
+    console.log(error)
+    return parseStringify({error:"Internal Server Error"})
+  }
+}  

@@ -80,3 +80,15 @@ declare type SearchParamProps = {
     type: string;
     timeZone:Date
   };
+
+  declare type ProcessedPayment={
+    id: string;
+    status: string;
+    paidBy: {
+      name: string;
+      id: string;
+      role:"doctor"|"user"| "admin";
+    };
+    amount: number;
+    date:Date;
+  }

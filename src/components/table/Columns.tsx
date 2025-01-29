@@ -16,12 +16,14 @@ import { TfiMoreAlt } from "react-icons/tfi";
 import { useEffect, useState } from "react";
 import ListActions from "./ListActions";
 import { Button } from "../ui/button";
-import { useCurrentUser } from "../providers/UserProvider";
+import { useCurrentUser } from '../providers/UserProvider';
 import GeneralAppointmentView from "../GeneralAppointmentView";
 import { isToday } from "date-fns";
 import { useRouter } from "next/navigation";
 import { Appointment } from "@/types/appwrite.types";
+import PaymentStatusBadge from "../PaymentStatusBadge";
 
+type PaymentStatus = "paid" | "deposited" | "withdrew"
 
 export const doctorAppointmentscolumns: ColumnDef<Appointment>[] = [
   {
@@ -175,6 +177,76 @@ export const userAppointmentColumns: ColumnDef<Appointment>[]=[
   },
 ]
 
+export const PaymentsColumns: ColumnDef<ProcessedPayment>[] = [
+  {
+    header: "#",
+    cell: ({ row }) => {
+      return <p className="text-14-medium ">{row.index + 1}</p>;
+    },
+  },
+  {
+    accessorKey: "paidBy",
+    header: "Paid By",
+    cell: ({ row }) => {
+      const payment = row.original;
+      return <PaymentUser payment={payment as ProcessedPayment} />;
+    },
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const payment = row.original;
+      return (
+        <div className="min-w-[115px] flex items-center ">
+          <PaymentStatusBadge paymentStatus={payment.status as PaymentStatus} />
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "date",
+    header: "Date",
+    cell: ({ row }) => {
+      const payment = row.original;
+      return (
+        <p className="hidden md:block text-14-regular min-w-[100px]">
+          {formatDateTime(payment.date).dateTime}
+        </p>
+      );
+    },
+  },
+  {
+    accessorKey: "amount",
+    header: "Amount",
+    cell: ({ row }) => {
+      const payment = row.original;
+      return <p className="text-14-medium ">{payment.amount}</p>;
+    },
+  },
+]
+
+const PaymentUser=({payment}:{payment:ProcessedPayment})=>{
+  const {user}=useCurrentUser()
+  return(
+    <div className="flex items-center gap-3">
+      <div className="relative size-9 bg-dark-500 rounded-full overflow-hidden">
+        <Image src={"/assets/images/noavatar.jpg"} fill loading="lazy" alt="" className="object-cover rounded-full" />
+      </div>
+      <div className="flex flex-col gap-3 justify-center">
+        {user
+         ?
+        <span className="text-white font-semibold capitalize">
+          {user?.id===payment.paidBy.id?`${payment.paidBy.name}`:`${payment.paidBy.role!=="doctor"?payment.paidBy.name:`Dr. ${payment.paidBy.name}`}`}
+        </span>
+          :
+          <span>John Doe</span>
+          }
+      <span className="block md:hidden text-sm text-gray-500">{formatDateTime(payment.date).dateTime}</span>
+      </div>
+    </div>
+  )
+}
 
 const AppointMentUserColumn=({doctor,appointment}:{doctor:{
   image: string;
