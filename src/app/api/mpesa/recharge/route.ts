@@ -76,7 +76,7 @@ export async function POST(req: Request) {
         PartyA: phone,
         PartyB: process.env.M_PESA_SHORTCODE,
         PhoneNumber: phone,
-        CallBackURL: `${process.env.NEXT_PUBLIC_URL}/api/mpesa/callback?userId=${body.userId}`,
+        CallBackURL: `${process.env.NEXT_PUBLIC_URL}/api/mpesa/callback?userId=${encodeURIComponent(body.userId)}&time=${body.time}`,
         AccountReference: "CarePulse consoltation.",
         TransactionDesc: "Recharge",
       },
