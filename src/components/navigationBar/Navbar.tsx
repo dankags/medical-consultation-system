@@ -19,10 +19,6 @@ import { toast } from '@/hooks/use-toast'
 import { createAppointment } from '@/lib/actions/appointment.actions'
 import { makeAppointmentPayment } from '@/lib/actions/user.actions'
 
-
-
-
-
 const Navbar = () => {
     const pathname=usePathname()
     const router=useRouter()
@@ -30,10 +26,9 @@ const Navbar = () => {
     const {user,status}=useCurrentUser()
     const updateSocket = useSocket((state) => state.setSocket);
     const removeSocket = useSocket((state) => state.removeSocket);
-     const {balance,setBalance}=useBalance()
+    const {balance,setBalance}=useBalance()
   
-    
-    
+    // navigation links
     const navlinks=useMemo<NavigationLink[]>(()=>{
       if(user?.role==="doctor"){
        
@@ -103,11 +98,14 @@ const Navbar = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[pathname,user])
 
+    // create appointment and make payment
     const handleCreateAppointment=async(patientId:string)=>{
       if(user?.role!=="doctor") return
       
       try{
+        // get current date time
         const date=new Date()
+        // make payment and create appointment
         const [updatedBalances,appointment]=await Promise.all([makeAppointmentPayment(user?.id,patientId,date),createAppointment({
           doctor:user.id,
           user:patientId,
@@ -117,7 +115,9 @@ const Navbar = () => {
           note:""
         })])
        
+        // check for errors and show error toast
         if(updatedBalances.error||updatedBalances.error){
+          
           toast({
             variant:"destructive",
             title:"!Ooops something went wrong",
@@ -131,27 +131,34 @@ const Navbar = () => {
           return
         }     
 
-        
+        // show success toast
         toast({
           title:"Success",
           description:"Appointment created successfully"
         })
 
+        // update balance
         setBalance(balance+500)
         
+        // send booking response to patient
         socket?.emit("sendBookingResponse", {
           patientId,
           doctorId: user?.id,
           urlPath: `/appointments/${appointment}/meetup`,
         });
+
+        // update doctor status to occupied
        socket?.emit("updateStatus", {userId:user.id,status:"occupied"})
+
+      //  redirect to appointment meetup page
        router.push(`/appointments/${appointment}/meetup`)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       }catch(error:any){
         console.log(error)
       }
     }
-
+    
+    // request notification permission
     useEffect(()=>{
       if ("Notification" in window) {
         if (Notification.permission === "default") {
@@ -162,15 +169,15 @@ const Navbar = () => {
       }
   }, []);
 
-
-  
-
-    // fetch balance if user has logged in
+    // fetch account balance and update balance
     useEffect(()=>{
+      // if no user or userId return
       if(!user||!userId ) return
+      
       const controller = new AbortController();
+
+      // fetch account balance
       const fetchAccountBalance=async()=>{
-         if(!userId) return
         try {
           const balance=await fetchAPI(`/api/balance/${user?.id}`,{
             method:"GET",
@@ -179,6 +186,7 @@ const Navbar = () => {
             },
             signal: controller.signal,
           })
+          // update balance
           setBalance(balance?.balance)
         } catch (error) {
           console.log(error)
@@ -190,18 +198,21 @@ const Navbar = () => {
         fetchAccountBalance()
     
       return () => {
-        controller.abort(); // Cancel fetch if userId changes or component unmounts
+        // cancel fetch request if userId changes or component unmounts
+        controller.abort(); 
       };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[userId,user])
 
-    // push user to socket server
+    // socket connection and event listeners
     useEffect(() => {
+      // if no user or socket return
       if (user&& socket.connected) {
-       
+      //  emit new user event
         if(socket) updateSocket(socket);
         socket?.emit("newUser", { userId: user.id, role: user?.role });
          
+        // patient receive booking response
         socket.on("receiveBookingResponse",(data)=>{
           toast({
             variant:"default",
@@ -213,7 +224,8 @@ const Navbar = () => {
           }
           router.push(data.urlPath);
         })
-
+        
+        // receive patient notification
         socket?.on("receivePatientNotification",(data)=>{
 
           if (Notification.permission === "granted") {
@@ -234,6 +246,7 @@ const Navbar = () => {
 
         })
 
+        // receive booking request
         socket?.on("receiveBookingRequest",(data)=>{
 
           toast({
@@ -262,6 +275,7 @@ const Navbar = () => {
 
         })
 
+        // receive payment update
         socket.on('payment_update', (data) => {
           if(user?.id===data?.id){
             setBalance(data?.amount)
@@ -271,19 +285,18 @@ const Navbar = () => {
 
       }
       
-      
+      // remove the socket from the useSocket store
       removeSocket()
 
       return () => {
+        // remove event listeners and disconnect socket
         socket?.off("newUser");
         socket?.off("receivePatientNotification")
       };
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user,socket])
-   
-  
-
     
+    // if in auth page return null
     if(pathname.includes('/auth') )  return
 
   return (

@@ -10,6 +10,7 @@ interface UserContextType {
     status: "autheticated"|"unautheticated"|"loading"
 }
 
+
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -18,13 +19,16 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [status,setStatus]=useState<"autheticated"|"unautheticated"|"loading">("loading")
 
     useEffect(() => {
+        if (!userId) {
+            setStatus("unautheticated")  
+          return
+        }
         const getUserData = async () => {
-            if (!userId) {
-                setStatus("unautheticated")  
-              return
-            }
             try {
                 const userData = await fetchUserData();
+                if(userData?.error){
+                    throw new Error(userData.error)
+                }
                 if(userData?.user){
                 setUser(userData.user);
                 setStatus("autheticated")
@@ -33,9 +37,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
             } catch (error) {
                 console.log(error)
                 setStatus("unautheticated")  
-            }
-                
-            
+            }         
         };
         getUserData();
     }, [userId]);
@@ -70,8 +72,11 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 };
 
+
 export const useCurrentUser = () => {
+    
     const context = useContext(UserContext);
+    
     if (context === undefined) {
         throw new Error('useUser must be used within a UserProvider');
     }
