@@ -34,6 +34,7 @@ A Digital Health Consoltation System application that allows patients to easily 
 - Clerk
 - M-Pesa
 - ngrok
+- Email.js
 
 ## <a name="features">🔋 Features</a>
 
@@ -150,7 +151,7 @@ To learn more about the technologies used, take a look at the following resource
 - [Appwrite](https://appwrite.io/) - this is the web app memory or database for both files and documents.
 - [SocketIO](https://socket.io/docs/v4/) - patients are able to send live booking request to online doctors and also notification.
 - [LiveKit](https://livekit.io/use-cases/video-conferencing) - This is an open source kit with many features like `Video Confrencing`, `Video Streaming` and `Voice agent` that you can intergrate with your app to have the above features.
-
+- [Email.js](https://www.emailjs.com/docs/examples/reactjs/) - i used this in order to send email between the doctors and patients.
 
 ## Deployment
 
