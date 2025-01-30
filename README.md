@@ -1,4 +1,3 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 <div align="center">
   <br />
@@ -159,4 +158,4 @@ For deployment we could have used [Vercel Platform](https://vercel.com/new?utm_m
 
 But since vercel does not support socket server you could use alternatives like [render](https://render.com/) as your choice or you could search online for deployment platforms that support socket serve.
 
-Check out our example [CarePulse](https://medical-consultation-system.onrender.com)
+Check out our example [Example](https://medical-consultation-system.onrender.com)
