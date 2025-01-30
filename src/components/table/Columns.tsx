@@ -20,12 +20,13 @@ import { useCurrentUser } from '../providers/UserProvider';
 import GeneralAppointmentView from "../GeneralAppointmentView";
 import { isToday } from "date-fns";
 import { useRouter } from "next/navigation";
-import { Appointment } from "@/types/appwrite.types";
+import { Appointment, DoctorAppointments } from "@/types/appwrite.types";
 import PaymentStatusBadge from "../PaymentStatusBadge";
+import { AppointmentModal } from "../AppointmentModal";
 
 type PaymentStatus = "paid" | "deposited" | "withdrew"
 
-export const doctorAppointmentscolumns: ColumnDef<Appointment>[] = [
+export const doctorAppointmentscolumns: ColumnDef<DoctorAppointments>[] = [
   {
     header: "#",
     cell: ({ row }) => {
@@ -37,7 +38,10 @@ export const doctorAppointmentscolumns: ColumnDef<Appointment>[] = [
     header: "Patient",
     cell: ({ row }) => {
       const appointment = row.original;
-      return <p className="text-14-medium ">{appointment.patient.name}</p>;
+      return <div className="flex flex-col justify-center gap-2 overflow-hidden">
+        <span className="font-semibold">{appointment.patient.name}</span>
+        <p className="w-48 line-clamp-1  text-sm text-gray-500 first-letter:capitalize">{appointment.patient.reason}</p>
+        </div>;
     },
   },
   {
@@ -59,7 +63,7 @@ export const doctorAppointmentscolumns: ColumnDef<Appointment>[] = [
       const appointment = row.original;
       return (
         <p className="text-14-regular min-w-[100px]">
-          {formatDateTime(appointment.schedule).dateTime}
+          {formatDateTime(appointment.appointmentDate).dateTime}
         </p>
       );
     },
@@ -70,20 +74,18 @@ export const doctorAppointmentscolumns: ColumnDef<Appointment>[] = [
     cell: ({ row }) => {
       const appointment = row.original;
 
-      const doctor = Doctors.find(
-        (doctor) => doctor.name === appointment.primaryPhysician
-      );
+      
 
       return (
         <div className="flex items-center gap-3">
           <Image
-            src={doctor?.image||"/assets/images/noavatar.jpg"}
+            src={appointment?.doctor.image||"/assets/images/noavatar.jpg"}
             alt="doctor"
             width={100}
             height={100}
-            className="size-8"
+            className="size-8 rounded-sm"
           />
-          <p className="whitespace-nowrap">Dr. {doctor?.name}</p>
+          <p className="whitespace-nowrap capitalize font-semibold">Dr. {appointment.doctor?.name}</p>
         </div>
       );
     },
@@ -97,22 +99,22 @@ export const doctorAppointmentscolumns: ColumnDef<Appointment>[] = [
 
       return (
         <div className="flex gap-1">
-          {/* <AppointmentModal
-            patientId={appointment.patient.$id}
-            userId={appointment.userId}
+          <AppointmentModal
+            patientId={appointment.patient.id as string}
+            userId={appointment.doctor?.id as string}
             appointment={appointment}
             type="schedule"
             title="Schedule Appointment"
             description="Please confirm the following details to schedule."
           />
           <AppointmentModal
-            patientId={appointment.patient.$id}
-            userId={appointment.userId}
+            patientId={appointment.patient.id as string}
+            userId={appointment.doctor?.id as string}
             appointment={appointment}
             type="cancel"
             title="Cancel Appointment"
             description="Are you sure you want to cancel your appointment?"
-          /> */}
+          />
         </div>
       );
     },
@@ -210,7 +212,7 @@ export const PaymentsColumns: ColumnDef<ProcessedPayment>[] = [
     cell: ({ row }) => {
       const payment = row.original;
       return (
-        <p className="hidden md:block text-14-regular min-w-[100px]">
+        <p className=" text-14-regular min-w-[100px]">
           {formatDateTime(payment.date).dateTime}
         </p>
       );

@@ -54,15 +54,16 @@ export const getUserAppointments=async()=>{
           
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           let appointments: any[] = [];
+          let doctor=null
 
           if(user.total===0)  return parseStringify({error:"User does not exist"})
           if(user.documents[0].role==="doctor"){
-            const doctor=await databases.listDocuments(
+            doctor=await databases.listDocuments(
                 DATABASE_ID!,
                 DOCTOR_COLLECTION_ID!,
                 [Query.equal("user",user.documents[0].$id) ]
               );
-              if(doctor.total===0) return parseStringify({appointments:[]})
+              if(doctor.total===0) return parseStringify({error:"This doctor does not exist"})
                 appointments=doctor.documents[0].appointments
           }
           if(user.documents[0].role==="user"){
@@ -73,9 +74,10 @@ export const getUserAppointments=async()=>{
           
           
             if(appointments.length===0) return parseStringify({appointments:[]})
+
         
           const processedAppointments = appointments?.map((doc) => {
-            if(user.documents[0].role==="user"){
+            if(user.documents[0].role!=="doctor"){
             return {
                 id: doc.$id, // Rename $id to id
                 appointmentDate: doc.schedule,
@@ -85,6 +87,7 @@ export const getUserAppointments=async()=>{
                     reason:doc.doctor.reason,
                 },
                 patient: {
+                    id:user.documents[0].$id,
                     name: user.documents[0].name,
                     email: user.documents[0].email,
                 },
@@ -94,17 +97,21 @@ export const getUserAppointments=async()=>{
             id: doc.$id, // Rename $id to id
                 appointmentDate: doc.schedule,
                 status: doc.status,
-                doctor: {
+                patient: {
+                    id:doc.user.$id,
                     name: doc.user.name,
                     reason:doc.reason,
                 },
-                patient: {
+                doctor: {
+                  doctorId:doctor?.documents[0].$id,
+                   id: user.documents[0].$id,
                     name: user.documents[0].name,
                     email: user.documents[0].email,
                 },
         }
         });
         // destructure the appointments json
+       
 
 
         return parseStringify({appointments:processedAppointments.sort((a,b)=>new Date(b.appointmentDate).getTime()-new Date(a.appointmentDate).getTime())})
@@ -320,6 +327,7 @@ export const getUserPayments=async(id:string)=>{
   }
 }  
 
+// 
 export const makeAppointmentPayment=async(doctorId:string,patientId:string,time:Date)=>{
   const {userId}=await auth()
   if(!userId) return parseStringify({error:"user not autheticated"})

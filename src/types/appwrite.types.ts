@@ -24,23 +24,34 @@ export interface Patient extends Models.Document {
   privacyConsent: boolean;
 }
 
-export interface Doctor{
-        name: string,
-        reason:string,
-}
 
-export interface AppointmentPatient{
+
+export interface AppointmentUser{
     id?:string,
+    doctorId?:string
     name: string,
-    email:string,
+    email?:string,
+    image?: string,
+    reason?:string,
 }
 
 export interface Appointment extends Models.Document {
-    doctor: Doctor;
-    patient: AppointmentPatient;
+    doctor: AppointmentUser;
+    patient: AppointmentUser;
     id: string,
     appointmentDate: Date,
     status: Status;
     note?: string | undefined;
   cancellationReason?: string | null;
 }
+
+export interface DoctorAppointments {
+  id:string,
+  appointmentDate: Date,
+  status: Status;
+  patient: AppointmentUser;
+  doctor: AppointmentUser;
+  note?: string | undefined;
+  cancellationReason?: string | null;
+}
+

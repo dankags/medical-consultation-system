@@ -1,6 +1,6 @@
 "use client";
 
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,47 +11,29 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Appointment } from "@/types/appwrite.types";
-
 
 
 import "react-datepicker/dist/react-datepicker.css";
-
+import { DoctorAppointments } from "@/types/appwrite.types";
+import { AppointmentForm } from "./forms/AppointmentForm";
 
 export const AppointmentModal = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   patientId,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   userId,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   appointment,
   type,
-  setIsOpened,
-  parentClosed,
 }: {
   patientId: string;
   userId: string;
-  appointment?: Appointment;
+  appointment?: DoctorAppointments;
   type: "schedule" | "cancel";
   title: string;
   description: string;
-  setIsOpened:Dispatch<SetStateAction<boolean>>;
-  parentClosed:boolean
 }) => {
-
-  const [isOpen,setIsOpen]=useState(parentClosed)
-
-  const handleOpenChange=()=>{
-      if (isOpen) {
-          setIsOpened(false)
-          setIsOpen(false)
-          return
-      }
-  }
-  
+  const [open, setOpen] = useState(false);
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
           variant="ghost"
@@ -68,13 +50,13 @@ export const AppointmentModal = ({
           </DialogDescription>
         </DialogHeader>
 
-        {/* <AppointmentForm
+        <AppointmentForm
           userId={userId}
           patientId={patientId}
           type={type}
           appointment={appointment}
-          setOpen={setIsOpen}
-        /> */}
+          setOpen={setOpen}
+        />
       </DialogContent>
     </Dialog>
   );

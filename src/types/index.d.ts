@@ -78,7 +78,6 @@ declare type SearchParamProps = {
     userId: string;
     appointment: Appointment;
     type: string;
-    timeZone:Date
   };
 
   declare type ProcessedPayment={

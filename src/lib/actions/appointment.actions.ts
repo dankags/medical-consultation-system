@@ -140,8 +140,6 @@ export const sendSMSNotification = async (userId: string, content: string) => {
 export const updateAppointment = async ({
   appointmentId,
   userId,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  timeZone,
   appointment,
   type,
 }: UpdateAppointmentParams) => {
