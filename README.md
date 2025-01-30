@@ -153,7 +153,7 @@ To learn more about the technologies used, take a look at the following resource
 - [LiveKit](https://livekit.io/use-cases/video-conferencing) - This is an open source kit with many features like `Video Confrencing`, `Video Streaming` and `Voice agent` that you can intergrate with your app to have the above features.
 
 
-## Deploy on Vercel
+## Deployment
 
 For deployment we could have used [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
