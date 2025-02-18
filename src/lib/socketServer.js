@@ -34,7 +34,6 @@ export const initSocket =async (server) => {
         socket.on("newUser", ({ userId, role }) => {
             addUser(socket.id,userId,role);
             io?.emit("getUsers", users);
-            console.log(users)
             const onlineDoctors = users.filter((user) => user.role === "doctor");
         io?.emit("getOnlineDoctors", onlineDoctors);
             
@@ -110,14 +109,9 @@ export const initSocket =async (server) => {
         //    handle the user payment updates
         
             socket.on("updatePayment",({userId,amount,message,status},callback)=>{
-                console.log(`Payment update received: User ${userId}, Amount: ${amount}, Status:${status}, Message:${message}`);
-
                 const receiver = getUser(userId);
                 
                 if (!receiver) {
-                  console.warn(
-                    `User ${userId} not found in active connections.`
-                  );
                   if (callback)
                     callback({
                       success: false,
@@ -159,8 +153,6 @@ export const initSocket =async (server) => {
                       });
                   }
                 );
-            
-                console.log(`Sent payment update to user ${userId} at socket ${receiver.socketId}`);
             })
 
             // handles deleting the user from the user array when the user logs out 
