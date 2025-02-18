@@ -44,7 +44,7 @@ if(!callbackData.Body){
             status: "error" 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         }, (ack:any) => {
-          console.log(ack.success ? "✅ Payment update sent successfully" : "❌ Failed to send payment update:", ack.error);
+          console.log(ack.success ? "✅ Payment update sent successfully" : "❌ Failed to send payment update:");
           socket.disconnect();
         });
     return NextResponse.json({message:Body.stkCallback.ResultDesc},{status:400})
@@ -67,7 +67,7 @@ if(!callbackData.Body){
         status: "success" 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }, (ack:any) => {
-      console.log(ack.success ? "✅ Payment update sent successfully" : "❌ Failed to send payment update:", ack.error);
+      console.log(ack.success ? "✅ Payment update sent successfully" : "❌ Failed to send payment update:");
       socket.disconnect();
     });
 
