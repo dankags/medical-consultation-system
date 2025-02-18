@@ -1,5 +1,5 @@
 "use client"
-import React, {ChangeEventHandler, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from '../ui/button'
 import { CreateWithdrawSchema } from '@/lib/validation'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -37,7 +37,8 @@ const form=useForm<z.infer<typeof CreateWithdrawSchema>>({
    form.setValue('phoneNumber', value || '');
  };
 
- const handleAmountChange=(e:ChangeEventHandler<HTMLInputElement>)=>{
+ // eslint-disable-next-line @typescript-eslint/no-explicit-any
+ const handleAmountChange=(e:any)=>{
   const amount=parseInt(e.target.value)
   if(!Number.isNaN(amount)){
     setUserBalance((balance-amount))
