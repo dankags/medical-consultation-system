@@ -276,9 +276,14 @@ const Navbar = () => {
         })
 
         // receive payment update
-        socket.on('payment_update', (data) => {
-          if(user?.id===data?.id){
+        socket.on('getPaymentUpdate', (data) => {
+          if(user?.id===data?.userId){
             setBalance(data?.amount)
+            toast({
+              title:`${data?.status==="success"?"successful payment":"!Ooops error."}`,
+              variant:`${data?.status==="success"?"default":"destructive"}`,
+              description:data.message
+            })
           }
            
         });
