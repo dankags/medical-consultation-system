@@ -1,11 +1,21 @@
 import { generateMpesaToken } from "@/lib/actions/user.actions";
 import { DATABASE_ID, databases, USER_COLLECTION_ID } from "@/lib/appwrite.config";
+import { auth } from "@clerk/nextjs/server";
 import axios from "axios";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-    const { doctorId, amount } = await req.json();
-  
+    const { doctorId, amount,time,phoneNumber } = await req.json();
+    const {userId}=await auth()
+    console.log(amount,doctorId)
+  if(!userId){
+    return NextResponse.json({ message: 'User is not autheticated.' }, { status: 401 }); 
+  }
+
+  if(!doctorId || !amount || !time || !phoneNumber){
+    return NextResponse.json({ message: 'Please provide the missing parameters.' }, { status: 400 }); 
+  }
+
     try {
       // Fetch doctor from Appwrite database
       const doctor = await databases.getDocument(
@@ -13,13 +23,14 @@ export async function POST(req: Request) {
         USER_COLLECTION_ID!,
         doctorId
       );
+    
   
     if(!doctor || doctor.role!=="doctor"){
-        return NextResponse.json({ message: 'Insufficient balance' }, { status: 400 });
+        return NextResponse.json({ message: 'The user does not exist.' }, { status: 400 });
     }
 
-      if ( (doctor.balance || 0) < amount) {
-        return NextResponse.json({ message: 'Insufficient balance' }, { status: 400 });
+      if ( (doctor.balance || 0) < amount || amount>doctor.balance || amount<0) {
+        return NextResponse.json({ message: 'Insufficient balance.' }, { status: 400 });
       }
   
       const token = await generateMpesaToken();

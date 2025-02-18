@@ -348,7 +348,7 @@ const Navbar = () => {
 
 
 {/* account balance in ksh in desktop */}
-      {pathname!=="/"&&<div className="flex items-center gap-2">
+      {pathname!=="/"||pathname.includes("/withdraw")&&<div className="flex items-center gap-2">
         <span className='text-base text-neutral-400 font-semibold'>Ksh</span>
         <span className="font-mono">{formatNumber(balance)}</span>
       </div>}

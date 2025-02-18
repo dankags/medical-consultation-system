@@ -19,7 +19,7 @@ import { Input } from "./ui/input";
 import { Select, SelectContent, SelectTrigger, SelectValue } from "./ui/select";
 import { Textarea } from "./ui/textarea";
 import DatePickerDemo from "./ui/DatePicker";
-import { useState } from "react";
+import {  ChangeEventHandler, useState } from "react";
 import { Button } from "./ui/button";
 
 
@@ -31,7 +31,8 @@ export enum FormFieldType {
   DATE_PICKER = "datePicker",
   SELECT = "select",
   SKELETON = "skeleton",
-  RADIO="radio"
+  RADIO="radio",
+  NUMBER="number"
 }
 
 interface CustomProps {
@@ -47,6 +48,8 @@ interface CustomProps {
   dateFormat?: string;
   showTimeSelect?: boolean;
   children?: React.ReactNode;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onChange?:(e:ChangeEventHandler<HTMLInputElement>)=>void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   renderSkeleton?: (field: any) => React.ReactNode;
   fieldType: FormFieldType;
@@ -89,6 +92,28 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
           </FormControl>
         </div>
       );
+      case FormFieldType.NUMBER:
+        return(
+          <FormControl>
+              <div className="w-full flex flex-col justify-center">
+
+              <Input
+              placeholder={props.placeholder}
+             name={props.name}
+           {...field}
+           value={field.value }
+            onChange={(e:ChangeEventHandler<HTMLInputElement>)=>{
+              if(props?.onChange){
+                props?.onChange(e)
+              }
+              field.onChange(e)
+              }}
+              type="number"
+              className="input-phone border-0 appearance-none focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-moz-appearance]:textfield"
+            />
+              </div>
+          </FormControl>
+        )
     case FormFieldType.TEXTAREA:
       return (
         <FormControl>

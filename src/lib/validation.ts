@@ -154,3 +154,17 @@ export const CreateDepositSchema = z.object({
     .string()
     .refine((phone) => /^\+\d{10,15}$/.test(phone), "Invalid phone number"),
 });
+
+export const CreateWithdrawSchema = z.object({
+  amount: z
+  .string()
+  .min(1, "Amount is required") // Ensure input is not an empty string
+  .refine((val) => !isNaN(Number(val)), {
+    message: "Amount must be a valid number",
+  })
+  .transform((val) => Number(val))
+  .pipe(z.number().min(0, "Price must be a positive number")),
+  phoneNumber: z
+    .string()
+    .refine((phone) => /^\+\d{10,15}$/.test(phone), "Invalid phone number"),
+});
