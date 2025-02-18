@@ -23,11 +23,14 @@ import { auth } from '@clerk/nextjs/server';
 export const createUser = async (user: CreateUserParams) => { 
  
   try {
+    if(!user || !user.clerkId){
+      throw new Error("user is not initialized.")
+    }
     // Create new user -> https://appwrite.io/docs/references/1.5.x/server-nodejs/users#create
     const newuser = await databases.createDocument(
       DATABASE_ID!,
       USER_COLLECTION_ID!,
-      ID.unique(),
+      user.clerkId,
       {
        ...user
       }

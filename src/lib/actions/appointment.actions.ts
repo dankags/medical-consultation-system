@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+
 import { ID, Query } from "node-appwrite";
 
 import { Appointment } from "@/types/appwrite.types";
@@ -12,8 +12,9 @@ import {
   DOCTOR_COLLECTION_ID,
   messaging,
 } from "../appwrite.config";
-import { formatDateTime, parseStringify } from "../utils";
+
 import { auth } from "@clerk/nextjs/server";
+import { parseStringify } from "../utils";
 
 
 
@@ -139,10 +140,13 @@ export const sendSMSNotification = async (userId: string, content: string) => {
 //  UPDATE APPOINTMENT
 export const updateAppointment = async ({
   appointmentId,
-  userId,
   appointment,
-  type,
 }: UpdateAppointmentParams) => {
+
+  const {userId}=await auth()
+  if(!userId){
+    throw new Error("user has is not autheticated.")
+  }
   try {
     // Update appointment to scheduled -> https://appwrite.io/docs/references/cloud/server-nodejs/databases#updateDocument
     const updatedAppointment = await databases.updateDocument(
@@ -150,17 +154,20 @@ export const updateAppointment = async ({
       APPOINTMENT_COLLECTION_ID!,
       appointmentId,
       appointment
-    );
+    )
+    
+    console.log(updateAppointment)
 
     if (!updatedAppointment) throw Error;
 
-    const smsMessage = `Greetings from CarePulse. ${type === "schedule" ? `Your appointment is confirmed for ${formatDateTime(appointment.schedule!).dateTime} with Dr. ${appointment.primaryPhysician}` : `We regret to inform that your appointment for ${formatDateTime( appointment.schedule!).dateTime} is cancelled. Reason:  ${appointment.cancellationReason}`}.`;
-    await sendSMSNotification(userId, smsMessage);
+    // const smsMessage = `Greetings from CarePulse. ${type === "schedule" ? `Your appointment is confirmed for ${formatDateTime(appointment.schedule!).dateTime} with Dr. ${appointment.primaryPhysician}` : `We regret to inform that your appointment for ${formatDateTime( appointment.schedule!).dateTime} is cancelled. Reason:  ${appointment.cancellationReason}`}.`;
+    // await sendSMSNotification(userId, smsMessage);
 
-    revalidatePath("/admin");
+    // revalidatePath("/admin");
     return parseStringify(updatedAppointment);
   } catch (error) {
     console.error("An error occurred while scheduling an appointment:", error);
+    return
   }
 };
 

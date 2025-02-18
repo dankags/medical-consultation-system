@@ -165,6 +165,7 @@ export function formatNumber(num=0) {
 }
 
 export function getTimeOfDay() {
+  "use client"
   const now = new Date();
   const hour = now.getHours();
 
@@ -172,11 +173,9 @@ export function getTimeOfDay() {
     return "Morning";
   } else if (hour >= 12 && hour < 17) {
     return "Afternoon";
-  } else if (hour >= 17 && hour < 21) {
+  } else{
     return "Evening";
-  } else {
-    return "Night";
-  }
+  } 
 }
 
 export const generateTimestamp = (time:Date): string => {

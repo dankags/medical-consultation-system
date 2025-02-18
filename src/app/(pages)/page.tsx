@@ -32,7 +32,7 @@ export default async function Home() {
     redirect("/auth/sign-in")
   }
   return (
-    <div className="w-full h-screen min-h-screen flex-col px-3  xl:px-12 2xl:px-32 ">
+    <div className="w-full min-h-screen flex-col px-3  xl:px-12 2xl:px-32 pb-12">
       <h3 className="text-2xl md:text-3xl font-semibold">
         Good {getTimeOfDay()} Daniel
       </h3>
@@ -67,12 +67,12 @@ export default async function Home() {
       </section>
 
       <div className=" w-full flex items-center justify-center ">
-        <section className="-z-10 relative  w-full h-[200px] md:w-10/12  md:h-[320px] lg:h-[400px] xl:h-[500px]  rounded-md bg-neutral-500">
+        <section className="-z-10 relative  w-full h-[200px] md:w-10/12  md:h-[320px] lg:h-[400px] xl:h-[400px]  rounded-md bg-neutral-500">
           <Image
             src={"/assets/images/heroImage2.jpg"}
             alt=""
             fill
-            className=" w-full aspect-video  object-fit"
+            className=" w-full aspect-video object-fit"
           />
         </section>
       </div>

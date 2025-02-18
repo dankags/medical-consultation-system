@@ -3,12 +3,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { SelectItem } from "@/components/ui/select";
-import { Doctors } from "@/constants";
 import {
   createAppointment,
   updateAppointment,
@@ -21,6 +20,12 @@ import "react-datepicker/dist/react-datepicker.css";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import SubmitButton from "../SubmitButton";
 import { Form } from "../ui/form";
+
+type Doctor={
+  doctorId:string,
+  image:string,
+  name:string
+}
 
 export const AppointmentForm = ({
   userId,
@@ -37,6 +42,7 @@ export const AppointmentForm = ({
 }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [doctors,setDoctors]=useState<Doctor[]>([])
 
   const AppointmentFormValidation = getAppointmentSchema(type);
 
@@ -129,6 +135,29 @@ export const AppointmentForm = ({
       buttonLabel = "Submit Apppointment";
   }
 
+  useEffect(()=>{
+    const controler=new AbortController()
+    const fetchDoctors=async()=>{
+      try {
+        const res = await fetch("/api/doctors",{signal:controler.signal})
+         
+        if(res.ok){
+          const data=await res.json()
+          setDoctors(data)
+        }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error:any) {
+        console.log(error)
+      }
+      
+    }
+    fetchDoctors()
+    return ()=>{
+      controler.abort()
+    }
+  },[])
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 space-y-6">
@@ -150,17 +179,17 @@ export const AppointmentForm = ({
               label="Doctor"
               placeholder="Select a doctor"
             >
-              {Doctors.map((doctor, i) => (
-                <SelectItem key={doctor.name + i} value={doctor.name}>
+              {doctors.map((doctor) => (
+                <SelectItem key={doctor.doctorId} value={doctor.doctorId}>
                   <div className="flex cursor-pointer items-center gap-2">
                     <Image
-                      src={doctor.image}
+                      src={doctor.image||"/assets/images/noavatar.jpg"}
                       width={32}
                       height={32}
                       alt="doctor"
                       className="rounded-full border border-dark-500"
                     />
-                    <p>{doctor.name}</p>
+                    <p className="capitalize">Dr. {doctor.name}</p>
                   </div>
                 </SelectItem>
               ))}
