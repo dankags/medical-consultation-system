@@ -91,3 +91,15 @@ declare type SearchParamProps = {
     amount: number;
     date:Date;
   }
+
+  declare interface Feedback{
+    user:string,
+    userFriendly: boolean,
+    mpesaIntegration: boolean,
+    recommendation:boolean,
+    accuracy:boolean,
+    additionalFeatures?:string,
+    challenges?:string,
+    impact?:string,
+    improvements?:string
+  }

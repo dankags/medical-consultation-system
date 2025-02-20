@@ -45,8 +45,8 @@ export async function POST(req: Request) {
           PartyA: process.env.MPESA_SHORTCODE,
           PartyB: doctor.phoneNumber,
           Remarks: 'Doctor Withdrawal',
-          QueueTimeOutURL: `${process.env.MPESA_CALLBACK_URL}/timeout`,
-          ResultURL: `${process.env.MPESA_CALLBACK_URL}/result`,
+          QueueTimeOutURL: `${process.env.MPESA_CALLBACK_URL}/api/mpesa/timeout`,
+          ResultURL: `${process.env.MPESA_CALLBACK_URL}/api/mpesa/withdraw/result`,
         },
         {
           

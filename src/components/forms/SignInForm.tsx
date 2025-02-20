@@ -9,9 +9,7 @@ import { userSignInValidation } from '@/lib/validation'
 import CustomFormField, { FormFieldType } from '../CustomFormField'
 import SubmitButton from '../SubmitButton'
 import { useRouter, useSearchParams } from 'next/navigation'
-
-
-
+import { toast } from '@/hooks/use-toast'
 
 
 function SignInForm() {
@@ -41,7 +39,8 @@ function SignInForm() {
           }
           const signInAttempt= await signIn?.create({
             identifier:values.email,
-            password:values.password
+            password:values.password,
+
            })
           
     
@@ -60,8 +59,10 @@ function SignInForm() {
             // for more info on error handling
             console.log(JSON.stringify(signInAttempt, null, 2))
           }
-        } catch (error) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error:any) {
           console.log(error);
+          toast({title:"!Ooops an error occured.",description:`${error.message}`,variant:"destructive"})
         }
     
         setIsLoading(false);

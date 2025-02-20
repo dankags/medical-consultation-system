@@ -6,6 +6,7 @@ import {
     APPOINTMENT_COLLECTION_ID,
     DATABASE_ID,
     DOCTOR_COLLECTION_ID,
+    FEEDBACK_COLLECTION_ID,
     PAYMENT_COLLECTION_ID,
     USER_COLLECTION_ID,
     databases,
@@ -123,7 +124,7 @@ export const getUserAppointments=async()=>{
 }
 
 // GET appointment by Id
-export const getAppointmentById=async(id:string)=>{
+export const   getAppointmentById=async(id:string)=>{
     const {userId}=await auth()
 
     if(!userId)  return parseStringify({error:"Not Autheticated"});
@@ -358,4 +359,20 @@ export const makeAppointmentPayment=async(doctorId:string,patientId:string,time:
       console.log(error)
       return parseStringify({error:"Internal server error."})
     }
+}
+
+export const createUserFeedback=async(userFeedback:Feedback)=>{
+  try {
+    const {userId}=await auth()
+    if(!userId){throw new Error("user not autheticated")}
+    const feedback=await databases.createDocument(DATABASE_ID!,FEEDBACK_COLLECTION_ID!,ID.unique(),{...userFeedback})
+    if(!feedback){
+      throw new Error("Something wnt wrong when creating a feedback.")
+    }
+    return parseStringify({message:"Feedback was created successfully."})
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error:any) {
+    console.error(error)
+    return parseStringify({error:"Internal Server."})
+  }
 }

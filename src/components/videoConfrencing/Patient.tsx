@@ -188,7 +188,7 @@ const Patient : React.FC<VideoLayoutProps> = ({appointmentId,doctor}) => {
                 serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
                 data-lk-theme="default"
                 style={{ height: "100dvh" }}
-                onDisconnected={() => router.push("/appointments")}
+                onDisconnected={() => router.push(`/feedback/${user?.id}`)}
                
               >
                 <VideoConference />

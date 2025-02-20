@@ -20,6 +20,9 @@ import "react-datepicker/dist/react-datepicker.css";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import SubmitButton from "../SubmitButton";
 import { Form } from "../ui/form";
+import emailjs from "@emailjs/browser";
+import { formatDateTime, generateCalendarLinks } from "@/lib/utils";
+import { useCurrentUser } from "../providers/UserProvider";
 
 type Doctor={
   doctorId:string,
@@ -43,6 +46,7 @@ export const AppointmentForm = ({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [doctors,setDoctors]=useState<Doctor[]>([])
+  const {user}=useCurrentUser()
 
   const AppointmentFormValidation = getAppointmentSchema(type);
 
@@ -107,13 +111,45 @@ export const AppointmentForm = ({
           },
           type,
         };
+        
+        const appointmentObj:CalendarEvent={
+          title:"Appointment reschedule",
+          description:"hello world",
+          locationUrl:`${process.env.NEXT_PUBLIC_URL}/appointments/${appointment?.id}/meetup`,
+          startDate:new Date(values.schedule).toISOString(),
+          endDate:new Date(values.schedule).toISOString()
+        }
+
+        const calenderAppointmentLink=generateCalendarLinks(appointmentObj)
 
         const updatedAppointment = await updateAppointment(appointmentToUpdate);
 
         if (updatedAppointment) {
+          await emailjs.send(
+            
+            process.env.NEXT_PUBLIC_SERVICE_ID!,
+            process.env.NEXT_PUBLIC_TEMPLATE_TWO_ID!,
+            {
+              from_email:user?.email,
+              // remember to update this to patient email.
+              to_email:user?.email,
+              doctor_name:user?.name,
+              // remember to update this to patient name.
+              patient_name:user?.name,
+              schedule_date:formatDateTime(values.schedule).dateOnly,
+              google_calendar:calenderAppointmentLink?.googleCalendarLink,
+              outlook_calendar:calenderAppointmentLink?.outlookCalendarLink,
+              apple_calendar:calenderAppointmentLink?.icalFileLink
+            },
+            {
+              publicKey: process.env.NEXT_PUBLIC_PUBLIC_KEY!,
+
+            }
+          );
           if (setOpen) {
             setOpen(false);
           }
+
           form.reset();
         }
       }
@@ -160,7 +196,7 @@ export const AppointmentForm = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 space-y-6 ">
         {type === "create" && (
           <section className="mb-12 space-y-4">
             <h1 className="header">New Appointment</h1>
