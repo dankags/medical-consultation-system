@@ -94,7 +94,7 @@ const OnlineDoctorsCards = () => {
 
   useEffect(()=>{
     const controller = new AbortController();
-    console.log(onlineDoctors)
+    
     fetchDoctorInfo(controller)
     return ()=>{
       controller.abort()
