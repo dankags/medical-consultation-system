@@ -19,6 +19,7 @@ import { toast } from '@/hooks/use-toast'
 import { createAppointment } from '@/lib/actions/appointment.actions'
 import { makeAppointmentPayment } from '@/lib/actions/user.actions'
 
+
 const Navbar = () => {
     const pathname=usePathname()
     const router=useRouter()
@@ -209,7 +210,7 @@ const Navbar = () => {
       // if no user or socket return
       if (user&& socket.connected) {
       //  emit new user event
-        if(socket) updateSocket(socket);
+        updateSocket(socket);
         socket?.emit("newUser", { userId: user.id, role: user?.role });
          
         // patient receive booking response
@@ -287,11 +288,13 @@ const Navbar = () => {
           }
            
         });
-
+        return
       }
-      
       // remove the socket from the useSocket store
       removeSocket()
+      
+      
+      
 
       return () => {
         // remove event listeners and disconnect socket
@@ -348,7 +351,7 @@ const Navbar = () => {
 
 
 {/* account balance in ksh in desktop */}
-      {pathname!=="/"||pathname.includes("/withdraw")&&<div className="flex items-center gap-2">
+      {(pathname!=="/"||pathname.includes("/withdraw"))&&<div className="flex items-center gap-2">
         <span className='text-base text-neutral-400 font-semibold'>Ksh</span>
         <span className="font-mono">{formatNumber(balance)}</span>
       </div>}

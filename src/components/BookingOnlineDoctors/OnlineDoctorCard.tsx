@@ -2,7 +2,7 @@
 import { fetchAPI } from '@/lib/fetch';
 import { useSocket } from '@/stores/useSocket'
 import Image from 'next/image';
-import React, { useEffect,useState } from 'react'
+import React, { useEffect,useRef,useState } from 'react'
 import { Button } from '../ui/button';
 import OnlineBanner from './OnlineBanner';
 import { Input } from '../ui/input';
@@ -15,6 +15,7 @@ import { useBalance } from '@/stores/useBalance';
 import { useAuth } from '@clerk/nextjs';
 import { DefaultEventsMap, Socket } from 'socket.io';
 import { useCurrentUser } from '../providers/UserProvider';
+import { useCallback } from 'react';
 
 type OnlineDoctor={
   id:string;
@@ -36,77 +37,70 @@ const OnlineDoctorsCards = () => {
     const [doctors,setDoctors]=useState<DoctorCard[]>([])
     const [isFetchingDoctorsInfo,setIsFetchingDoctorsInfo]=useState(true)
     const [searchInput,setSearchInput]=useState("")
-    const [isInitialRender,setIsInitialRender]=useState(true)
     const [filteredDoctors,setFilteredDoctors]=useState<DoctorCard[]>([])
-  
-    useEffect(()=>{
-      
-      setIsInitialRender(false)
-  const controller = new AbortController();
+    const isInitialRender=useRef(true)
 
-  const handleGetOnlineDoctors = (doctors: OnlineDoctor[]) => {
-    if(!isInitialRender){
-      setOnlineDoctors(doctors);
-      return
-    }
-    setTimeout(() => {
-    setOnlineDoctors(doctors);
-    },10000)
-
-  };
-
-  const fetchDoctorInfo = async () => {
-    if (onlineDoctors.length === 0) {
-      setDoctors([]);
-      return;
-    }
-
-    setIsFetchingDoctorsInfo(true);
-    const doctorsIds = onlineDoctors.map((item) => item.newUserId);
-
-    try {
-      const res = await fetchAPI("/api/getDoctorsInfo", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ doctorsIds }),
-        signal: controller.signal
-      });
-      if (res.error) {
-        throw new Error(res.error);
+    const fetchDoctorInfo = useCallback(async (controller:AbortController) => {
+      if (onlineDoctors.length === 0) {
+        setDoctors([]);
+        return;
       }
-      setDoctors(res);
-    } catch (error) {
-      console.log("Error fetching Doctor Info:", error);
-    } finally {
-      setIsFetchingDoctorsInfo(false);
-    }
-  };
 
-  // Initial load
-  socket?.on("getOnlineDoctors", handleGetOnlineDoctors);
+      setIsFetchingDoctorsInfo(true);
+      const doctorsIds = onlineDoctors.map((item) => item.newUserId);
 
-  // Fetch doctor info whenever onlineDoctors changes
-  fetchDoctorInfo();
-
-  // Poll for online doctors every 10 seconds
-  const intervalId = setInterval(() => {
-    console.log("refreshing online doctors");
-    socket?.off("getOnlineDoctors", handleGetOnlineDoctors);
-    socket?.on("getOnlineDoctors", handleGetOnlineDoctors);
-  }, 10000);
-
-  // Cleanup
-  return () => {
-    socket?.off("getOnlineDoctors", handleGetOnlineDoctors);
-    clearInterval(intervalId);
-    controller.abort();
-  };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[socket,onlineDoctors])
-
+      try {
+        const res = await fetchAPI("/api/getDoctorsInfo", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ doctorsIds }),
+          signal: controller.signal,
+        });
+        if (res.error) {
+          throw new Error(res.error);
+        }
+        setDoctors(res);
+      } catch (error) {
+        console.log("Error fetching Doctor Info:", error);
+      } finally {
+        
+        setIsFetchingDoctorsInfo(false);
+      }
+    },[onlineDoctors])
   
+    useEffect(() => {
+    
+      if(!socket) return
+      const handleGetOnlineDoctors = (doctors: OnlineDoctor[]) => {
+        if (isInitialRender.current) {
+          setOnlineDoctors(doctors); // Set immediately on first call
+          isInitialRender.current = false; // Mark as not initial
+        } else {
+          setTimeout(() => {
+            setOnlineDoctors(doctors);
+          }, 20000);
+        }
+      };
+      // Initial load
+      socket?.on("getOnlineDoctors",(data:OnlineDoctor[])=>{handleGetOnlineDoctors(data)});
+      // Cleanup
+      return () => {
+        socket?.off("getOnlineDoctors");
+      };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [socket]);
+
+  useEffect(()=>{
+    const controller = new AbortController();
+    console.log(onlineDoctors)
+    fetchDoctorInfo(controller)
+    return ()=>{
+      controller.abort()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[onlineDoctors])
 
 
 
@@ -119,7 +113,7 @@ const OnlineDoctorsCards = () => {
 
 
   return (
-    <div className=" w-full h-[calc(100vh-80px)] ">
+    <div  className=" w-full h-[calc(100vh-80px)] ">
       <ScrollArea className="w-full h-full ">
         <div className="w-full flex flex-col gap-3 relative">
           <div className="z-10 py-1 sticky top-0  flex items-center justify-center bg-dark-300 ">
