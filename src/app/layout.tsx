@@ -5,9 +5,9 @@ import Navbar from "@/components/navigationBar/Navbar";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from '../components/theme-provider';
 import { ClerkProvider } from '@clerk/nextjs';
-import { Toaster } from "@/components/ui/toaster";
 import FooterMobileNavigation from "@/components/navigationBar/FooterMobileNavigation";
 import { UserProvider } from "@/components/providers/UserProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 
 const fontSans = FontSans({
@@ -46,7 +46,7 @@ export default function RootLayout({
         <Navbar/>
         {children}
         <FooterMobileNavigation/>
-        <Toaster />
+        <Toaster richColors />
        </ThemeProvider>
       </body>
     </html>

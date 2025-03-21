@@ -104,10 +104,25 @@ export const initSocket =async (server) => {
               });
             }
             });
+            // handle getting the current online doctors
+            socket.on("requestCurrentOnlineDoctors",({userId})=>{
+              const receiver = getUser(userId);
+              const onlineDoctors = users.filter((user) => user.role === "doctor");
+               
+              if (!receiver) {
+                if (callback)
+                  callback({
+                    success: false,
+                    error: "User not found in active connections.",
+                  });
+                return;
+              }
 
+              io.to(receiver.socketId).emit("getCurrentOnlineDoctors",onlineDoctors)
+
+            })
 
         //    handle the user payment updates
-        
             socket.on("updatePayment",({userId,amount,message,status},callback)=>{
                 const receiver = getUser(userId);
                 

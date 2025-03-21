@@ -44,11 +44,9 @@ export default async function DepositCash(){
 
     return (
       <main className="w-full h-[calc(100vh-80px)] flex flex-col md:flex-row">       
-        <section className="w-full h-full p-4">
+        <section className="w-full h-full ">
           <ScrollArea className="w-full h-full">
-            <div className="w-full flex items-center justify-center">
               <Deposit user={userData.user} />
-            </div>
           </ScrollArea>
         </section>
       </main>

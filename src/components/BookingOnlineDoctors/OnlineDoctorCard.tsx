@@ -2,7 +2,7 @@
 import { fetchAPI } from '@/lib/fetch';
 import { useSocket } from '@/stores/useSocket'
 import Image from 'next/image';
-import React, { useEffect,useRef,useState } from 'react'
+import React, { useEffect,useState } from 'react'
 import { Button } from '../ui/button';
 import OnlineBanner from './OnlineBanner';
 import { Input } from '../ui/input';
@@ -10,12 +10,12 @@ import { BiSearch } from "react-icons/bi";
 import { ScrollArea } from '../ui/scroll-area';
 import { Skeleton } from '../ui/skeleton';
 import { useRouter } from 'next/navigation';
-import { toast } from '@/hooks/use-toast';
 import { useBalance } from '@/stores/useBalance';
 import { useAuth } from '@clerk/nextjs';
 import { DefaultEventsMap, Socket } from 'socket.io';
 import { useCurrentUser } from '../providers/UserProvider';
 import { useCallback } from 'react';
+import { toast } from 'sonner';
 
 type OnlineDoctor={
   id:string;
@@ -33,12 +33,13 @@ type DoctorCard={
 
 const OnlineDoctorsCards = () => {
     const {socket}=useSocket()
+    const {user}=useCurrentUser()
     const [onlineDoctors,setOnlineDoctors]=useState<OnlineDoctor[]>([])
     const [doctors,setDoctors]=useState<DoctorCard[]>([])
     const [isFetchingDoctorsInfo,setIsFetchingDoctorsInfo]=useState(true)
     const [searchInput,setSearchInput]=useState("")
     const [filteredDoctors,setFilteredDoctors]=useState<DoctorCard[]>([])
-    const isInitialRender=useRef(true)
+    
 
     const fetchDoctorInfo = useCallback(async (controller:AbortController) => {
       if (onlineDoctors.length === 0) {
@@ -73,21 +74,28 @@ const OnlineDoctorsCards = () => {
     useEffect(() => {
     
       if(!socket) return
-      const handleGetOnlineDoctors = (doctors: OnlineDoctor[]) => {
-        if (isInitialRender.current) {
+
+      const handleFirstOnlineDoctors=(doctors: OnlineDoctor[]) => {
           setOnlineDoctors(doctors); // Set immediately on first call
-          isInitialRender.current = false; // Mark as not initial
-        } else {
+      };
+
+      const handleGetOnlineDoctors = (doctors: OnlineDoctor[]) => {
           setTimeout(() => {
             setOnlineDoctors(doctors);
-          }, 20000);
-        }
+          }, 30000); 
       };
+
+     socket.emit("requestCurrentOnlineDoctors",{userId:user?.id})
+
+     socket.on("getCurrentOnlineDoctors",(data:OnlineDoctor[])=>{handleFirstOnlineDoctors(data)})
+
       // Initial load
       socket?.on("getOnlineDoctors",(data:OnlineDoctor[])=>{handleGetOnlineDoctors(data)});
       // Cleanup
       return () => {
         socket?.off("getOnlineDoctors");
+        socket?.off("getCurrentOnlineDoctors");
+        socket?.off("requestCurrentOnlineDoctors");
       };
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [socket]);
@@ -202,26 +210,20 @@ const OnlineDoctorCard=({doctor,socket}:{doctor:DoctorCard,socket:Socket<Default
 
   const handleBooking=async()=>{
     if(!isUserOnline){
-       toast({
-         variant:"destructive",
-         title:"!Ooops something went wrong",
+       toast.error("!Ooops something went wrong",{
          description:"The doctor you trying to book is currently offline."
        })
        return
     }
     if(!balance || balance < 500){
-      toast({
-        variant:"destructive",
-        title:"!Ooops something went wrong",
+      toast.error("!Ooops something went wrong",{
         description:"You have insufficient funds to book this session.",
         action:<Button variant={"outline"} onClick={()=>router.push(`/deposit/${userId}`)}>Recharge</Button>
       })
       return
     }
     if(isDoctorOccupied){
-                toast({
-                  variant:"destructive",
-                  title:"!Ooops something went wrong",
+                toast.error("!Ooops something went wrong",{
                   description:"The doctor you trying to book is currently in a session."
                 })
                 return

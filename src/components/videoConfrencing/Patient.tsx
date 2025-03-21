@@ -7,11 +7,11 @@ import { LiveKitRoom, RoomAudioRenderer, VideoConference } from '@livekit/compon
 import '@livekit/components-styles';
 import { FaVideoSlash } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
-import { toast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import clsx from 'clsx';
 import { Button } from '../ui/button';
 import emailjs from "@emailjs/browser";
+import { toast } from 'sonner';
 
 
 
@@ -83,9 +83,7 @@ const Patient : React.FC<VideoLayoutProps> = ({appointmentId,doctor}) => {
           setToken(data);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error:any) {
-          toast({
-            variant: "destructive",
-            title: "Uh oh! Something went wrong.",
+          toast.error("Uh oh! Something went wrong.",{
             description: `${error?.message}`,
           })
         }

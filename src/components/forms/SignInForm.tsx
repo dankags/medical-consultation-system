@@ -9,7 +9,8 @@ import { userSignInValidation } from '@/lib/validation'
 import CustomFormField, { FormFieldType } from '../CustomFormField'
 import SubmitButton from '../SubmitButton'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { toast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
+
 
 
 function SignInForm() {
@@ -62,7 +63,7 @@ function SignInForm() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error:any) {
           console.log(error);
-          toast({title:"!Ooops an error occured.",description:`${error.message}`,variant:"destructive"})
+          toast.error("!Ooops an error occured.",{description:`${error.message}`})
         }
     
         setIsLoading(false);

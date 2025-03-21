@@ -8,9 +8,9 @@ import { Button } from '../ui/button'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Progress } from '../ui/progress'
 import Image from 'next/image'
-import { toast } from '@/hooks/use-toast'
 import { createUserFeedback } from '@/lib/actions/user.actions'
 import { useCurrentUser } from '../providers/UserProvider'
+import { toast } from 'sonner'
 
 const FeedBackForm = ({userId}:{userId:string}) => {
     const [step, setStep] = useState(1)
@@ -52,12 +52,12 @@ const FeedBackForm = ({userId}:{userId:string}) => {
             throw new Error("Something went wrong when creating your feedback.")
           }
 
-          toast({variant:"default",title:"Success",description:`Your feedback was sent successfully`})
+          toast.success("success",{description:`Your feedback was sent successfully`})
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error:any) {
           console.log(error)
-          toast({variant:"destructive",title:"!Ooops",description:`${error?.message}`})
+          toast.error("!Ooops",{description:`${error?.message}`})
         }
       })
     }

@@ -32,7 +32,7 @@ export default async function Home() {
     redirect("/auth/sign-in")
   }
   return (
-    <div className="w-full min-h-screen flex-col px-3  xl:px-12 2xl:px-32 pb-12">
+    <div className="w-full min-h-screen flex-col px-3  xl:px-12 2xl:px-32 pb-16 pt-3">
       <h3 className="text-2xl md:text-3xl font-semibold">
         Good {getTimeOfDay()} Daniel
       </h3>

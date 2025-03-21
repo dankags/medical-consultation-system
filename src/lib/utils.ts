@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import stringToColor from "string-to-color";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -190,3 +191,23 @@ export const generateTimestamp = (time:Date): string => {
 
   return `${year}${month}${date}${hours}${minutes}${seconds}`;
 };
+
+export function extractInitials(name: string): string {
+  if (!name) return ""; // Handle empty input
+  
+  const words: string[] = name.trim().split(" ").filter(word => word.length > 0);
+  let initials: string = "";
+  
+  if (words.length === 1) {
+      initials = words[0][0];
+  } else {
+      initials = words[0][0] + words[1][0];
+  }
+  
+  return initials.toUpperCase();
+}
+
+export function nameColor(name:string){
+  const color = stringToColor(name);
+  return color
+}

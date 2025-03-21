@@ -6,7 +6,7 @@ import React, { useEffect, useMemo } from 'react'
 import { Button } from '../ui/button'
 import { IoNotifications, IoNotificationsOutline } from "react-icons/io5";
 import { useAuth } from '@clerk/nextjs'
-import { cn, formatNumber } from '@/lib/utils'
+import { cn, extractInitials, formatNumber, nameColor } from '@/lib/utils'
 import DropDownMenu from './DropDownMenu'
 import { TooltipDemo } from '../ToolTipProvider'
 import { useCurrentUser } from '../providers/UserProvider'
@@ -15,9 +15,11 @@ import { socket } from '@/socket'
 import { useSocket } from '@/stores/useSocket'
 import { Skeleton } from '../ui/skeleton'
 import { useBalance } from '@/stores/useBalance'
-import { toast } from '@/hooks/use-toast'
 import { createAppointment } from '@/lib/actions/appointment.actions'
 import { makeAppointmentPayment } from '@/lib/actions/user.actions'
+import { toast } from 'sonner'
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+
 
 
 const Navbar = () => {
@@ -28,6 +30,8 @@ const Navbar = () => {
     const updateSocket = useSocket((state) => state.setSocket);
     const removeSocket = useSocket((state) => state.removeSocket);
     const {balance,setBalance}=useBalance()
+
+    const userNameColor=nameColor(user?.name||"John Doe")
   
     // navigation links
     const navlinks=useMemo<NavigationLink[]>(()=>{
@@ -119,22 +123,17 @@ const Navbar = () => {
         // check for errors and show error toast
         if(updatedBalances.error||updatedBalances.error){
           
-          toast({
-            variant:"destructive",
-            title:"!Ooops something went wrong",
+          toast.error("!Ooops something went wrong",{
             description:updatedBalances.error
           })
-          toast({
-            variant:"destructive",
-            title:"!Ooops something went wrong",
+          toast.error("!Ooops something went wrong",{
             description:appointment.error
           })
           return
         }     
 
         // show success toast
-        toast({
-          title:"Success",
+        toast.success("Success",{
           description:"Appointment created successfully"
         })
 
@@ -215,9 +214,7 @@ const Navbar = () => {
          
         // patient receive booking response
         socket.on("receiveBookingResponse",(data)=>{
-          toast({
-            variant:"default",
-            title:"Booking Response",
+          toast.success("Booking Response",{
             description:`The doctor accepted your booking request. Now you will be redirected to meet the doctor.`,
           })
           if(user?.role==="user"){
@@ -250,9 +247,7 @@ const Navbar = () => {
         // receive booking request
         socket?.on("receiveBookingRequest",(data)=>{
 
-          toast({
-            variant:"default",
-            title:"Booking Request",
+          toast("Booking Request",{          
             description:`${data.message}`,
             action:<Button onClick={()=>handleCreateAppointment(data?.patientId)} variant={"outline"}>Accept</Button>
 
@@ -280,9 +275,13 @@ const Navbar = () => {
         socket.on('getPaymentUpdate', (data) => {
           if(user?.id===data?.userId){
             setBalance(data?.amount)
-            toast({
-              title:`${data?.status==="success"?"successful payment":"!Ooops error."}`,
-              variant:`${data?.status==="success"?"default":"destructive"}`,
+            if(data.status==="success"){
+              toast.success(`successful payment":"!Ooops error.`,{
+                description:data.message
+              })
+              return
+            }
+            toast.error(`!Ooops error.`,{
               description:data.message
             })
           }
@@ -308,7 +307,7 @@ const Navbar = () => {
     if(pathname.includes('/auth') )  return
 
   return (
-    <div className="z-10 sticky top-0 w-full h-20 flex items-center justify-between bg-dark-300 py-3 px-3 md:px-6 xl:px-12 2xl:px-32 ">
+    <div className="z-10 sticky top-0 w-full h-20 flex items-center justify-between bg-dark-300 border-b border-neutral-800 py-3 px-3 md:px-6 xl:px-12 2xl:px-32 ">
       <div className="h-full flex items-center">
         <Link href={"/"}>
           {/* desktop */}
@@ -374,15 +373,12 @@ const Navbar = () => {
     
           <Button
           title={user?.name?user.name:"John doe"}
-            className="relative  p-1 rounded-full border border-neutral-700 hover:bg-neutral-700 hover:cursor-pointer"
+            className="relative p-0 rounded-full border border-neutral-700 hover:bg-neutral-700 hover:cursor-pointer"
           >
-           <Image
-              src="/assets/images/noavatar.jpg"
-              alt="patient"
-              width={24}
-              height={24}
-              className=" size-7  rounded-full "
-            />
+           <Avatar>
+      <AvatarImage src={user?.image?user?.image:""} alt="@shadcn" />
+      <AvatarFallback style={{backgroundColor:`${userNameColor}`}} className='font-semibold'>{extractInitials(user?.name||"John Doe")}</AvatarFallback>
+    </Avatar>
           </Button>
           
        </DropDownMenu>

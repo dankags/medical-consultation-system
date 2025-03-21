@@ -2,11 +2,11 @@
 import React, { useEffect, useState } from 'react'
 import { Button } from '../ui/button'
 import { useSocket } from '@/stores/useSocket'
-import { toast } from '@/hooks/use-toast'
 import { useBalance } from '@/stores/useBalance'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@clerk/nextjs'
 import { useCurrentUser } from '../providers/UserProvider'
+import { toast } from 'sonner'
 
 type SocketUser={
     socketId:string;
@@ -65,25 +65,19 @@ const BookingBtn = ({doctorId,doctor}:{doctorId:string,doctor:Doctor}) => {
 
         const handleBooking=async()=>{
           if(!isDoctorAvailable){
-             toast({
-               variant:"destructive",
-               title:"!Ooops something went wrong",
+             toast.error("!Ooops something went wrong",{
                description:"The doctor you trying to book is currently offline."
              })
              return
           }
           if(isDoctorOccupied){
-            toast({
-              variant:"destructive",
-              title:"!Ooops something went wrong",
+            toast.error("!Ooops something went wrong",{
               description:"The doctor you trying to book is currently in a session."
             })
             return
          }
           if(!balance || balance < 500){
-            toast({
-              variant:"destructive",
-              title:"!Ooops something went wrong",
+            toast.error("!Ooops something went wrong",{
               description:"You have insufficient funds to book this session.",
               action:<Button variant={"outline"} onClick={()=>router.push(`/deposit/${userId}`)}>Recharge</Button>
             })

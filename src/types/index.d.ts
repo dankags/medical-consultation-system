@@ -21,6 +21,8 @@ declare interface User {
   email: string;
   role: string;
   phone?: string;
+  image?:string;
+  coverImage?:string
 }
 
 

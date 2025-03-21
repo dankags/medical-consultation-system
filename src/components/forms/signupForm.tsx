@@ -15,7 +15,8 @@ import CustomFormField, { FormFieldType } from "../CustomFormField";
 import SubmitButton from "../SubmitButton";
 import { useSignUp } from "@clerk/nextjs";
 import ConfirmEmail from "../Dialogs/ConfirmEmail";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
+
 
 
 type User={
@@ -39,7 +40,6 @@ const SignUpForm = () => {
     birthDate:new Date()
   })
   const [showConfirmDialog,setShowConfirmDialog]=useState(false)
-  const { toast } = useToast()
   const [verification, setVerification] = useState({
     state:"default",
     error:"",
@@ -102,27 +102,21 @@ const SignUpForm = () => {
         const newUser = await createUser(user); 
         
         if (newUser) {
-          toast({
-            description:"User created successfully",
-          })
+          toast.success("User created successfully")
           router.push(`/auth/sign-in`);
         }
         await setActive({ session: completeSignUp.createdSessionId })
         setVerification({...verification,state:"success"})
         setShowConfirmDialog(false)
       } else {
-        toast({
-          title: "!Ooops something went wrong.",
-           variant: "destructive",
+        toast.error("!Ooops something went wrong.",{
           description:"Verification failed",
         })
         setVerification({...verification,error:`Verification failed`,state:"failed"})
       }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err:any) {
-      toast({
-        title: "!Ooops something went wrong.",
-         variant: "destructive",
+      toast.error("!Ooops something went wrong.",{
         description:err.errors[0].longMessage,
       })
       setVerification({...verification,error:err.errors[0].longMessage,state:"failed"})

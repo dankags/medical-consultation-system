@@ -5,7 +5,6 @@ import { CreateWithdrawSchema } from '@/lib/validation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { toast } from '@/hooks/use-toast'
 import PhoneInput from "react-phone-number-input";
 import 'react-phone-number-input/style.css'
 import { E164Number } from 'libphonenumber-js/core'
@@ -14,6 +13,8 @@ import { useBalance } from '@/stores/useBalance'
 import { formatNumber } from '@/lib/utils'
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import { Form } from '../ui/form'
+import { toast } from 'sonner'
+
 
 const Withdraw = ({user}:{user:User}) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -67,14 +68,12 @@ const form=useForm<z.infer<typeof CreateWithdrawSchema>>({
 
     if (!response.ok) throw new Error(`${resData?.message}`);
     
-    toast({description:'Deposit successful'});
+    toast.success('Deposit successful');
     form.reset();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
   } catch (error:any) {
  
-    toast({
-      variant:"destructive",
-      title:"!Ooops",
+    toast.error("!Ooops",{
       description:`${error?.message}`
     });
   } finally {

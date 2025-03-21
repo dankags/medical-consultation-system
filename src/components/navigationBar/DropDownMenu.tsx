@@ -9,13 +9,12 @@ import {
   } from "../ui/dropdown-menu"
 import { LogOut, User } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useAuth, useClerk } from "@clerk/nextjs"
+import {  useClerk } from "@clerk/nextjs"
 import { useSocket } from "@/stores/useSocket"
 
 
 const DropDownMenu = ({children}:{children:React.ReactNode}) => {
     const router=useRouter()
-    const {userId}=useAuth()
     const {socket:userSocket,removeSocket}=useSocket()
     const { signOut } = useClerk()
   return (
@@ -26,7 +25,7 @@ const DropDownMenu = ({children}:{children:React.ReactNode}) => {
     <DropdownMenuContent className="w-56 dark:bg-dark-200 dark:border-neutral-700">
       <DropdownMenuLabel>My Account</DropdownMenuLabel>
       <DropdownMenuSeparator />
-      <DropdownMenuItem className="hover:cursor-pointer" onClick={()=>router.push(`/user/${userId}`)}>
+      <DropdownMenuItem className="hover:cursor-pointer" onClick={()=>router.push(`/profile`)}>
             <User />
             <span>Profile</span>
     </DropdownMenuItem>
