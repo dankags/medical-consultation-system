@@ -3,10 +3,15 @@ import UserProfilePage from '@/components/profile/userProfile-section'
 import { fetchUserData } from '@/lib/actions/user.actions'
 import { auth } from '@clerk/nextjs/server'
 import { LucideServerOff } from 'lucide-react'
+import { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import React from 'react'
 
+export const metadata: Metadata = {
+  title: "Profile.",
+  description:"This is a page dedicated for user and doctors profile.",
+};
 
 export default async function ProfilePage() {
     const [{userId},user]=await Promise.all([auth(),fetchUserData()])

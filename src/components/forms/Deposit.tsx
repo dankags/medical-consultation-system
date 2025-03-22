@@ -369,7 +369,7 @@ return (
                     type="submit"
                     variant={paymentMethod === "mpesa" ? "default" : "ghost"}
                     disabled={paymentMethod !== "mpesa"}
-                    className={cn("w-full h-12 bg-emerald-600/30 text-neutral-100",paymentMethod === "mpesa"&&"bg-emerald-600 hover:bg-emerald-700 text-white")}
+                    className={cn("w-full h-12 dark:bg-emerald-600/30 text-neutral-100",paymentMethod === "mpesa"&&"dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white")}
                   >
                     {paymentMethod === "mpesa"
                       ? "Recharge with M-Pesa"

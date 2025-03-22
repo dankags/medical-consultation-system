@@ -86,9 +86,7 @@ export default function UserProfilePage() {
                     </div>
 
                     <h2 className="text-xl font-bold">{user?.name||"John Doe"}</h2>
-                    <p className="text-sm text-muted-foreground">
-                      Patient ID: KE-2023-10045
-                    </p>
+                 
 
                     <div className="w-full mt-6">
                       <Button variant="secondary" className="w-full dark:bg-green-500 dark:hover:bg-green-500/80">
