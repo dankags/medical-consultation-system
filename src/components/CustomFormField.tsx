@@ -81,7 +81,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
               type={showPassword?"text":props.type}
               className="shad-input border-0"
             />
-            {props?.type==="password"&&<Button type="button" onClick={()=>setShowPassword(!showPassword)}>
+            {props?.type==="password"&&<Button type="button" className="dark:bg-transparent" onClick={()=>setShowPassword(!showPassword)}>
                {!showPassword?
                <FaRegEye size={24}/>
                :
@@ -166,7 +166,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
               value={props.label}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => field.onChange(e.target.value)}
               id={props.label}
-              className="shad-input border-0"
+              className="shad-input border-0 "
             />
             <label htmlFor={props.label} className="text-white text-sm first-letter:capitalize">
             {props.label}

@@ -117,19 +117,19 @@ export default function EnhancedDoctorProfile() {
                     <div className="p-6 space-y-4">
                       <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                          <Phone className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                          <Phone className="h-5 w-5 text-slate-600 dark:bg-neutral-800" />
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground">Phone</p>
+                          <p className="text-sm dark:bg-neutral-400">Phone</p>
                           <p className="font-medium">{user?.phone||"+254 712345678"}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                          <Mail className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                          <Mail className="h-5 w-5 text-slate-600 dark:bg-neutral-800" />
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground">Email</p>
+                          <p className="text-sm dark:bg-neutral-400">Email</p>
                           <p className="font-medium">
                           {user?.email||"johndoe@example.com"}
                           </p>
@@ -137,10 +137,10 @@ export default function EnhancedDoctorProfile() {
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                          <MapPin className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                          <MapPin className="h-5 w-5 text-slate-600 dark:bg-neutral-800" />
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm dark:bg-neutral-400">
                             Office
                           </p>
                           <p className="font-medium">
@@ -150,10 +150,10 @@ export default function EnhancedDoctorProfile() {
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                          <Globe className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                          <Globe className="h-5 w-5 text-slate-600 dark:bg-neutral-800" />
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm dark:bg-neutral-400">
                             Website
                           </p>
                           <p className="font-medium">www.drkirungu.com</p>
@@ -169,19 +169,19 @@ export default function EnhancedDoctorProfile() {
                       <div className="space-y-2">
                         <div className="flex justify-between items-center">
                           <span>English</span>
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-sm dark:bg-neutral-400">
                             Native
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span>Swahili</span>
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-sm dark:bg-neutral-400">
                             Fluent
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span>French</span>
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-sm dark:bg-neutral-400">
                             Intermediate
                           </span>
                         </div>
@@ -275,7 +275,7 @@ export default function EnhancedDoctorProfile() {
                             <h2 className="text-xl font-semibold mb-4">
                               About Dr. Daniel Kirungu
                             </h2>
-                            <div className="space-y-3 dark:text-neutral-600">
+                            <div className="space-y-3 dark:text-neutral-400">
                               <p>
                                 Dr. Daniel Kirungu is a board-certified
                                 cardiologist with over 15 years of experience in
@@ -312,14 +312,14 @@ export default function EnhancedDoctorProfile() {
                               Specialties
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <Card>
+                              <Card className="dark:border-neutral-600">
                                 <CardHeader className="p-4 pb-2">
                                   <CardTitle className="text-base">
                                     Interventional Cardiology
                                   </CardTitle>
                                 </CardHeader>
                                 <CardContent className="p-4 pt-0">
-                                  <p className="text-sm dark:text-neutral-600">
+                                  <p className="text-sm dark:text-neutral-400">
                                     Specializes in catheter-based treatment of
                                     heart diseases, including angioplasty and
                                     stent placement.
@@ -333,7 +333,7 @@ export default function EnhancedDoctorProfile() {
                                   </CardTitle>
                                 </CardHeader>
                                 <CardContent className="p-4 pt-0">
-                                  <p className="text-sm dark:text-neutral-600">
+                                  <p className="text-sm dark:text-neutral-400">
                                     Diagnosis and treatment of congenital heart
                                     defects, heart problems in infants,
                                     children, and adolescents.
@@ -347,7 +347,7 @@ export default function EnhancedDoctorProfile() {
                                   </CardTitle>
                                 </CardHeader>
                                 <CardContent className="p-4 pt-0">
-                                  <p className="text-sm dark:text-neutral-600">
+                                  <p className="text-sm dark:text-neutral-400">
                                     Performs surgical procedures on the heart
                                     and great vessels, including bypass surgery
                                     and valve repair.
@@ -361,7 +361,7 @@ export default function EnhancedDoctorProfile() {
                                   </CardTitle>
                                 </CardHeader>
                                 <CardContent className="p-4 pt-0">
-                                  <p className="text-sm dark:text-neutral-600">
+                                  <p className="text-sm dark:text-neutral-400">
                                     Focuses on preventing heart disease through
                                     risk assessment, lifestyle changes, and
                                     medication management.
@@ -415,10 +415,10 @@ export default function EnhancedDoctorProfile() {
                                   <h3 className="font-medium">
                                     Fellowship in Interventional Cardiology
                                   </h3>
-                                  <p className="text-sm text-muted-foreground">
+                                  <p className="text-sm dark:text-neutral-400">
                                     Johns Hopkins University, 2010-2012
                                   </p>
-                                  <p className="mt-2 text-sm text-muted-foreground">
+                                  <p className="mt-2 text-sm dark:text-neutral-400">
                                     Specialized training in advanced cardiac
                                     interventions, including complex coronary
                                     interventions, structural heart disease
@@ -436,10 +436,10 @@ export default function EnhancedDoctorProfile() {
                                   <h3 className="font-medium">
                                     Residency in Cardiology
                                   </h3>
-                                  <p className="text-sm text-muted-foreground">
+                                  <p className="text-sm dark:text-neutral-400">
                                     Mayo Clinic, 2007-2010
                                   </p>
-                                  <p className="mt-2 text-sm text-muted-foreground">
+                                  <p className="mt-2 text-sm dark:text-neutral-400">
                                     Comprehensive training in all aspects of
                                     cardiovascular medicine, including cardiac
                                     imaging, electrophysiology, and heart
@@ -456,10 +456,10 @@ export default function EnhancedDoctorProfile() {
                                   <h3 className="font-medium">
                                     Internship in Internal Medicine
                                   </h3>
-                                  <p className="text-sm text-muted-foreground">
+                                  <p className="text-sm dark:text-neutral-400">
                                     Kenyatta National Hospital, 2006-2007
                                   </p>
-                                  <p className="mt-2 text-sm text-muted-foreground">
+                                  <p className="mt-2 text-sm dark:text-neutral-400">
                                     Rotational training in various medical
                                     specialties, with a focus on internal
                                     medicine and cardiology.
@@ -475,10 +475,10 @@ export default function EnhancedDoctorProfile() {
                                   <h3 className="font-medium">
                                     Doctor of Medicine (MD)
                                   </h3>
-                                  <p className="text-sm text-muted-foreground">
+                                  <p className="text-sm dark:text-neutral-400">
                                     University of Nairobi, 2001-2006
                                   </p>
-                                  <p className="mt-2 text-sm text-muted-foreground">
+                                  <p className="mt-2 text-sm dark:text-neutral-400">
                                    {` Graduated with honors. Thesis on "Early
                                     Detection of Cardiovascular Disease in Young
                                     Adults."`}
@@ -501,10 +501,10 @@ export default function EnhancedDoctorProfile() {
                                   <h3 className="font-medium">
                                     Head of Cardiology Department
                                   </h3>
-                                  <p className="text-sm text-muted-foreground">
+                                  <p className="text-sm dark:text-neutral-400">
                                     Nairobi Medical Center, 2018-Present
                                   </p>
-                                  <p className="mt-2 text-sm text-muted-foreground">
+                                  <p className="mt-2 text-sm dark:text-neutral-400">
                                     Leading a team of 12 cardiologists and 25
                                     support staff. Responsible for departmental
                                     operations, quality improvement, and patient
@@ -522,10 +522,10 @@ export default function EnhancedDoctorProfile() {
                                   <h3 className="font-medium">
                                     Senior Cardiologist
                                   </h3>
-                                  <p className="text-sm text-muted-foreground">
+                                  <p className="text-sm dark:text-neutral-400">
                                     Kenyatta National Hospital, 2012-2018
                                   </p>
-                                  <p className="mt-2 text-sm text-muted-foreground">
+                                  <p className="mt-2 text-sm dark:text-neutral-400">
                                     Specialized in complex cardiac interventions
                                     and pediatric cardiology. Established the
                                     hospital&apos;s first dedicated pediatric
@@ -542,10 +542,10 @@ export default function EnhancedDoctorProfile() {
                                   <h3 className="font-medium">
                                     Research Fellow
                                   </h3>
-                                  <p className="text-sm text-muted-foreground">
+                                  <p className="text-sm dark:text-neutral-400">
                                     Johns Hopkins University, 2010-2012
                                   </p>
-                                  <p className="mt-2 text-sm text-muted-foreground">
+                                  <p className="mt-2 text-sm dark:text-neutral-400">
                                     Conducted research on novel interventional
                                     techniques for structural heart disease.
                                     Published 8 papers in peer-reviewed
@@ -566,10 +566,10 @@ export default function EnhancedDoctorProfile() {
                                   Novel Approaches to Pediatric Congenital Heart
                                   Disease Treatment
                                 </h3>
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-sm dark:text-neutral-400">
                                   Journal of Pediatric Cardiology, 2020
                                 </p>
-                                <p className="mt-2 text-sm text-muted-foreground">
+                                <p className="mt-2 text-sm dark:text-neutral-400">
                                   A comprehensive review of minimally invasive
                                   techniques for treating congenital heart
                                   defects in children.
@@ -589,10 +589,10 @@ export default function EnhancedDoctorProfile() {
                                   Long-term Outcomes of Transcatheter Aortic
                                   Valve Replacement in Elderly Patients
                                 </h3>
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-sm dark:text-neutral-400">
                                   European Heart Journal, 2018
                                 </p>
-                                <p className="mt-2 text-sm text-muted-foreground">
+                                <p className="mt-2 text-sm dark:text-neutral-400">
                                   A 5-year follow-up study of elderly patients
                                   who underwent TAVR procedures.
                                 </p>
@@ -611,10 +611,10 @@ export default function EnhancedDoctorProfile() {
                                   Cardiovascular Disease Patterns in Sub-Saharan
                                   Africa: A Comparative Analysis
                                 </h3>
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-sm dark:text-neutral-400">
                                   African Journal of Medicine, 2016
                                 </p>
-                                <p className="mt-2 text-sm text-muted-foreground">
+                                <p className="mt-2 text-sm dark:text-neutral-400">
                                   An epidemiological study of cardiovascular
                                   disease patterns across different regions in
                                   Sub-Saharan Africa.
@@ -641,7 +641,7 @@ export default function EnhancedDoctorProfile() {
                               Services Offered
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <Card>
+                              <Card className="dark:border-neutral-600">
                                 <CardContent className="p-6">
                                   <div className="flex gap-4 items-start">
                                     <div className="h-12 w-12 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center shrink-0">
@@ -651,7 +651,7 @@ export default function EnhancedDoctorProfile() {
                                       <h3 className="font-medium">
                                         Cardiac Consultation
                                       </h3>
-                                      <p className="text-sm dark:text-neutral-600 mt-1">
+                                      <p className="text-sm dark:text-neutral-400 mt-1">
                                         Comprehensive evaluation of heart
                                         health, including medical history
                                         review, physical examination, and
@@ -665,7 +665,7 @@ export default function EnhancedDoctorProfile() {
                                 </CardContent>
                               </Card>
 
-                              <Card>
+                              <Card className="dark:border-neutral-600">
                                 <CardContent className="p-6">
                                   <div className="flex gap-4 items-start">
                                     <div className="h-12 w-12 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center shrink-0">
@@ -675,7 +675,7 @@ export default function EnhancedDoctorProfile() {
                                       <h3 className="font-medium">
                                         Echocardiogram
                                       </h3>
-                                      <p className="text-sm dark:text-neutral-600 mt-1">
+                                      <p className="text-sm dark:text-neutral-400 mt-1">
                                         Ultrasound imaging of the heart to
                                         assess structure and function, detect
                                         abnormalities, and evaluate blood flow.
@@ -688,7 +688,7 @@ export default function EnhancedDoctorProfile() {
                                 </CardContent>
                               </Card>
 
-                              <Card>
+                              <Card className="dark:border-neutral-600">
                                 <CardContent className="p-6">
                                   <div className="flex gap-4 items-start">
                                     <div className="h-12 w-12 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center shrink-0">
@@ -698,7 +698,7 @@ export default function EnhancedDoctorProfile() {
                                       <h3 className="font-medium">
                                         Stress Test
                                       </h3>
-                                      <p className="text-sm dark:text-neutral-600 mt-1">
+                                      <p className="text-sm dark:text-neutral-400 mt-1">
                                         Evaluation of heart function during
                                         physical activity to detect coronary
                                         artery disease and assess exercise
@@ -712,7 +712,7 @@ export default function EnhancedDoctorProfile() {
                                 </CardContent>
                               </Card>
 
-                              <Card>
+                              <Card className="dark:border-neutral-600">
                                 <CardContent className="p-6">
                                   <div className="flex gap-4 items-start">
                                     <div className="h-12 w-12 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center shrink-0">
@@ -722,7 +722,7 @@ export default function EnhancedDoctorProfile() {
                                       <h3 className="font-medium">
                                         Holter Monitoring
                                       </h3>
-                                      <p className="text-sm dark:text-neutral-600 mt-1">
+                                      <p className="text-sm dark:text-neutral-400 mt-1">
                                         Continuous ECG recording over 24-48
                                         hours to detect irregular heart rhythms
                                         and evaluate symptoms.
@@ -735,7 +735,7 @@ export default function EnhancedDoctorProfile() {
                                 </CardContent>
                               </Card>
 
-                              <Card>
+                              <Card className="dark:border-neutral-600">
                                 <CardContent className="p-6">
                                   <div className="flex gap-4 items-start">
                                     <div className="h-12 w-12 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center shrink-0">
@@ -745,7 +745,7 @@ export default function EnhancedDoctorProfile() {
                                       <h3 className="font-medium">
                                         Cardiac Catheterization
                                       </h3>
-                                      <p className="text-sm dark:text-neutral-600 mt-1">
+                                      <p className="text-sm dark:text-neutral-400 mt-1">
                                         Minimally invasive procedure to diagnose
                                         and treat heart conditions, including
                                         coronary artery disease.
@@ -758,7 +758,7 @@ export default function EnhancedDoctorProfile() {
                                 </CardContent>
                               </Card>
 
-                              <Card>
+                              <Card className="dark:border-neutral-600">
                                 <CardContent className="p-6">
                                   <div className="flex gap-4 items-start">
                                     <div className="h-12 w-12 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center shrink-0">
@@ -768,7 +768,7 @@ export default function EnhancedDoctorProfile() {
                                       <h3 className="font-medium">
                                         Pediatric Cardiology Consultation
                                       </h3>
-                                      <p className="text-sm text-muted-foreground mt-1">
+                                      <p className="text-sm dark:text-neutral-400 mt-1">
                                         Specialized evaluation of heart
                                         conditions in infants, children, and
                                         adolescents.
@@ -788,21 +788,21 @@ export default function EnhancedDoctorProfile() {
                               Procedures
                             </h2>
                             <div className="space-y-4">
-                              <div className="p-4 border rounded-lg">
+                              <div className="p-4 border rounded-lg dark:border-neutral-600">
                                 <div className="flex justify-between">
                                   <h3 className="font-medium">
                                     Coronary Angioplasty and Stenting
                                   </h3>
                                   <Badge>Specialized</Badge>
                                 </div>
-                                <p className="mt-2 text-sm text-muted-foreground">
+                                <p className="mt-2 text-sm dark:text-neutral-400">
                                   Procedure to open blocked coronary arteries
                                   and restore blood flow to the heart muscle
                                   using balloon angioplasty and stent placement.
                                 </p>
                               </div>
 
-                              <div className="p-4 border rounded-lg">
+                              <div className="p-4 border rounded-lg dark:border-neutral-600">
                                 <div className="flex justify-between">
                                   <h3 className="font-medium">
                                     Transcatheter Aortic Valve Replacement
@@ -810,35 +810,35 @@ export default function EnhancedDoctorProfile() {
                                   </h3>
                                   <Badge>Specialized</Badge>
                                 </div>
-                                <p className="mt-2 text-sm text-muted-foreground">
+                                <p className="mt-2 text-sm dark:text-neutral-400">
                                   Minimally invasive procedure to replace a
                                   narrowed aortic valve that fails to open
                                   properly (aortic stenosis).
                                 </p>
                               </div>
 
-                              <div className="p-4 border rounded-lg">
+                              <div className="p-4 border rounded-lg dark:border-neutral-600">
                                 <div className="flex justify-between">
                                   <h3 className="font-medium">
                                     Atrial Septal Defect (ASD) Closure
                                   </h3>
                                   <Badge>Specialized</Badge>
                                 </div>
-                                <p className="mt-2 text-sm text-muted-foreground">
+                                <p className="mt-2 text-sm dark:text-neutral-400">
                                   Procedure to close a hole in the wall (septum)
                                   between the two upper chambers of the heart
                                   (atria).
                                 </p>
                               </div>
 
-                              <div className="p-4 border rounded-lg">
+                              <div className="p-4 border rounded-lg dark:border-neutral-600">
                                 <div className="flex justify-between">
                                   <h3 className="font-medium">
                                     Pacemaker Implantation
                                   </h3>
                                   <Badge>Specialized</Badge>
                                 </div>
-                                <p className="mt-2 text-sm text-muted-foreground">
+                                <p className="mt-2 text-sm dark:text-neutral-400">
                                   Surgical placement of a small device that
                                   helps regulate the heartbeat in patients with
                                   certain heart rhythm disorders.
@@ -854,7 +854,7 @@ export default function EnhancedDoctorProfile() {
                         <div className="space-y-6">
                           <section>
                             <div className="flex flex-col md:flex-row gap-6 items-start">
-                              <div className="w-full md:w-64 p-6 bg-slate-50 dark:bg-slate-900 rounded-lg">
+                              <div className="w-full md:w-64 p-6 bg-slate-50 dark:bg-dark-400 rounded-lg">
                                 <div className="text-center">
                                   <div className="text-4xl font-bold">4.9</div>
                                   <div className="flex justify-center mt-2">
@@ -870,7 +870,7 @@ export default function EnhancedDoctorProfile() {
                                       />
                                     ))}
                                   </div>
-                                  <div className="text-sm dark:text-neutral-600 mt-1">
+                                  <div className="text-sm dark:text-neutral-400 mt-1">
                                     Based on 128 reviews
                                   </div>
                                 </div>
@@ -903,14 +903,14 @@ export default function EnhancedDoctorProfile() {
                                   </div>
                                 </div>
 
-                                <Button className="w-full mt-6">
+                                <Button className="w-full mt-6 dark:bg-green-500 dark:text-white">
                                   Write a Review
                                 </Button>
                               </div>
 
                               <div className="flex-1 space-y-6">
                                 <div className="space-y-4">
-                                  <div className="p-4 border rounded-lg">
+                                  <div className="p-4 border rounded-lg dark:border-neutral-600">
                                     <div className="flex justify-between">
                                       <div className="flex items-center gap-2">
                                         <Avatar className="h-10 w-10">
@@ -934,11 +934,11 @@ export default function EnhancedDoctorProfile() {
                                           </div>
                                         </div>
                                       </div>
-                                      <div className="text-sm dark:text-neutral-600">
+                                      <div className="text-sm dark:text-neutral-400">
                                         2 weeks ago
                                       </div>
                                     </div>
-                                    <p className="mt-3 text-sm dark:text-neutral-600">
+                                    <p className="mt-3 text-sm dark:text-neutral-400">
                                       Dr. Kirungu is an exceptional
                                       cardiologist. He took the time to explain
                                       my condition in detail and answered all my
@@ -948,7 +948,7 @@ export default function EnhancedDoctorProfile() {
                                     </p>
                                   </div>
 
-                                  <div className="p-4 border rounded-lg">
+                                  <div className="p-4 border rounded-lg dark:border-neutral-600">
                                     <div className="flex justify-between">
                                       <div className="flex items-center gap-2">
                                         <Avatar className="h-10 w-10">
@@ -977,11 +977,11 @@ export default function EnhancedDoctorProfile() {
                                           </div>
                                         </div>
                                       </div>
-                                      <div className="text-sm dark:text-neutral-600">
+                                      <div className="text-sm dark:text-neutral-400">
                                         1 month ago
                                       </div>
                                     </div>
-                                    <p className="mt-3 text-sm dark:text-neutral-600">
+                                    <p className="mt-3 text-sm dark:text-neutral-400">
                                       My son had a congenital heart defect, and
                                       Dr. Kirungu performed the surgery. His
                                       skill and expertise are unmatched. The
@@ -991,7 +991,7 @@ export default function EnhancedDoctorProfile() {
                                     </p>
                                   </div>
 
-                                  <div className="p-4 border rounded-lg">
+                                  <div className="p-4 border rounded-lg dark:border-neutral-600">
                                     <div className="flex justify-between">
                                       <div className="flex items-center gap-2">
                                         <Avatar className="h-10 w-10">
@@ -1020,11 +1020,11 @@ export default function EnhancedDoctorProfile() {
                                           </div>
                                         </div>
                                       </div>
-                                      <div className="text-sm dark:text-neutral-600">
+                                      <div className="text-sm dark:text-neutral-400">
                                         2 months ago
                                       </div>
                                     </div>
-                                    <p className="mt-3 text-sm dark:text-neutral-600">
+                                    <p className="mt-3 text-sm dark:text-neutral-400">
                                       I&apos;ve been seeing Dr. Kirungu for my heart
                                       condition for over 5 years. He is always
                                       up-to-date with the latest treatments and
@@ -1035,7 +1035,7 @@ export default function EnhancedDoctorProfile() {
                                   </div>
                                 </div>
 
-                                <Button variant="outline" className="w-full">
+                                <Button variant="outline" className="w-full dark:bg-transparent dark:border-neutral-600 dark:hover:bg-green-500 ">
                                   Load More Reviews
                                 </Button>
                               </div>
@@ -1108,7 +1108,7 @@ export default function EnhancedDoctorProfile() {
                               Videos
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div className="rounded-lg overflow-hidden border">
+                              <div className="rounded-lg overflow-hidden border dark:border-neutral-600">
                                 <div className="aspect-video bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
                                   <Video className="h-12 w-12 text-slate-400" />
                                 </div>
@@ -1116,13 +1116,13 @@ export default function EnhancedDoctorProfile() {
                                   <h3 className="font-medium">
                                     Understanding Heart Health
                                   </h3>
-                                  <p className="text-sm dark:text-neutral-600 mt-1">
+                                  <p className="text-sm dark:text-neutral-400 mt-1">
                                     Dr. Kirungu explains the basics of heart
                                     health and preventive measures.
                                   </p>
                                 </div>
                               </div>
-                              <div className="rounded-lg overflow-hidden border">
+                              <div className="rounded-lg overflow-hidden border dark:border-neutral-600">
                                 <div className="aspect-video bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
                                   <Video className="h-12 w-12 text-slate-400" />
                                 </div>
@@ -1130,7 +1130,7 @@ export default function EnhancedDoctorProfile() {
                                   <h3 className="font-medium">
                                     Cardiac Surgery: What to Expect
                                   </h3>
-                                  <p className="text-sm dark:text-neutral-600 mt-1">
+                                  <p className="text-sm dark:text-neutral-400 mt-1">
                                     A walkthrough of the cardiac surgery process
                                     and recovery.
                                   </p>
@@ -1144,30 +1144,30 @@ export default function EnhancedDoctorProfile() {
                               Certificates & Awards
                             </h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                              <div className="aspect-square rounded-lg overflow-hidden border p-4 flex flex-col items-center justify-center text-center">
+                              <div className="aspect-square rounded-lg overflow-hidden border p-4 flex flex-col items-center justify-center text-center dark:border-neutral-600">
                                 <Award className="h-12 w-12 text-yellow-500 mb-4" />
                                 <h3 className="font-medium">
                                   Excellence in Cardiology
                                 </h3>
-                                <p className="text-sm dark:text-neutral-600 mt-1">
+                                <p className="text-sm dark:text-neutral-400 mt-1">
                                   Kenya Medical Association, 2019
                                 </p>
                               </div>
-                              <div className="aspect-square rounded-lg overflow-hidden border p-4 flex flex-col items-center justify-center text-center">
+                              <div className="aspect-square rounded-lg overflow-hidden border p-4 flex flex-col items-center justify-center text-center dark:border-neutral-600">
                                 <Award className="h-12 w-12 text-yellow-500 mb-4" />
                                 <h3 className="font-medium">
                                   Outstanding Physician Award
                                 </h3>
-                                <p className="text-sm dark:text-neutral-600 mt-1">
+                                <p className="text-sm dark:text-neutral-400 mt-1">
                                   Nairobi Medical Center, 2021
                                 </p>
                               </div>
-                              <div className="aspect-square rounded-lg overflow-hidden border p-4 flex flex-col items-center justify-center text-center">
+                              <div className="aspect-square rounded-lg overflow-hidden border p-4 flex flex-col items-center justify-center text-center dark:border-neutral-600">
                                 <Award className="h-12 w-12 text-yellow-500 mb-4" />
                                 <h3 className="font-medium">
                                   Research Excellence
                                 </h3>
-                                <p className="text-sm dark:text-neutral-600 mt-1">
+                                <p className="text-sm dark:text-neutral-400 mt-1">
                                   African Cardiac Society, 2018
                                 </p>
                               </div>

@@ -65,8 +65,8 @@ export default function DatePickerDemo({ setFormDate }: Props) {
           variant={"outline"}
           type="button"
           className={cn(
-            "w-fit justify-start text-left font-normal ring-0 ring-offset-0 border-none",
-            !date && "text-muted-foreground"
+            "w-fit justify-start text-left font-normal ring-0 ring-offset-0 border-none dark:bg-transparent",
+            !date && "dark:text-neutral-500"
           )}
         >
           <CalendarIcon/>
