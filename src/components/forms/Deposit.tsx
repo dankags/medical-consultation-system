@@ -353,7 +353,7 @@ return (
                   <Button
                     type="button"
                     variant="ghost"
-                    className="w-full flex items-center justify-center gap-3 h-12 dark:bg-green-500/30 text-white"
+                    className="w-full flex items-center justify-center gap-3 h-12 dark:bg-green-500/30 dark:text-white"
                   >
                     <Image
                       src="/assets/icons/loader.svg"
@@ -369,7 +369,7 @@ return (
                     type="submit"
                     variant={paymentMethod === "mpesa" ? "default" : "ghost"}
                     disabled={paymentMethod !== "mpesa"}
-                    className={cn("w-full h-12 dark:bg-emerald-600/30 text-neutral-100",paymentMethod === "mpesa"&&"dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white")}
+                    className={cn("w-full h-12 dark:bg-emerald-600/30 dark:text-neutral-100",paymentMethod === "mpesa"&&"dark:bg-emerald-600 dark:hover:bg-emerald-700 dark:text-white")}
                   >
                     {paymentMethod === "mpesa"
                       ? "Recharge with M-Pesa"
