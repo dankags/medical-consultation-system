@@ -81,7 +81,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
               type={showPassword?"text":props.type}
               className="shad-input border-0"
             />
-            {props?.type==="password"&&<Button type="button" className="dark:bg-transparent" onClick={()=>setShowPassword(!showPassword)}>
+            {props?.type==="password"&&<Button type="button" className="dark:bg-transparent dark:text-white" onClick={()=>setShowPassword(!showPassword)}>
                {!showPassword?
                <FaRegEye size={24}/>
                :
