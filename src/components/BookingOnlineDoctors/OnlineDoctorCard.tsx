@@ -18,7 +18,7 @@ type OnlineDoctor={
   status:"free"|"occupied"
 }
 type DoctorCard={
-  id:string;
+  doctorUserId:string;
   doctorId:string;
   name:string;
   specialty:string[];
@@ -146,7 +146,7 @@ const OnlineDoctorsCards = () => {
             {!isFetchingDoctorsInfo ? (
               <>
                {(filteredDoctors.length > 0 ? filteredDoctors : doctors).map((doctor) => (
-      <OnlineDoctorCard key={doctor.id} doctor={doctor} socket={socket}/>
+      <OnlineDoctorCard key={doctor.doctorUserId} doctor={doctor} socket={socket}/>
     ))}
               </>
             ) : (
