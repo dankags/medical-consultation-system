@@ -28,7 +28,7 @@ export default async function BookOnlineDoctors() {
 
   return (
     <Suspense fallback={<Loading/>}>
-       <OnlineDoctorsCards/>
+      <OnlineDoctorsCards/>
     </Suspense>
   )
 }

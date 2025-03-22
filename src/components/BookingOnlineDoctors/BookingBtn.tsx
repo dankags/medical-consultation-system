@@ -15,6 +15,9 @@ type SocketUser={
     status:"free"|"occupied"
 }
 type Doctor={
+  doctorUserId:string,
+  doctorProfileImage?:string,
+  doctorCoverImage?:string,
   name: string,
   rating: number,
   specialty: string[],
@@ -91,10 +94,15 @@ const BookingBtn = ({doctorId,doctor}:{doctorId:string,doctor:Doctor}) => {
       
         }
   return (
-    <Button onClick={handleBooking} variant={"secondary"} disabled={!isDoctorAvailable} className={`capitalize bg-green-500 active:bg-green-500/75 ${!isDoctorAvailable&&"text-gray-300 bg-neutral-500/30  disabled:cursor-not-allowed"}`}>
-      Book Doctor
+    <Button
+      onClick={handleBooking}
+      variant={"secondary"}
+      disabled={!isDoctorAvailable}
+      className={`capitalize dark:bg-green-500 dark:active:bg-green-500/75 ${!isDoctorAvailable && "text-gray-300 dark:bg-green-500/30  disabled:cursor-not-allowed"}`}
+    >
+      Book Appointment
     </Button>
-  )
+  );
 }
 
 export default BookingBtn

@@ -1,3 +1,4 @@
+"use client"
 import { useSocket } from '@/stores/useSocket'
 import clsx from 'clsx';
 import React, { useEffect, useState } from 'react'
@@ -38,18 +39,13 @@ const OnlineBanner = ({userId}:{userId:string}) => {
    
 
   return (
-    <div className="flex items-center gap-2">
+    <div className=" absolute right-2 bottom-4 md:bottom-5 isolate flex items-center gap-2">
       <div
         className={clsx(
-          "size-2 rounded-full bg-green-500",
+          "size-5 rounded-full bg-green-500 ring-2 ring-neutral-50",
           !isUserOnline && "bg-neutral-500"
         )}
       />
-      <span
-        className={clsx("font-thin text-sm", !isUserOnline && "text-gray-300")}
-      >
-        {isUserOnline ? "Online" : "Offline"}
-      </span>
     </div>
   );
 }

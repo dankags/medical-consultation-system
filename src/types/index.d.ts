@@ -105,3 +105,14 @@ declare type SearchParamProps = {
     impact?:string,
     improvements?:string
   }
+
+  declare interface DoctorCard{
+    id:string;
+    doctorId:string;
+    name:string;
+    specialty:string[];
+    description?:string;
+    image?:string;
+    location?:string
+    experience?:string
+  }

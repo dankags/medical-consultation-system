@@ -22,6 +22,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 
 
 
+
 const Navbar = () => {
     const pathname=usePathname()
     const router=useRouter()
@@ -307,7 +308,7 @@ const Navbar = () => {
     if(pathname.includes('/auth') )  return
 
   return (
-    <div className="z-10 sticky top-0 w-full h-20 flex items-center justify-between bg-dark-300 border-b border-neutral-800 py-3 px-3 md:px-6 xl:px-12 2xl:px-32 ">
+    <div className="z-10 sticky top-0 w-full h-20 flex items-center justify-between bg-dark-300 border-b border-dark-400 py-3 px-3 md:px-6 xl:px-12 2xl:px-32 ">
       <div className="h-full flex items-center">
         <Link href={"/"}>
           {/* desktop */}
@@ -377,7 +378,7 @@ const Navbar = () => {
           >
            <Avatar>
       <AvatarImage src={user?.image?user?.image:""} alt="@shadcn" />
-      <AvatarFallback style={{backgroundColor:`${userNameColor}`}} className='font-semibold'>{extractInitials(user?.name||"John Doe")}</AvatarFallback>
+      <AvatarFallback style={{backgroundColor:`${userNameColor}`}} className='font-semibold '>{extractInitials(user?.name||"John Doe")}</AvatarFallback>
     </Avatar>
           </Button>
           

@@ -130,14 +130,18 @@ export const getDoctorPreview=async(id:string,doctorId:string)=>{
 
   try {
     const [user, doctor] = await Promise.all([
-      databases.getDocument(DATABASE_ID!, USER_COLLECTION_ID!, id,[Query.select([])]),
+      databases.getDocument(DATABASE_ID!, USER_COLLECTION_ID!, id),
       databases.getDocument(DATABASE_ID!, DOCTOR_COLLECTION_ID!, doctorId),
     ]);
 
    if (!user || !doctor) return parseStringify({ error: "This Doctor Does not exist" });
 
+ 
 
     const resData={
+      doctorUserId:user?.$id,
+      doctorProfileImage:user?.image,
+      doctorCoverImage:user?.coverImage,
       name:doctor?.name,
       rating:doctor?.rating,
       specialty:doctor?.speciality,

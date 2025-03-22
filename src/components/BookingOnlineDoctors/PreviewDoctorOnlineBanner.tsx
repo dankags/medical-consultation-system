@@ -1,41 +1,54 @@
-"use client"
-import { useSocket } from '@/stores/useSocket';
-import clsx from 'clsx';
-import React, { useEffect, useState } from 'react'
+"use client";
+import { useSocket } from "@/stores/useSocket";
+import React, { useEffect, useState } from "react";
+import { Badge } from "../ui/badge";
+import { cn } from "@/lib/utils";
 
-type SocketUser={
-    socketId:string;
-    newUserId:string;
-    role:"doctor"|"user"|"admin"
-    status:"free"|"occupied"
-}
+type SocketUser = {
+  socketId: string;
+  newUserId: string;
+  role: "doctor" | "user" | "admin";
+  status: "free" | "occupied";
+};
 
-const PreviewDoctorOnlineBanner = ({doctorId}:{doctorId:string}) => {
-    const {socket}=useSocket()
-    const [isDoctorAvailable, setIsDoctorAvailable] = useState(false);
-    
-        useEffect(() => {
-              if(!socket) return
-              const handleDoctorOnline = (socketUsers:SocketUser[]) => {
-                if(socketUsers?.some((user) => user.newUserId === doctorId)){
-                    setIsDoctorAvailable(true)
-                    return
-                }
-                setIsDoctorAvailable(false)
-                return
-            };
-            
-              socket?.on("getOnlineDoctors", handleDoctorOnline);
-            
-              return () => {
-                socket?.off("getOnlineDoctors", handleDoctorOnline);
-              };
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-            }, [socket])
-           
+const PreviewDoctorOnlineBanner = ({ doctorId }: { doctorId: string }) => {
+  const { socket } = useSocket();
+  const [isDoctorAvailable, setIsDoctorAvailable] = useState<"free"|"occupied">("free");
+
+  useEffect(() => {
+    if (!socket) return;
+    const handleDoctorOnline = (socketUsers: SocketUser[]) => {
+      const doctor=socketUsers.find(
+        (user) => user.newUserId === doctorId && user.role === "doctor"
+      );
+      if (doctor) {
+        setIsDoctorAvailable(doctor.status);
+        return;
+      }
+      setIsDoctorAvailable("occupied");
+      return;
+    };
+
+    socket?.on("getOnlineDoctors", handleDoctorOnline);
+
+    return () => {
+      socket?.off("getOnlineDoctors", handleDoctorOnline);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socket]);
+console.log(isDoctorAvailable)
   return (
-    <div className={clsx("size-6 rounded-full ring-4 ring-dark-300 bg-green-500",!isDoctorAvailable&&"hidden")}></div>
-  )
-}
+    <Badge
+      className={cn(
+        "rounded-full px-3",
+        isDoctorAvailable==="free"
+          ? "dark:text-white dark:bg-emerald-500/80 dark:hover:bg-emerald-500/70"
+          : "dark:bg-neutral-600/80 dark:text-white"
+      )}
+    >
+      {isDoctorAvailable==="free" ? "Available" : "In session"}
+    </Badge>
+  );
+};
 
-export default PreviewDoctorOnlineBanner
+export default PreviewDoctorOnlineBanner;
