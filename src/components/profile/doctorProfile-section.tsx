@@ -120,7 +120,7 @@ export default function EnhancedDoctorProfile() {
                           <Phone className="h-5 w-5 text-slate-600 dark:bg-neutral-800" />
                         </div>
                         <div>
-                          <p className="text-sm dark:bg-neutral-400">Phone</p>
+                          <p className="text-sm dark:text-neutral-400">Phone</p>
                           <p className="font-medium">{user?.phone||"+254 712345678"}</p>
                         </div>
                       </div>
@@ -129,7 +129,7 @@ export default function EnhancedDoctorProfile() {
                           <Mail className="h-5 w-5 text-slate-600 dark:bg-neutral-800" />
                         </div>
                         <div>
-                          <p className="text-sm dark:bg-neutral-400">Email</p>
+                          <p className="text-sm dark:text-neutral-400">Email</p>
                           <p className="font-medium">
                           {user?.email||"johndoe@example.com"}
                           </p>
@@ -140,7 +140,7 @@ export default function EnhancedDoctorProfile() {
                           <MapPin className="h-5 w-5 text-slate-600 dark:bg-neutral-800" />
                         </div>
                         <div>
-                          <p className="text-sm dark:bg-neutral-400">
+                          <p className="text-sm dark:text-neutral-400">
                             Office
                           </p>
                           <p className="font-medium">
@@ -153,7 +153,7 @@ export default function EnhancedDoctorProfile() {
                           <Globe className="h-5 w-5 text-slate-600 dark:bg-neutral-800" />
                         </div>
                         <div>
-                          <p className="text-sm dark:bg-neutral-400">
+                          <p className="text-sm dark:text-neutral-400">
                             Website
                           </p>
                           <p className="font-medium">www.drkirungu.com</p>
@@ -169,19 +169,19 @@ export default function EnhancedDoctorProfile() {
                       <div className="space-y-2">
                         <div className="flex justify-between items-center">
                           <span>English</span>
-                          <span className="text-sm dark:bg-neutral-400">
+                          <span className="text-sm dark:text-neutral-400">
                             Native
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span>Swahili</span>
-                          <span className="text-sm dark:bg-neutral-400">
+                          <span className="text-sm dark:text-neutral-400">
                             Fluent
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span>French</span>
-                          <span className="text-sm dark:bg-neutral-400">
+                          <span className="text-sm dark:text-neutral-400">
                             Intermediate
                           </span>
                         </div>
@@ -326,7 +326,7 @@ export default function EnhancedDoctorProfile() {
                                   </p>
                                 </CardContent>
                               </Card>
-                              <Card>
+                              <Card className="dark:border-neutral-600">
                                 <CardHeader className="p-4 pb-2">
                                   <CardTitle className="text-base">
                                     Pediatric Cardiology
@@ -340,7 +340,7 @@ export default function EnhancedDoctorProfile() {
                                   </p>
                                 </CardContent>
                               </Card>
-                              <Card>
+                              <Card className="dark:border-neutral-600">
                                 <CardHeader className="p-4 pb-2">
                                   <CardTitle className="text-base">
                                     Cardiac Surgery
@@ -354,7 +354,7 @@ export default function EnhancedDoctorProfile() {
                                   </p>
                                 </CardContent>
                               </Card>
-                              <Card>
+                              <Card className="dark:border-neutral-600">
                                 <CardHeader className="p-4 pb-2">
                                   <CardTitle className="text-base">
                                     Preventive Cardiology
@@ -561,7 +561,7 @@ export default function EnhancedDoctorProfile() {
                               Publications & Research
                             </h2>
                             <div className="space-y-4">
-                              <div className="p-4 border rounded-lg">
+                              <div className="p-4 border rounded-lg dark:border-neutral-600">
                                 <h3 className="font-medium">
                                   Novel Approaches to Pediatric Congenital Heart
                                   Disease Treatment
@@ -584,7 +584,7 @@ export default function EnhancedDoctorProfile() {
                                 </div>
                               </div>
 
-                              <div className="p-4 border rounded-lg">
+                              <div className="p-4 border rounded-lg  dark:border-neutral-600">
                                 <h3 className="font-medium">
                                   Long-term Outcomes of Transcatheter Aortic
                                   Valve Replacement in Elderly Patients
@@ -606,7 +606,7 @@ export default function EnhancedDoctorProfile() {
                                 </div>
                               </div>
 
-                              <div className="p-4 border rounded-lg">
+                              <div className="p-4 border rounded-lg  dark:border-neutral-600">
                                 <h3 className="font-medium">
                                   Cardiovascular Disease Patterns in Sub-Saharan
                                   Africa: A Comparative Analysis
@@ -1209,7 +1209,7 @@ export default function EnhancedDoctorProfile() {
                             </span>
                           </div>
                         </div>
-                        <Button size="sm" className="dark:bg-green-500 dark:hover:bg-green-500/80">View</Button>
+                        <Button size="sm" className="dark:bg-green-500 dark:hover:bg-green-500/80 dark:text-white">View</Button>
                       </div>
 
                       <div className="flex items-center gap-4 p-4 rounded-lg border dark:border-neutral-600">
@@ -1232,7 +1232,7 @@ export default function EnhancedDoctorProfile() {
                             </span>
                           </div>
                         </div>
-                        <Button size="sm" className="dark:bg-green-500 dark:hover:bg-green-500/80">View</Button>
+                        <Button size="sm" className="dark:bg-green-500 dark:hover:bg-green-500/80 dark:text-white">View</Button>
                       </div>
                     </div>
                   </CardContent>
