@@ -51,6 +51,14 @@ export default function EnhancedDoctorProfile() {
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            <Button
+            variant="ghost"
+            size="sm"
+            className="absolute top-4 right-4 bg-black/20 text-white dark:hover:text-black dark:hover:bg-white/30"
+          >
+            <Edit className="h-4 w-4 mr-2" />
+            Edit Cover
+          </Button>
           </div>
 
           {/* Profile Section */}
