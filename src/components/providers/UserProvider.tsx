@@ -1,84 +1,61 @@
-"use client"
-import React, { createContext,useContext, useEffect, useState } from 'react';
-import { useAuth } from '@clerk/nextjs'
-import { fetchUserData } from '@/lib/actions/user.actions';
+"use client";
 
+import React, { createContext, useContext, useEffect, useState, useCallback} from "react";
+import { useAuth } from "@clerk/nextjs";
+import { fetchUserData } from "@/lib/actions/user.actions";
 
 interface UserContextType {
-    user: User | null;
-    updateUser: () => void;
-    status: "autheticated"|"unautheticated"|"loading"
+  user: User | null;
+  updateUser: () => void;
+  status: "authenticated" | "unauthenticated" | "loading";
 }
-
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { userId } = useAuth();
-    const [user, setUser] = useState<User | null>(null);
-    const [status,setStatus]=useState<"autheticated"|"unautheticated"|"loading">("loading")
+  const { userId } = useAuth();
+  const [user, setUser] = useState<User | null>(null);
+  const [status, setStatus] = useState<"authenticated" | "unauthenticated" | "loading">("loading");
+  
+  // Prevent double execution on mount
+ 
 
-    useEffect(() => {
-        if (!userId) {
-            setStatus("unautheticated")  
-          return
-        }
-        const getUserData = async () => {
-            try {
-                const userData = await fetchUserData();
-                if(userData?.error){
-                    throw new Error(userData.error)
-                }
-                if(userData?.user){
-                setUser(userData.user);
-                setStatus("autheticated")
-                return
-               }
-            } catch (error) {
-                console.log(error)
-                setStatus("unautheticated")  
-            }         
-        };
-        getUserData();
-    }, [userId]);
+  // Fetch user data
+  const fetchAndSetUser = useCallback(async () => {
+    if (!userId ) return;
 
-    const updateUser = async() => {
-        if(!userId){
-            setStatus("unautheticated")  
-             return
-            }
-        try {
-            const userData = await fetchUserData();
-            if(userData?.user){
-                setUser(userData.user);
-                setStatus("autheticated")
-                return
-               }
-            if(userData?.error){
-                setStatus("unautheticated")  
-                throw new Error(userData.error)
-            }   
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (error:any) {
-            setStatus("unautheticated")  
-            console.log(error)
-        }
-    };
 
-    return (
-        <UserContext.Provider value={{ user, updateUser,status }}>
-            {children}
-        </UserContext.Provider>
-    );
+    try {
+      const { user, error } = await fetchUserData();
+      if (error) throw new Error(error);
+
+      setUser(user);
+      setStatus("authenticated");
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      setUser(null);
+      setStatus("unauthenticated");
+    }
+  }, [userId]);
+
+  // Fetch user data only once per mount or when userId first becomes available
+  useEffect(() => {
+    if (userId) {
+      fetchAndSetUser();
+    }
+  }, [userId]); // Removed `fetchAndSetUser` from dependencies
+
+  return (
+    <UserContext.Provider value={{ user, updateUser: fetchAndSetUser, status }}>
+      {children}
+    </UserContext.Provider>
+  );
 };
 
-
 export const useCurrentUser = () => {
-    
-    const context = useContext(UserContext);
-    
-    if (context === undefined) {
-        throw new Error('useUser must be used within a UserProvider');
-    }
-    return context;
+  const context = useContext(UserContext);
+  if (!context) {
+    throw new Error("useCurrentUser must be used within a UserProvider");
+  }
+  return context;
 };

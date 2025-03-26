@@ -2,7 +2,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import React, { useEffect, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import { Button } from '../ui/button'
 import { IoNotifications, IoNotificationsOutline } from "react-icons/io5";
 import { useAuth } from '@clerk/nextjs'
@@ -35,147 +35,72 @@ const Navbar = () => {
     const userNameColor=nameColor(user?.name||"John Doe")
   console.log(user)
     // navigation links
-    const navlinks=useMemo<NavigationLink[]>(()=>{
-      if(user?.role==="doctor"){
-       
-        return [
-          {
-            name:"Home",
-            href:"/",
-            active:pathname==="/"
-          },
-          {
-           name:"Appointments",
-           href:`/appointments`,
-           active:pathname.includes("/appointments")
-         },
-         {
-           name:"payments",
-           href:`/payments/${userId}`,
-           active:pathname.includes("/payments")
-         },
-         {
-           name:"Withdraw",
-           href:`/withdraw/${userId}`,
-           active:pathname.includes("/withdraw")
-         },
-       ]
-
+    const navlinks=useMemo(() => {
+      if (!user) return [{ name: "Home", href: "/", active: pathname === "/" }];
+  
+      const links = [
+        { name: "Home", href: "/", active: pathname === "/" },
+        { name: "Appointments", href: "/appointments", active: pathname.includes("/appointments") },
+        { name: "Payments", href: `/payments/${userId}`, active: pathname.includes("/payments") },
+      ];
+  
+      if (user.role === "doctor") {
+        links.push({ name: "Withdraw", href: `/withdraw/${userId}`, active: pathname.includes("/withdraw") });
+      } else if (user.role === "user") {
+        links.push({ name: "Deposit", href: `/deposit/${userId}`, active: pathname.includes("/deposit") });
       }
-      if(user?.role==="user"){
-
-        return [
-           {
-             name:"Home",
-             href:"/",
-             active:pathname==="/"
-           },
-           {
-            name:"Appointments",
-            href:`/appointments`,
-            active:pathname.includes("/appointments")
-          },
-          {
-            name:"payments",
-            href:`/payments/${userId}`,
-            active:pathname.includes("/payments")
-          },
-          {
-            name:"Deposit",
-            href:`/deposit/${userId}`,
-            active:pathname.includes("/deposit")
-          },
-        ]
-      }
-
-     return [
-        {
-          name:"Home",
-          href:"/",
-          active:pathname==="/"
-        },
-        {
-         name:"Appointments",
-         href:`/appointments`,
-         active:pathname.includes("/appointments")
-       },
-      ]
-      
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[pathname,user])
+  
+      return links;
+    }, [pathname, user, userId]);
 
     // create appointment and make payment
-    const handleCreateAppointment=async(patientId:string)=>{
-      if(user?.role!=="doctor") return
-      
-      try{
-        // get current date time
-        const date=new Date()
-        // make payment and create appointment
-        const [updatedBalances,appointment]=await Promise.all([makeAppointmentPayment(user?.id,patientId,date),createAppointment({
-          doctor:user.id,
-          user:patientId,
-          schedule:date,
-          status:"scheduled",
-          reason:"it was an urgent appointment",
-          note:""
-        })])
-       
-        // check for errors and show error toast
-        if(updatedBalances.error||updatedBalances.error){
-          
-          toast.error("!Ooops something went wrong",{
-            description:updatedBalances.error
-          })
-          toast.error("!Ooops something went wrong",{
-            description:appointment.error
-          })
-          return
-        }     
-
-        // show success toast
-        toast.success("Success",{
-          description:"Appointment created successfully"
-        })
-
-        // update balance
-        setBalance(balance+500)
-        
-        // send booking response to patient
-        socket?.emit("sendBookingResponse", {
-          patientId,
-          doctorId: user?.id,
-          urlPath: `/appointments/${appointment}/meetup`,
-        });
-
-        // update doctor status to occupied
-       socket?.emit("updateStatus", {userId:user.id,status:"occupied"})
-
-      //  redirect to appointment meetup page
-       router.push(`/appointments/${appointment}/meetup`)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      }catch(error:any){
-        console.log(error)
-      }
-    }
-    
-    // request notification permission
-    useEffect(()=>{
-      if ("Notification" in window) {
-        if (Notification.permission === "default") {
-          Notification.requestPermission().catch((err) => {
-            console.error("Notification permission request failed:", err);
-          });
+    const handleCreateAppointment=useCallback(async (patientId: string) => {
+      if (user?.role !== "doctor") return;
+  
+      try {
+        const date = new Date();
+        const [updatedBalances, appointment] = await Promise.all([
+          makeAppointmentPayment(user.id, patientId, date),
+          createAppointment({
+            doctor: user.id,
+            user: patientId,
+            schedule: date,
+            status: "scheduled",
+            reason: "Urgent appointment",
+            note: "",
+          }),
+        ]);
+  
+        if (updatedBalances.error || appointment.error) {
+          toast.error("Error processing request", { description: updatedBalances.error || appointment.error });
+          return;
         }
+  
+        toast.success("Appointment created successfully");
+  
+        setBalance(balance + 500);
+  
+        socket?.emit("sendBookingResponse", { patientId, doctorId: user.id, urlPath: `/appointments/${appointment}/meetup` });
+        socket?.emit("updateStatus", { userId: user.id, status: "occupied" });
+  
+        router.push(`/appointments/${appointment}/meetup`);
+      } catch (error) {
+        console.error("Error creating appointment:", error);
       }
-  }, []);
+    }, [user, balance, setBalance, router]);
+    
+ // **Request Notification Permission**
+ useEffect(() => {
+  if ("Notification" in window && Notification.permission === "default") {
+    Notification.requestPermission().catch(console.error);
+  }
+}, []);
 
-    // fetch account balance and update balance
-    useEffect(()=>{
-      // if no user or userId return
-      if(!user||!userId ) return
-      
-      const controller = new AbortController();
+   // **Fetch User Balance**
+   useEffect(() => {
+    if (!user || !userId) return;
+
+    const controller = new AbortController();
 
       // fetch account balance
       const fetchAccountBalance=async()=>{
@@ -204,19 +129,6 @@ const Navbar = () => {
       };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[userId,user])
-
-    useEffect(()=>{
-      // if(!socket||user?.id) return
-      // emit new user event
-      if(pathname.includes("book-doctor")){
-        
-      socket.emit("requestCurrentOnlineDoctors",{userId:user?.id})
-      }
-      return ()=>{
-        // remove event listener
-        socket?.off("requestCurrentOnlineDoctors")
-      }
-    },[pathname,socket,user?.id])
 
     // socket connection and event listeners
     useEffect(() => {
@@ -253,7 +165,6 @@ const Navbar = () => {
             window.open(`/appointments/${data?.message.appointmentId}/meetup`, "_blank");
           };
         } else {
-          toast.success("Notification",{ description:"Notifications are not allowed by the user."})
           console.log("Notifications are not allowed by the user.");
         }
 
@@ -281,7 +192,6 @@ const Navbar = () => {
             window.open(`/appointments/${data?.message.appointmentId}/meetup`, "_blank");
           };
         } else {
-          toast.error("!Ooops",{description:"Notifications are not allowed by the user."})
           console.log("Notifications are not allowed by the user.");
         }
 
@@ -311,19 +221,18 @@ const Navbar = () => {
       
       
 
-      return () => {
-        // remove event listeners and disconnect socket
-        socket?.off("newUser");
-        socket?.off("receivePatientNotification")
-      };
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user,socket])
-    
+    return () => {
+      socket.off("receiveBookingResponse");
+      socket.off("receivePatientNotification");
+      socket.off("receiveBookingRequest");
+      socket.off("getPaymentUpdate");
+    };
+  }, [user, socket]);
     // if in auth page return null
     if(pathname.includes('/auth') )  return
 
   return (
-    <div className="z-10 sticky top-0 w-full h-20 flex items-center justify-between bg-dark-300 border-b border-neutral-700 py-3 px-3 md:px-6 xl:px-12 2xl:px-32 ">
+    <div className="z-10 sticky top-0 w-full h-20 flex items-center justify-between bg-dark-300 border-b dark:border-neutral-700 py-3 px-3 md:px-6 xl:px-12 2xl:px-32 ">
       <div className="h-full flex items-center">
         <Link href={"/"}>
           {/* desktop */}
@@ -345,7 +254,7 @@ const Navbar = () => {
         </Link>
       </div>
 
-      {status==="autheticated" ?
+      {status==="authenticated" ?
       <div className="hidden md:flex items-center gap-3 xl:gap-8 2xl:gap-12 ">
         {navlinks?.map((item, i) => (
           <Link key={i} href={item.href} className={cn("font-normal first-letter:capitalize", item.active && "font-bold text-green-500 ")}>
