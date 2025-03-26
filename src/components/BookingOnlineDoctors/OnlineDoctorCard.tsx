@@ -10,6 +10,7 @@ import { Skeleton } from '../ui/skeleton';
 import { useCurrentUser } from '../providers/UserProvider';
 import { useCallback } from 'react';
 import OnlineDoctorCard from './DoctorCard';
+import { toast } from 'sonner';
 
 type OnlineDoctor={
   id:string;
@@ -28,26 +29,41 @@ type DoctorCard={
   experience?:string
 }
 
+function arraysHaveSameDoctors(arr1: OnlineDoctor[], arr2: OnlineDoctor[]): boolean {
+  // Quick length check
+  if (arr1.length !== arr2.length) return false;
 
+  // Create a Set of unique keys from arr1
+  const idsSet = new Set(arr1.map(doc => doc.newUserId));
+
+  // Check each doctor in arr2 is in the Set
+  for (const doctor of arr2) {
+    if (!idsSet.has(doctor.newUserId)) {
+      return false;
+    }
+  }
+  return true;
+}
 
 const OnlineDoctorsCards = () => {
     const {socket}=useSocket()
     const {user}=useCurrentUser()
-    const [onlineDoctors,setOnlineDoctors]=useState<OnlineDoctor[]>([])
+    const [onlineDoctors,setOnlineDoctors]=useState<OnlineDoctor[]|null>(null)
     const [doctors,setDoctors]=useState<DoctorCard[]>([])
     const [isFetchingDoctorsInfo,setIsFetchingDoctorsInfo]=useState(true)
     const [searchInput,setSearchInput]=useState("")
     const [filteredDoctors,setFilteredDoctors]=useState<DoctorCard[]>([])
+    const [prevOnlineDoctors,setPrevOnlineDoctors]=useState<OnlineDoctor[]>([])
     
 
     const fetchDoctorInfo = useCallback(async (controller:AbortController) => {
-      if (onlineDoctors.length === 0) {
+      if (onlineDoctors?.length === 0) {
         setDoctors([]);
         return;
       }
 
       setIsFetchingDoctorsInfo(true);
-      const doctorsIds = onlineDoctors.map((item) => item.newUserId);
+      const doctorsIds = onlineDoctors?.map((item) => item.newUserId);
 
       try {
         const res = await fetchAPI("/api/getDoctorsInfo", {
@@ -63,6 +79,7 @@ const OnlineDoctorsCards = () => {
         }
         setDoctors(res);
       } catch (error) {
+        toast.error("Error fetching Doctor Info")
         console.log("Error fetching Doctor Info:", error);
       } finally {
         
@@ -75,7 +92,11 @@ const OnlineDoctorsCards = () => {
       if(!socket) return
 
       const handleFirstOnlineDoctors=(doctors: OnlineDoctor[]) => {
-          setOnlineDoctors(doctors); // Set immediately on first call
+        if(!onlineDoctors){
+          setOnlineDoctors(doctors); 
+          return
+        }
+     
       };
 
       const handleGetOnlineDoctors = (doctors: OnlineDoctor[]) => {
@@ -83,8 +104,6 @@ const OnlineDoctorsCards = () => {
             setOnlineDoctors(doctors);
           }, 30000); 
       };
-
-     socket.emit("requestCurrentOnlineDoctors",{userId:user?.id})
 
      socket.on("getCurrentOnlineDoctors",(data:OnlineDoctor[])=>{handleFirstOnlineDoctors(data)})
 
@@ -97,18 +116,20 @@ const OnlineDoctorsCards = () => {
         socket?.off("requestCurrentOnlineDoctors");
       };
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [socket]);
+    }, [socket,user]);
 
   useEffect(()=>{
+    if(!onlineDoctors||onlineDoctors.length===0) return
     const controller = new AbortController();
-    
-    fetchDoctorInfo(controller)
+    if(!arraysHaveSameDoctors(onlineDoctors,prevOnlineDoctors)){
+      fetchDoctorInfo(controller)
+      setPrevOnlineDoctors(onlineDoctors) 
+    }
     return ()=>{
       controller.abort()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   },[onlineDoctors])
-
 
 
     const handleSearchSpecialty=()=>{
@@ -146,7 +167,7 @@ const OnlineDoctorsCards = () => {
             {!isFetchingDoctorsInfo ? (
               <>
                {(filteredDoctors.length > 0 ? filteredDoctors : doctors).map((doctor) => (
-      <OnlineDoctorCard key={doctor.doctorUserId} doctor={doctor} socket={socket}/>
+      <OnlineDoctorCard key={doctor.doctorUserId} doctor={doctor} />
     ))}
               </>
             ) : (

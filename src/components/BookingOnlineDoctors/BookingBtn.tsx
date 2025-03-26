@@ -19,10 +19,10 @@ type Doctor={
   doctorProfileImage?:string,
   doctorCoverImage?:string,
   name: string,
-  rating: number,
+  rating?: number,
   specialty: string[],
-  title: string|null,
-  description: string,
+  title?: string|null,
+  description?: string,
   doctorId:string,
 }
 
@@ -31,10 +31,11 @@ const BookingBtn = ({doctorId,doctor}:{doctorId:string,doctor:Doctor}) => {
     const {socket}=useSocket()
     const router=useRouter()
     const {userId}=useAuth()
-    const {user}=useCurrentUser()
+    const {user,status}=useCurrentUser()
      const [isDoctorAvailable, setIsDoctorAvailable] = useState(false);
      const [isDoctorOccupied,setIsDoctorOccupied]=useState(false)
       const {balance}=useBalance()
+ 
       
     useEffect(() => {
           if(!socket) return
@@ -58,13 +59,18 @@ const BookingBtn = ({doctorId,doctor}:{doctorId:string,doctor:Doctor}) => {
             return
         };
         
-          socket?.on("getOnlineDoctors", handleDoctorOnline);
+       
+        socket.emit("requestCurrentOnlineDoctors",{userId:user?.id})
+        socket.on("getCurrentOnlineDoctors",(data:SocketUser[])=>{handleDoctorOnline(data)})
+        socket.on("getOnlineDoctors",(data:SocketUser[])=>{handleDoctorOnline(data)})
+        
         
           return () => {
             socket?.off("getOnlineDoctors", handleDoctorOnline);
+            socket.off("requestCurrentOnlineDoctors");
           };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, [socket])
+        }, [socket,status])
 
         const handleBooking=async()=>{
           if(!isDoctorAvailable){
@@ -98,7 +104,7 @@ const BookingBtn = ({doctorId,doctor}:{doctorId:string,doctor:Doctor}) => {
       onClick={handleBooking}
       variant={"secondary"}
       disabled={!isDoctorAvailable}
-      className={`capitalize dark:bg-green-500 dark:active:bg-green-500/75 ${!isDoctorAvailable && "text-gray-300 dark:bg-green-500/30  disabled:cursor-not-allowed"}`}
+      className={`capitalize dark:bg-green-500 dark:hover:bg-green-500/90 dark:active:bg-green-500/75 ${!isDoctorAvailable && "text-gray-300 dark:bg-green-500/30  disabled:cursor-not-allowed"}`}
     >
       Book Appointment
     </Button>

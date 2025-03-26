@@ -135,7 +135,7 @@ export default async function PreviewDoctor (props: {
                         {extractInitials(doctor.name||"John Doe")}
                       </AvatarFallback>
                     </Avatar>
-                  <OnlineBanner userId="jksdui548934"/>
+                  <OnlineBanner userId={params.id}/>
                   </div>
                 </div>
 

@@ -7,7 +7,7 @@ import { Query } from 'node-appwrite';
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const {userId}=await auth()
-  console.log(body?.doctorsIds)
+  
 
   if(!userId) return NextResponse.json({ error: 'UnAutheticated' }, { status: 401 });
 
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
         ]);
       
         const filteredData=users?.documents.map(({ $id, doctorInfo }) => ({
-            id: $id,
+            doctorUserId: $id,
             doctorId:doctorInfo?.$id,
             name:doctorInfo?.name,
             description:doctorInfo?.description,

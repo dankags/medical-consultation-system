@@ -36,7 +36,7 @@ const PreviewDoctorOnlineBanner = ({ doctorId }: { doctorId: string }) => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
-console.log(isDoctorAvailable)
+
   return (
     <Badge
       className={cn(

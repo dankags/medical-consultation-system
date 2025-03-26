@@ -30,7 +30,7 @@ export async function POST(req: Request) {
       { status: 401 }
     );
   }
-  
+  console.log(body.time,body.price )
     
     if (!body.price || !body.phoneNumber || !body.time || !body.userId) {
       return NextResponse.json(
@@ -72,11 +72,11 @@ export async function POST(req: Request) {
         Password: password,
         Timestamp: timestamp,
         TransactionType: "CustomerPayBillOnline",
-        Amount: body.price,
+        Amount: 1,
         PartyA: phone,
         PartyB: process.env.M_PESA_SHORTCODE,
         PhoneNumber: phone,
-        CallBackURL: `${process.env.NEXT_PUBLIC_URL}/api/mpesa/callback?userId=${encodeURIComponent(body.userId)}&time=${body.time}`,
+        CallBackURL: `https://56f2-102-166-189-48.ngrok-free.app/api/mpesa/callback?userId=${encodeURIComponent(body.userId)}&time=${body.time}`,
         AccountReference: "CarePulse consoltation.",
         TransactionDesc: "Recharge",
       },

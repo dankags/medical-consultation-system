@@ -33,7 +33,7 @@ const Navbar = () => {
     const {balance,setBalance}=useBalance()
 
     const userNameColor=nameColor(user?.name||"John Doe")
-  
+  console.log(user)
     // navigation links
     const navlinks=useMemo<NavigationLink[]>(()=>{
       if(user?.role==="doctor"){
@@ -205,6 +205,19 @@ const Navbar = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[userId,user])
 
+    useEffect(()=>{
+      // if(!socket||user?.id) return
+      // emit new user event
+      if(pathname.includes("book-doctor")){
+        
+      socket.emit("requestCurrentOnlineDoctors",{userId:user?.id})
+      }
+      return ()=>{
+        // remove event listener
+        socket?.off("requestCurrentOnlineDoctors")
+      }
+    },[pathname,socket,user?.id])
+
     // socket connection and event listeners
     useEffect(() => {
       // if no user or socket return
@@ -240,6 +253,7 @@ const Navbar = () => {
             window.open(`/appointments/${data?.message.appointmentId}/meetup`, "_blank");
           };
         } else {
+          toast.success("Notification",{ description:"Notifications are not allowed by the user."})
           console.log("Notifications are not allowed by the user.");
         }
 
@@ -267,6 +281,7 @@ const Navbar = () => {
             window.open(`/appointments/${data?.message.appointmentId}/meetup`, "_blank");
           };
         } else {
+          toast.error("!Ooops",{description:"Notifications are not allowed by the user."})
           console.log("Notifications are not allowed by the user.");
         }
 

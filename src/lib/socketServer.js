@@ -32,9 +32,11 @@ export const initSocket =async (server) => {
     io.on('connection', (socket) => {
         // adds new users in the sockets array
         socket.on("newUser", ({ userId, role }) => {
+        
             addUser(socket.id,userId,role);
             io?.emit("getUsers", users);
             const onlineDoctors = users.filter((user) => user.role === "doctor");
+            console.log(onlineDoctors)
         io?.emit("getOnlineDoctors", onlineDoctors);
             
           });
@@ -175,6 +177,7 @@ export const initSocket =async (server) => {
               removeUser(socket.id);
               io?.emit("getUsers", users);
               const onlineDoctors = users.filter((user) => user.role === "doctor");
+              console.log(onlineDoctors)
         io?.emit("getOnlineDoctors", onlineDoctors);
             });
         //  hndles when the user disconnects from the socket server

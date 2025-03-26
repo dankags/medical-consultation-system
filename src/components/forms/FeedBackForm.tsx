@@ -30,8 +30,7 @@ const FeedBackForm = ({userId}:{userId:string}) => {
     const progress = (step / totalSteps) * 100
   
     const handleRadioChange = (field: string, value: string) => {
-      console.log(field,value)
-      setFormData((prev) => ({ ...prev, [field]: (value==="true") }))
+        setFormData((prev) => ({ ...prev, [field]: (value==="true") }))
     }
   
     const handleTextChange = (field: string, value: string) => {
@@ -61,7 +60,7 @@ const FeedBackForm = ({userId}:{userId:string}) => {
         }
       })
     }
-  console.log(formData)
+ 
    useEffect(()=>{
     if(!userId || !user || user?.id!==userId) return
     setFormData(prev=>({...prev,user:userId}))

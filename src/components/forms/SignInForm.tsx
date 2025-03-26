@@ -58,7 +58,7 @@ function SignInForm() {
           } else {
             // See https://clerk.com/docs/custom-flows/error-handling
             // for more info on error handling
-            console.log(JSON.stringify(signInAttempt, null, 2))
+           
           }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error:any) {

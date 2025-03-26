@@ -70,7 +70,7 @@ const SignUpForm = () => {
         emailAddress:values.email,
         password:values.password
        })
-       console.log(signUpRes)
+      
        await signUp?.prepareEmailAddressVerification({ strategy: 'email_code' })
        setShowConfirmDialog(true)
        setVerification({...verification,state:"pending"})

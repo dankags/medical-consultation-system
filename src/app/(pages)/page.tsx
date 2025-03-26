@@ -31,10 +31,14 @@ export default async function Home() {
   if(!userId||res?.error==="Not Autheticated"){
     redirect("/auth/sign-in")
   }
+  if(user.error){
+    redirect("/not-found")
+  }
   return (
     <div className="w-full min-h-screen flex-col px-3  xl:px-12 2xl:px-32 pb-16 pt-3">
+
       <h3 className="text-2xl md:text-3xl font-semibold">
-        Good {getTimeOfDay()} Daniel
+        Good {getTimeOfDay()} {user?.user?.name}
       </h3>
       <section className="w-full flex items-center justify-between my-6">
         <div className="flex flex-col justify-center gap-2">

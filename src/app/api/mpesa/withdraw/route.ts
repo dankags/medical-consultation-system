@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
     const { doctorId, amount,time,phoneNumber } = await req.json();
     const {userId}=await auth()
-    console.log(amount,doctorId)
+  
   if(!userId){
     return NextResponse.json({ message: 'User is not autheticated.' }, { status: 401 }); 
   }

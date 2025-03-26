@@ -21,7 +21,7 @@ type Props={
 const DialogProvider:React.FC<Props> = ({title,description,children,opened,FooterComp,setOpenedState}) => {
 
   const handleDialogIsOpened=(opened:boolean)=>{
-     console.log(opened)
+     
      setOpenedState(opened)
   }
 

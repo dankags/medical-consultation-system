@@ -22,7 +22,7 @@ export default async function page(props: {
   const {id} = await props.params
   const [{userId},user]=await Promise.all([auth(),fetchUserData()])
 
-  console.log(id)
+
 
   if(!userId){
     redirect("/auth/sign-in")
