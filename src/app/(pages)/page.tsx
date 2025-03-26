@@ -1,11 +1,10 @@
-import { getTimeOfDay } from "@/lib/utils";
+import { cn, getTimeOfDay } from "@/lib/utils";
 import { auth } from "@clerk/nextjs/server";
 import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { formatNumber } from '../../lib/utils';
-import { FaArrowRight } from "react-icons/fa";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getUserAppointments, getUserBalance } from "@/lib/actions/user.actions";
@@ -13,6 +12,10 @@ import { fetchUserData } from '../../lib/actions/user.actions';
 import { DataTable } from "@/components/table/DataTable";
 import { doctorAppointmentscolumns, userAppointmentColumns } from "@/components/table/Columns";
 import { BiGroup } from "react-icons/bi";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { DollarSign} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { FaUserDoctor } from "react-icons/fa6";
 
 
 export const metadata: Metadata = {
@@ -25,7 +28,7 @@ export const revalidate = 300
 
 
 export default async function Home() {
-  const [{userId},user,res,appointments]=await Promise.all([auth(),fetchUserData(),getUserBalance(),getUserAppointments()])
+  const [{userId},{user},res,appointments]=await Promise.all([auth(),fetchUserData(),getUserBalance(),getUserAppointments()])
   
  
   if(!userId||res?.error==="Not Autheticated"){
@@ -33,36 +36,42 @@ export default async function Home() {
   }
   return (
     <div className="w-full min-h-screen flex-col px-3  xl:px-12 2xl:px-32 pb-16 pt-3">
-      <h3 className="text-2xl md:text-3xl font-semibold">
-        Good {getTimeOfDay()} Daniel
-      </h3>
-      <section className="w-full flex items-center justify-between my-6">
-        <div className="flex flex-col justify-center gap-2">
-          <h4 className="text-xl font-semibold text-neutral-100">Balance</h4>
-          <div className="flex items-center gap-3">
-            <span className="font-semibold text-lg md:text-xl text-neutral-400">
-              Ksh.
-            </span>
-            <Suspense
-              fallback={
-                <Skeleton className="w-[150px] h-8 rounded-full bg-neutral-400" />
-              }
-            >
-              <span className="font-mono text-lg md:text-xl">
-                {formatNumber(res?.balance)}
-              </span>
-            </Suspense>
+    
+      <section className="w-full  flex items-center justify-between flex-col gap-3 md:flex-row my-6">
+        <div className={cn("w-full md:w-5/12 flex flex-col items-start justify-between ",user?.role !== "user"&&"md:w-full md:flex-row")}>
+      <div className="w-full mb-3 md:mb-5">
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+              Good {getTimeOfDay()}, <span className="text-primary">{user?.name}</span>
+            </h1>
+            <p className="text-sm md:text-base mt-1 dark:text-neutral-400">Welcome to your health dashboard. How are you feeling today?</p>
           </div>
-        </div>
-        {user?.user?.role === "user" && (
-          <div className="flex items-center justify-center">
-            <Link
-              className="py-2 px-3 text-sm md:py-3 md:px-4 flex gap-3 border-2 border-emerald-500 hover:bg-emerald-600/30 rounded-full font-medium"
-              href={"/book-doctor"}
-            >
-              Book Doctor <FaArrowRight size={20} />
-            </Link>
+      <Card className="mt-4 w-full md:w-fit md:mt-0  dark:border-neutral-600 dark:bg-dark-400">
+            <CardContent className="flex items-center p-4">
+              <DollarSign className="mr-2 h-5 w-5 text-primary" />
+              <div>
+                <p className="text-sm font-medium text-nowrap">Account Balance</p>
+                <p className="text-2xl font-bold text-nowrap">KSh {formatNumber(res?.balance)}</p>
+              </div>
+            </CardContent>
+          </Card>
           </div>
+        {user?.role === "user" && (
+           <Card className="w-full md:w-4/12 dark:bg-dark-400 dark:border-neutral-600">
+           <CardHeader className="flex-row items-center gap-3">
+            <div className="p-2 rounded-md dark:bg-dark-500 dark:text-neutral-100"><FaUserDoctor  size={35}/></div>
+            <div className="flex flex-col gap-3">
+             <CardTitle>Book a Doctor</CardTitle>
+             <CardDescription>Schedule a consultation with our specialists</CardDescription>
+             </div>
+           </CardHeader>
+          
+           <CardFooter>
+             <Link href="/book-doctor" className="w-full">
+               <Button className="w-full dark:text-white dark:bg-green-500 dark:hover:bg-green-500/90">Book Appointment</Button>
+             </Link>
+           </CardFooter>
+         </Card>
+         
         )}
       </section>
 
@@ -78,15 +87,20 @@ export default async function Home() {
       </div>
 
       <section className="my-6 flex flex-col gap-3">
-       <div className="flex items-center w-full p-3 justify-start gap-3">
-                     <div className="p-3 rounded-md text-white bg-dark-500"><BiGroup size={24}/></div>
-                     <h4 className="text-2xl font-semibold">Upcomming Appointments.</h4>
-                   </div>
+       <div className="flex items-center w-full p-3 justify-between gap-3">
+                     <div className="flex items-center gap-3">
+                       <div className="p-2 md:p-3 rounded-md dark:text-emerald-500 dark:bg-green-500/20"><BiGroup size={24}/></div>
+                       <h4 className="text-lg md:text-2xl font-bold tracking-tight">Upcomming Appointments.</h4>
+                     </div>
+                     <Link href="/appointments" className="">
+               <Button variant="outline" size={"sm"} className="w-fit dark:text-white dark:bg-transparent dark:border-neutral-500 dark:hover:border-neutral-100 dark:hover:bg-green-500">View All</Button>
+             </Link>
+        </div>
         <Suspense fallback={<AppointmentsSkeleton />}>
           {appointments?.appointments?.length >= 0 ? (
             <>
               {" "}
-              {user.user.role !== "doctor" ? (
+              {user.role !== "doctor" ? (
                 <DataTable
                   data={appointments?.appointments}
                   columns={userAppointmentColumns}

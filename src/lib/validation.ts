@@ -155,6 +155,8 @@ export const CreateDepositSchema = z.object({
     .refine((phone) => /^\+\d{10,15}$/.test(phone), "Invalid phone number"),
 });
 
+
+
 export const CreateWithdrawSchema = z.object({
   amount: z
   .string()

@@ -1,7 +1,7 @@
 "use client"
 import { CreateDepositSchema } from '@/lib/validation'
 import { zodResolver } from '@hookform/resolvers/zod'
-import React, { memo, useState } from 'react'
+import React, { memo, useEffect, useState,useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '../ui/button'
@@ -19,12 +19,13 @@ import { toast } from 'sonner'
 import { MdOutlineCreditCard } from 'react-icons/md'
 
 
+
 const SESSION_PRICE = 500;
 const MAX_SESSIONS = 10;
 const MIN_SESSIONS = 1;
 
 const Deposit = memo(({user}:{user:User}) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransaction] = useTransition();
   const [sessionNumber,setSessionNumber]=useState<number>(1)
   const [paymentMethod, setPaymentMethod] = useState("mpesa")
 
@@ -35,40 +36,42 @@ const Deposit = memo(({user}:{user:User}) => {
     price: sessionNumber * SESSION_PRICE
   }
  })
+
+ useEffect(() => {
+  form.setValue('price', sessionNumber * SESSION_PRICE);
+}, [sessionNumber]);
+
  const handlePhoneChange = useCallback((value: E164Number) => {
   form.setValue('phoneNumber', value || '');
-},[]);
+  form.trigger('phoneNumber');
+},[form]);
 
 const onSubmit = useCallback(async (data: z.infer<typeof CreateDepositSchema>) => {
-  try {
-    setIsLoading(true);
-    // API call implementation here
+  startTransaction(async()=>{
+    try {
+      
+      // API call implementation here      
+      const response = await fetch('/api/mpesa/recharge', {
+        method: 'POST',
+        body: JSON.stringify({
+         ...data,
+          time:new Date().toISOString(),
+          userId:user?.id
+        })
+      });
+  
+      if (!response.ok) throw new Error('Failed to process deposit');
+      
+      toast.success("Deposit was initiated successfully");
+      form.reset();
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const {price,...others}=data
-    
-    const response = await fetch('/api/mpesa/recharge', {
-      method: 'POST',
-      body: JSON.stringify({
-        ...others,
-        price: sessionNumber * SESSION_PRICE,
-        time:new Date().toISOString(),
-        userId:user?.id
-      })
-    });
-
-    if (!response.ok) throw new Error('Failed to process deposit');
-    
-    toast.success("Deposit was initiated successfully");
-    form.reset();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error) {
-    toast.error("!Ooops",{
-      description:'Internal server error'
-    });
-  } finally {
-    setIsLoading(false);
-  }
-},[]); 
+    } catch (error) {
+      toast.error("!Ooops",{
+        description:'Internal server error'
+      });
+    } 
+  })
+},[user]); 
 
 
 return (
@@ -97,20 +100,20 @@ return (
                   <div className="flex items-center gap-4">
                     <Button
                       variant={
-                        sessionNumber <= MIN_SESSIONS || isLoading
+                        sessionNumber <= MIN_SESSIONS || isPending
                           ? "ghost"
-                          : "outline"
+                          : "default"
                       }
                       size="icon"
                       type="button"
                       className={cn(
                         "h-10 w-10 rounded-full ",
-                        sessionNumber <= MIN_SESSIONS || isLoading
+                        sessionNumber <= MIN_SESSIONS || isPending
                           ? "dark:bg-green-500/30"
-                          : "bg-white dark:bg-green-500 border-gray-200 dark:border-green-600"
+                          : "dark:text-white dark:bg-green-500 border-gray-200 dark:border-green-600 dark:hover:bg-green-500/90"
                       )}
                       onClick={() => setSessionNumber((prev) => prev - 1)}
-                      disabled={sessionNumber <= MIN_SESSIONS || isLoading}
+                      disabled={sessionNumber <= MIN_SESSIONS || isPending}
                     >
                       <Minus className="h-4 w-4" />
                     </Button>
@@ -119,20 +122,20 @@ return (
                     </span>
                     <Button
                       variant={
-                        sessionNumber >= MAX_SESSIONS || isLoading
+                        sessionNumber >= MAX_SESSIONS || isPending
                           ? "ghost"
-                          : "outline"
+                          : "default"
                       }
                       type="button"
                       size="icon"
                       className={cn(
                         "h-10 w-10 rounded-full ",
-                        sessionNumber >= MAX_SESSIONS || isLoading
+                        sessionNumber >= MAX_SESSIONS || isPending
                           ? "dark:bg-green-500/30"
-                          : "bg-white dark:bg-green-500 border-gray-200 dark:border-green-600"
+                          : "dark:text-white dark:bg-green-500 border-gray-200 dark:border-green-600 dark:hover:bg-green-500/90"
                       )}
                       onClick={() => setSessionNumber((prev) => prev + 1)}
-                      disabled={sessionNumber >= MAX_SESSIONS || isLoading}
+                      disabled={sessionNumber >= MAX_SESSIONS || isPending}
                     >
                       <Plus className="h-4 w-4" />
                     </Button>
@@ -349,33 +352,38 @@ return (
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col gap-4">
-                {isLoading ? (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    className="w-full flex items-center justify-center gap-3 h-12 dark:bg-green-500/30 dark:text-white"
-                  >
-                    <Image
-                      src="/assets/icons/loader.svg"
-                      alt="loader"
-                      width={24}
-                      height={24}
-                      className="animate-spin"
-                    />
-                    <span>Initiating Payment</span>
-                  </Button>
-                ) : (
+                {
                   <Button
                     type="submit"
                     variant={paymentMethod === "mpesa" ? "default" : "ghost"}
-                    disabled={paymentMethod !== "mpesa"}
-                    className={cn("w-full h-12 dark:bg-emerald-600/30 dark:text-neutral-100",paymentMethod === "mpesa"&&"dark:bg-emerald-600 dark:hover:bg-emerald-700 dark:text-white")}
+                    disabled={paymentMethod !== "mpesa" || isPending}
+                    className={cn(
+                      "flex items-center gap-2 w-full h-12 dark:bg-emerald-600/30 dark:text-neutral-100",
+                      paymentMethod === "mpesa" &&
+                        "dark:bg-emerald-600 dark:hover:bg-emerald-700 dark:text-white",
+                      isPending && "dark:bg-green-500/30 dark:text-white"
+                    )}
                   >
-                    {paymentMethod === "mpesa"
-                      ? "Recharge with M-Pesa"
-                      : "Pay with Card"}
+                    {isPending ? (
+                      <>
+                        <Image
+                          src="/assets/icons/loader.svg"
+                          alt="loader"
+                          width={24}
+                          height={24}
+                          className="animate-spin"
+                        />
+                        <span>Initiating Payment</span>
+                      </>
+                    ) : (
+                      <>
+                        {paymentMethod === "mpesa"
+                          ? "Recharge with M-Pesa"
+                          : "Pay with Card"}
+                      </>
+                    )}
                   </Button>
-                )}
+                }
                 <div className="flex items-center justify-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                   <Clock className="w-3 h-3" />
                   <span>Estimated processing time: 1-2 minutes</span>

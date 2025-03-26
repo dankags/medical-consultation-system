@@ -184,11 +184,11 @@ export const fetchUserData=async()=>{
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const {gender,balance,reviews,appointments,payments,doctorInfo,patient,myPayments,$databaseId,$collectionId,birthDate,clerkId,$id,$permissions,$updatedAt,$createdAt,...userData} = user.documents[0];
-        return parseStringify({ user: {...userData,id:$id} });
+        return parseStringify({ user: {...userData,id:$id},error:null });
 
      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
      } catch (err:any) {
-        return parseStringify({ error: "Internal Server Error" });
+        return parseStringify({user:null, error: "Internal Server Error" });
      }
 }
 
