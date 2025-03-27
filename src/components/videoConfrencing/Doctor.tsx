@@ -1,11 +1,9 @@
 "use client"
 import { fetchAPI } from '@/lib/fetch';
 import React, { useEffect, useState } from 'react'
-import { LiveKitRoom, RoomAudioRenderer, VideoConference } from '@livekit/components-react';
 import '@livekit/components-styles';
+import LivekitRoomLayOut from './LivekitRoomLayOut';
 import { FaVideoSlash } from 'react-icons/fa';
-import { useSocket } from '@/stores/useSocket';
-import { useCurrentUser } from '../providers/UserProvider';
 
 type VideoLayoutProps={
     appointmentId:string;
@@ -14,18 +12,19 @@ type VideoLayoutProps={
    
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Doctor = ({appointmentId,doctor,role}:VideoLayoutProps) => {
     const [token, setToken] = useState('')
-    const {socket}=useSocket()
-    const {user}=useCurrentUser()  
-    
-
    //  create room token
     const fetchRoomToken = async (room: string, username: string | undefined, controller?: AbortController): Promise<string> => {
         try {
-            const res = await fetchAPI(`/api/token?room=${room}&username=${username}&role=${role}`,{
-                method:"GET",
-                signal:controller?.signal
+            const res = await fetchAPI(`/api/token/create-room`,{
+                method:"POST",
+                signal:controller?.signal,
+                body:JSON.stringify({
+                  userName:username,
+                  roomName:room 
+                })
             });
             return res.token;
         } catch (err) {
@@ -57,22 +56,7 @@ const Doctor = ({appointmentId,doctor,role}:VideoLayoutProps) => {
 
     if(token !== ''){
          return (
-             <LiveKitRoom
-               token={token}
-               connect={true}
-               video={true}
-               audio={true}
-               serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
-               data-lk-theme="default"
-               style={{ height: "100dvh" }}
-               onDisconnected={() => {
-                socket?.emit("updateStatus",{userId:user?.id,status:"free"})
-               }}
-             >
-               <VideoConference />
-               <RoomAudioRenderer />
-               {/* <ControlBar /> */}
-             </LiveKitRoom>
+     <LivekitRoomLayOut role='doctor' token={token}/>
            );
      }
    return (

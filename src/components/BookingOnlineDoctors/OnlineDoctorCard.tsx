@@ -129,7 +129,7 @@ console.log(onlineDoctors)
 
   return (
     <div  className=" w-full h-[calc(100vh-80px)] ">
-      <ScrollArea className="w-full h-full ">
+      <ScrollArea className="w-full h-full pb-20 md:pb-0">
         <div className="w-full flex flex-col gap-3 relative pt-3">
           <div className=" py-1  flex flex-col gap-3 items-center justify-center bg-dark-300 space-y-3">
           <h1 className="text-center text-3xl font-bold tracking-tight md:text-4xl">Find Your Perfect Doctor</h1>

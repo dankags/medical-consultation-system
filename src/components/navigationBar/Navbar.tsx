@@ -144,7 +144,7 @@ const Navbar = () => {
             description:`The doctor accepted your booking request. Now you will be redirected to meet the doctor.`,
           })
           if(user?.role==="user"){
-            setBalance(balance-500)
+            setBalance((balance-500))
           }
           router.push(data.urlPath);
         })
@@ -242,7 +242,7 @@ if(pathname==="/book-doctor"||pathname.includes("meetup")){
     if(pathname.includes('/auth') )  return
 
   return (
-    <div className="z-10 sticky top-0 w-full h-20 flex items-center justify-between bg-dark-300 border-b dark:border-neutral-700 py-3 px-3 md:px-6 xl:px-12 2xl:px-32 ">
+    <div className=" sticky top-0 w-full h-20 flex items-center justify-between bg-dark-300 border-b dark:border-neutral-700 py-3 px-3 md:px-6 xl:px-12 2xl:px-32 ">
       <div className="h-full flex items-center">
         <Link href={"/"}>
           {/* desktop */}

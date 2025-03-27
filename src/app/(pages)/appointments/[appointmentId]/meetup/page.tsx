@@ -1,3 +1,4 @@
+import { ScrollArea } from '@/components/ui/scroll-area';
 import Doctor from '@/components/videoConfrencing/Doctor';
 import Patient from '@/components/videoConfrencing/Patient';
 import { fetchUserData, getAppointmentById } from '@/lib/actions/user.actions';
@@ -47,12 +48,16 @@ export default async function VideoMeetUpPage(props: {
  }
 
   return (
-    <div className="w-full h-screen min-h-screen flex-col px-3  xl:px-12 2xl:px-32 ">
+    <div className="w-full h-[calc(100vh-80px)] flex-col px-3 ">
+     <ScrollArea className={"w-full h-full pb-20 md:pb-0"}>
+       <div className="w-full h-full">
       { user?.role === "doctor" ?
       <Doctor appointmentId={params.appointmentId} doctor={user} role={"doctor"}/>
       :
       <Patient appointmentId={params.appointmentId} doctor={appointment?.appointments?.doctor}/>
       }
+      </div>
+      </ScrollArea>
     </div>
   )
 }

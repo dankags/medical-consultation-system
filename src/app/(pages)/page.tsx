@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { formatNumber, getTimeOfDay } from '../../lib/utils';
+import { cn, formatNumber, getTimeOfDay } from '../../lib/utils';
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getUserAppointments, getUserBalance } from "@/lib/actions/user.actions";
@@ -39,26 +39,12 @@ export default async function Home() {
 
   return (
     <div className="w-full min-h-screen flex-col px-3  xl:px-12 2xl:px-32 pb-16 pt-3">
-      <h3 className="text-2xl md:text-3xl font-semibold">
+      
+      <section className={cn("w-full flex flex-col md:flex-row items-center justify-between gap-3 my-6")}>
+        <div className={cn("w-full md:w-6/12 flex flex-col justify-cente gap-2 md:gap-3",user?.role === "doctor"&&"md:w-full md:flex-row justify-between ")}>
+        <h3 className="text-xl md:text-3xl font-semibold">
         Good {getTimeOfDay()} {user?.name||"John Doe"}
       </h3>
-      <section className="w-full flex items-center justify-between my-6">
-        <div className="flex flex-col justify-center gap-2">
-          <h4 className="text-xl font-semibold text-neutral-100">Balance</h4>
-          <div className="flex items-center gap-3">
-            <span className="font-semibold text-lg md:text-xl text-neutral-400">
-              Ksh.
-            </span>
-            <Suspense
-              fallback={
-                <Skeleton className="w-[150px] h-8 rounded-full bg-neutral-400" />
-              }
-            >
-              <span className="font-mono text-lg md:text-xl">
-                {formatNumber(res?.balance)}
-              </span>
-            </Suspense>
-          </div>
       <Card className="mt-4 w-full md:w-fit md:mt-0  dark:border-neutral-600 dark:bg-dark-400">
             <CardContent className="flex items-center p-4">
               <DollarSign className="mr-2 h-5 w-5 text-primary" />

@@ -36,7 +36,7 @@ export const initSocket =async (server) => {
             addUser(socket.id,userId,role);
             io?.emit("getUsers", users);
             const onlineDoctors = users.filter((user) => user.role === "doctor");
-            console.log(onlineDoctors)
+            
         io?.emit("getOnlineDoctors", onlineDoctors);
             
           });
@@ -46,7 +46,7 @@ export const initSocket =async (server) => {
            socket.on("sendBookingRequest", ({ patientId, doctorId,message }) => {
             const receiver = getUser(doctorId);
             if (receiver) {
-              console.log(message)
+              
               io?.to(receiver.socketId).emit("receiveBookingRequest", {
                 patientId,
                 message,
@@ -177,7 +177,7 @@ export const initSocket =async (server) => {
               removeUser(socket.id);
               io?.emit("getUsers", users);
               const onlineDoctors = users.filter((user) => user.role === "doctor");
-              console.log(onlineDoctors)
+              
         io?.emit("getOnlineDoctors", onlineDoctors);
             });
         //  hndles when the user disconnects from the socket server
@@ -193,9 +193,4 @@ export const initSocket =async (server) => {
 };
 
 
-//   console.log(io)
-//   if (!io) {
-//     throw new Error("Socket.IO not initialized");
-//   }
-//   return io;
-// };
+

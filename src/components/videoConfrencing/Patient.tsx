@@ -3,15 +3,16 @@ import React, { useEffect, useState } from 'react'
 import { useCurrentUser } from '../providers/UserProvider';
 import { useSocket } from '@/stores/useSocket';
 import { fetchAPI } from '@/lib/fetch';
-import { LiveKitRoom, RoomAudioRenderer, VideoConference } from '@livekit/components-react';
 import '@livekit/components-styles';
 import { FaVideoSlash } from 'react-icons/fa';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import clsx from 'clsx';
 import { Button } from '../ui/button';
 import emailjs from "@emailjs/browser";
 import { toast } from 'sonner';
+import LivekitRoomLayOut from './LivekitRoomLayOut';
+import { Avatar, AvatarImage } from '../ui/avatar';
+import { AvatarFallback } from '@/components/ui/avatar';
+import { extractInitials, nameColor } from '@/lib/utils';
 
 
 
@@ -32,12 +33,13 @@ const Patient : React.FC<VideoLayoutProps> = ({appointmentId,doctor}) => {
      const {user}=useCurrentUser()
      const [isDoctorAvailable, setIsDoctorAvailable] = useState(false);
      const {socket}=useSocket()
-     const router=useRouter()
+     const userNameColor=nameColor(doctor.name||"John Doe")
+
    
 
     //   checks if the doctor is available
     useEffect(() => {
-     
+     if(!socket) return
       const handleFirstOnlineDoctors=(doctors: SocketUser[]) => {
         if(doctors?.some((user) => user.newUserId === doctor?.id)){
           setIsDoctorAvailable(true)
@@ -57,7 +59,11 @@ const Patient : React.FC<VideoLayoutProps> = ({appointmentId,doctor}) => {
         setIsDoctorAvailable(false)
         return
     };
-    socket.on("getCurrentOnlineDoctors",(data:SocketUser[])=>{handleFirstOnlineDoctors(data)})
+    socket.on("getCurrentOnlineDoctors",(data:SocketUser[]|null)=>{
+      if(data){
+        handleFirstOnlineDoctors(data)
+      }
+    })
       socket?.on("getOnlineDoctors", handleDoctorOnline);
     
       return () => {
@@ -71,9 +77,14 @@ const Patient : React.FC<VideoLayoutProps> = ({appointmentId,doctor}) => {
     //  create room token
   const fetchRoomToken = async (room: string, username: string | undefined, controller?: AbortController): Promise<string> => {
       try {
-          const res = await fetchAPI(`/api/token?room=${room}&username=${username}`,{
-              method:"GET",
-              signal:controller?.signal
+          const res = await fetchAPI(`/api/token/join-room`,{
+              method:"POST",
+              signal:controller?.signal,
+              body:JSON.stringify({
+                userName:username,
+                roomName:room,
+                role:user?.role
+              })
           });
           if(res.error){
             throw Error(res.error)
@@ -144,17 +155,22 @@ const Patient : React.FC<VideoLayoutProps> = ({appointmentId,doctor}) => {
 
     if(  token === ""){
         return (
-          <div className="w-full h-full flex items-center justify-center ">
-           <div className='w-10/12 md:w-6/12 lg:w-4/12 aspect-square flex flex-col items-center justify-center gap-3 p-3 rounded-md bg-dark-400'>
+          <div className="w-full h-[calc(100vh-80px)] flex items-center justify-center ">
+           <div className='w-10/12 md:w-5/12 lg:w-4/12 aspect-square flex flex-col items-center justify-center gap-3 p-3 rounded-md bg-dark-400'>
                 <div className="w-6/12 aspect-square relative rounded-full flex items-center justify-center ">
-                  <Image
-                    src={"/assets/images/noavatar.jpg"}
-                    alt="doctor"
-                    height={120}
-                    width={120}
-                    priority
-                    className="w-full aspect-square rounded-full"
-                  />
+                 
+                                           <Avatar className="size-8/12 border-4 dark:border-white">
+                                             <AvatarImage
+                                               src={doctor?.image ? doctor?.image : ""}
+                                               alt="@shadcn"
+                                             />
+                                             <AvatarFallback
+                                               style={{ backgroundColor: `${userNameColor}` }}
+                                               className="text-3xl font-semibold"
+                                             >
+                                               {extractInitials(user?.name || "John Doe")}
+                                             </AvatarFallback>
+                                           </Avatar>
                 </div>
                 <h4 className="font-semibold text-lg capitalize">Dr. {doctor?.name ?? "John Doe"}</h4>
                 <div className="flex items-center gap-2">
@@ -188,21 +204,7 @@ const Patient : React.FC<VideoLayoutProps> = ({appointmentId,doctor}) => {
 
      if(token !== ""){
           return (
-              <LiveKitRoom
-                token={token}
-                connect={true}
-                video={true}
-                audio={true}
-                serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
-                data-lk-theme="default"
-                style={{ height: "100dvh" }}
-                onDisconnected={() => router.push(`/feedback/${user?.id}`)}
-               
-              >
-                <VideoConference />
-                <RoomAudioRenderer />
-                {/* <ControlBar /> */}
-              </LiveKitRoom>
+            <LivekitRoomLayOut role='user' token={token}/>
             );
       }
     return (
