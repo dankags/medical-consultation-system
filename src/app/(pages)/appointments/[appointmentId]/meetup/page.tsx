@@ -47,7 +47,7 @@ export default async function VideoMeetUpPage(props: {
  }
 
   return (
-    <div className="w-full h-screen min-h-screen flex-col px-3  xl:px-12 2xl:px-32 ">
+    <div className="w-full h-screen min-h-screen flex-col px-3  xl:px-12 2xl:px-32 pb-20 md:pb-0">
       { user?.role === "doctor" ?
       <Doctor appointmentId={params.appointmentId} doctor={user} role={"doctor"}/>
       :
