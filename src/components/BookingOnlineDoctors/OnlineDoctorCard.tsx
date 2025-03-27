@@ -11,9 +11,10 @@ import { useCurrentUser } from '../providers/UserProvider';
 import { useCallback } from 'react';
 import OnlineDoctorCard from './DoctorCard';
 import { toast } from 'sonner';
+import { arraysHaveSameDoctors } from '@/lib/utils';
 
 type OnlineDoctor={
-  id:string;
+  socketId:string;
   newUserId:string;
   role:"doctor"
   status:"free"|"occupied"
@@ -29,21 +30,7 @@ type DoctorCard={
   experience?:string
 }
 
-function arraysHaveSameDoctors(arr1: OnlineDoctor[], arr2: OnlineDoctor[]): boolean {
-  // Quick length check
-  if (arr1.length !== arr2.length) return false;
 
-  // Create a Set of unique keys from arr1
-  const idsSet = new Set(arr1.map(doc => doc.newUserId));
-
-  // Check each doctor in arr2 is in the Set
-  for (const doctor of arr2) {
-    if (!idsSet.has(doctor.newUserId)) {
-      return false;
-    }
-  }
-  return true;
-}
 
 const OnlineDoctorsCards = () => {
     const {socket}=useSocket()
@@ -111,8 +98,8 @@ const OnlineDoctorsCards = () => {
       socket?.on("getOnlineDoctors",(data:OnlineDoctor[])=>{handleGetOnlineDoctors(data)});
       // Cleanup
       return () => {
-        socket?.off("getOnlineDoctors");
-        socket?.off("getCurrentOnlineDoctors");
+        socket?.off("getOnlineDoctors",handleGetOnlineDoctors);
+        socket?.off("getCurrentOnlineDoctors",handleFirstOnlineDoctors);
         socket?.off("requestCurrentOnlineDoctors");
       };
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -130,7 +117,7 @@ const OnlineDoctorsCards = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   },[onlineDoctors])
-
+console.log(onlineDoctors)
 
     const handleSearchSpecialty=()=>{
       const regex = new RegExp(`${searchInput}`, "i");

@@ -43,6 +43,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (userId) {
       fetchAndSetUser();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]); // Removed `fetchAndSetUser` from dependencies
 
   return (

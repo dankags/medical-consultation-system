@@ -39,6 +39,7 @@ const Deposit = memo(({user}:{user:User}) => {
 
  useEffect(() => {
   form.setValue('price', sessionNumber * SESSION_PRICE);
+// eslint-disable-next-line react-hooks/exhaustive-deps
 }, [sessionNumber]);
 
  const handlePhoneChange = useCallback((value: E164Number) => {
@@ -71,6 +72,7 @@ const onSubmit = useCallback(async (data: z.infer<typeof CreateDepositSchema>) =
       });
     } 
   })
+// eslint-disable-next-line react-hooks/exhaustive-deps
 },[user]); 
 
 

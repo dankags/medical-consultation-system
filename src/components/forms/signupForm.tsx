@@ -66,11 +66,12 @@ const SignUpForm = () => {
     const {password,...others}=values
     try {
       setUserDetails({...others})
+       // eslint-disable-next-line @typescript-eslint/no-unused-vars
        const signUpRes=await signUp?.create({
         emailAddress:values.email,
         password:values.password
        })
-      
+      // console.log(signUpRes?.status)
        await signUp?.prepareEmailAddressVerification({ strategy: 'email_code' })
        setShowConfirmDialog(true)
        setVerification({...verification,state:"pending"})

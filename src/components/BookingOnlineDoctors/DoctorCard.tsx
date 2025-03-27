@@ -1,17 +1,11 @@
-import { useBalance } from "@/stores/useBalance";
-import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { useCurrentUser } from "../providers/UserProvider";
 import { memo, useEffect, useState, useRef } from "react";
 import { cn, extractInitials, nameColor } from "@/lib/utils";
-import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardFooter } from "../ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { MapPin } from "lucide-react";
 import { Badge } from "../ui/badge";
-import { DefaultEventsMap, Socket } from 'socket.io';
-import { Calendar } from "../ui/calendar";
 import { useSocket } from "@/stores/useSocket";
 import BookingBtn from "./BookingBtn";
 import OnlineBanner from "./OnlineBanner";
@@ -37,10 +31,6 @@ type OnlineDoctor={
 const OnlineDoctorCard=memo(({doctor}:{doctor:DoctorCard})=>{
   const router=useRouter()
   const {socket}=useSocket()
-  const {balance}=useBalance()
-  const {userId}=useAuth();
-  const {user}=useCurrentUser()
-  const [isUserOnline,setIsUserOnline]=useState(false)
   const [isDoctorOccupied,setIsDoctorOccupied]=useState(false)
  const doctorNameColor=nameColor(doctor.name)
  const parentRef=useRef<HTMLDivElement|null>(null)
@@ -52,7 +42,7 @@ const OnlineDoctorCard=memo(({doctor}:{doctor:DoctorCard})=>{
  const handleGetUsers = (users:OnlineDoctor[]) => {
    const doctors=users.filter((item)=>item.newUserId===doctor.doctorUserId)
    if(users?.some((user) => user.newUserId === doctor?.doctorUserId)){
-     setIsUserOnline(true)
+   
      if(doctors.length>0){
        if(doctors[0].status==="occupied"){
          setIsDoctorOccupied(true)
@@ -64,7 +54,7 @@ const OnlineDoctorCard=memo(({doctor}:{doctor:DoctorCard})=>{
      return
  }
  setIsDoctorOccupied(false)
- setIsUserOnline(false)
+
  return
    };
   
@@ -170,5 +160,7 @@ const OnlineDoctorCard=memo(({doctor}:{doctor:DoctorCard})=>{
 },(prevProps,nextProps)=>(
   prevProps.doctor.doctorUserId===nextProps.doctor.doctorUserId
 ))
+
+OnlineDoctorCard.displayName="OnlineDoctorCard"
 
 export default OnlineDoctorCard

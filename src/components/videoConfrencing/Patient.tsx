@@ -38,6 +38,16 @@ const Patient : React.FC<VideoLayoutProps> = ({appointmentId,doctor}) => {
     //   checks if the doctor is available
     useEffect(() => {
      
+      const handleFirstOnlineDoctors=(doctors: SocketUser[]) => {
+        if(doctors?.some((user) => user.newUserId === doctor?.id)){
+          setIsDoctorAvailable(true)
+          return
+      }
+      setIsDoctorAvailable(false)
+      return
+     
+      };
+
       const handleDoctorOnline = (socketUsers:SocketUser[]) => {
         
         if(socketUsers?.some((user) => user.newUserId === doctor?.id)){
@@ -47,7 +57,7 @@ const Patient : React.FC<VideoLayoutProps> = ({appointmentId,doctor}) => {
         setIsDoctorAvailable(false)
         return
     };
-    
+    socket.on("getCurrentOnlineDoctors",(data:SocketUser[])=>{handleFirstOnlineDoctors(data)})
       socket?.on("getOnlineDoctors", handleDoctorOnline);
     
       return () => {
@@ -155,7 +165,7 @@ const Patient : React.FC<VideoLayoutProps> = ({appointmentId,doctor}) => {
 
             <Button
               variant={"secondary"}
-              className={`capitalize  ${isDoctorAvailable?"bg-green-500":"text-gray-300 bg-neutral-500/30  disabled:cursor-not-allowed"}`}
+              className={`capitalize  ${isDoctorAvailable?"dark:bg-green-500 dark:text-white flex items-center gap-2 dark:hover:bg-green-500/90 dark:active:bg-green-500/75":"dark:text-gray-300 dark:bg-neutral-500/30  disabled:cursor-not-allowed"}`}
               onClick={handleJoin}
               disabled={!isDoctorAvailable}
             >

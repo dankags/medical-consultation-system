@@ -3,8 +3,6 @@ import { cache } from "react";
 import { redirect } from "next/navigation";
 import { fetchUserData} from '@/lib/actions/user.actions';
 import type { Metadata } from 'next'
-import Withdraw from '@/components/forms/Withdraw';
-import UserBalance from '@/components/withdrawComp/UserBalance';
 import WithdrawalPage from '@/components/forms/withdraw-test';
 
 const getUser=cache(async()=>{

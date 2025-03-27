@@ -2,6 +2,13 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import stringToColor from "string-to-color";
 
+type OnlineDoctor={
+  socketId:string;
+  newUserId:string;
+  role:"doctor"
+  status:"free"|"occupied"
+}
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -210,4 +217,21 @@ export function extractInitials(name: string): string {
 export function nameColor(name:string){
   const color = stringToColor(name);
   return color
+}
+
+export function arraysHaveSameDoctors(arr1: OnlineDoctor[], arr2: OnlineDoctor[]): boolean {
+  if (arr1.length !== arr2.length) return false;
+  const sortedArr1 = [...arr1].sort((a, b) => a.newUserId.localeCompare(b.newUserId));
+  const sortedArr2 = [...arr2].sort((a, b) => a.newUserId.localeCompare(b.newUserId));
+  console.log(sortedArr1,sortedArr2)
+  // Iterate and compare each object
+  return sortedArr1.every((doctor, index) => {
+    const otherDoctor = sortedArr2[index];
+    return (
+      doctor.socketId=== otherDoctor.socketId&&
+      doctor.newUserId === otherDoctor.newUserId &&
+      doctor.role === otherDoctor.role &&
+      doctor.status === otherDoctor.status
+    );
+  });
 }

@@ -13,16 +13,16 @@ type OnlineUsers={
 
 const OnlineBanner = ({userId,className}:{userId:string,className?:string}) => {
    const {socket}=useSocket()
-   const {user,status}=useCurrentUser()
+   const {user}=useCurrentUser()
    const [isUserOnline,setIsUserOnline]=useState(false)
-   const [doctorsOnliene,setDoctorsOnline]=useState<OnlineUsers[]>([])
+   
  
 
    useEffect(()=>{
      if(!socket) return
      
     const handleGetUsers = (users:OnlineUsers[]) => {
-      setDoctorsOnline(users);
+     
       if(users?.some((user) => user.newUserId === userId)){
         setIsUserOnline(true)
         return
@@ -42,6 +42,7 @@ socket.on("getOnlineDoctors",(data:OnlineUsers[])=>{handleGetUsers(data)})
           socket.off("requestCurrentOnlineDoctors");
         }
       };
+   // eslint-disable-next-line react-hooks/exhaustive-deps
    },[socket,userId])
 
   

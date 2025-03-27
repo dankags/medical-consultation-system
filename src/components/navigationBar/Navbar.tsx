@@ -33,7 +33,7 @@ const Navbar = () => {
     const {balance,setBalance}=useBalance()
 
     const userNameColor=nameColor(user?.name||"John Doe")
-  console.log(user)
+
     // navigation links
     const navlinks=useMemo(() => {
       if (!user) return [{ name: "Home", href: "/", active: pathname === "/" }];
@@ -227,7 +227,17 @@ const Navbar = () => {
       socket.off("receiveBookingRequest");
       socket.off("getPaymentUpdate");
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, socket]);
+
+ useEffect(() => {
+  if(!socket) return
+if(pathname==="/book-doctor"||pathname.includes("meetup")){
+  socket.emit("requestCurrentOnlineDoctors",{userId:user?.id})
+}
+ // eslint-disable-next-line react-hooks/exhaustive-deps
+ },[pathname])
+
     // if in auth page return null
     if(pathname.includes('/auth') )  return
 

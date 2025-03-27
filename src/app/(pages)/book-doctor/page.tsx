@@ -28,9 +28,9 @@ export default async function BookOnlineDoctors() {
 
   return (
     <div className="">
-    {/* <Suspense fallback={<Loading/>}> */}
+    <Suspense fallback={<Loading/>}>
       <OnlineDoctorsCards/>
-    {/* </Suspense> */}
+    </Suspense>
     </div>
   )
 }

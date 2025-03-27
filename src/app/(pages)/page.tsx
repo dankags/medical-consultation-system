@@ -1,10 +1,9 @@
-import { cn, getTimeOfDay } from "@/lib/utils";
 import { auth } from "@clerk/nextjs/server";
 import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { formatNumber } from '../../lib/utils';
+import { formatNumber, getTimeOfDay } from '../../lib/utils';
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getUserAppointments, getUserBalance } from "@/lib/actions/user.actions";
@@ -37,10 +36,11 @@ export default async function Home() {
   if(user.error){
     redirect("/not-found")
   }
+
   return (
     <div className="w-full min-h-screen flex-col px-3  xl:px-12 2xl:px-32 pb-16 pt-3">
       <h3 className="text-2xl md:text-3xl font-semibold">
-        Good {getTimeOfDay()} Daniel
+        Good {getTimeOfDay()} {user?.name||"John Doe"}
       </h3>
       <section className="w-full flex items-center justify-between my-6">
         <div className="flex flex-col justify-center gap-2">

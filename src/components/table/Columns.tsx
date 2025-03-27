@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import { Appointment, DoctorAppointments } from "@/types/appwrite.types";
 import PaymentStatusBadge from "../PaymentStatusBadge";
 import { AppointmentModal } from "../AppointmentModal";
+import { IoVideocamOutline } from "react-icons/io5";
 
 type PaymentStatus = "paid" | "deposited" | "withdrew"
 
@@ -303,7 +304,7 @@ const AppointmentActions=({appointment}:{appointment:Appointment})=>{
 
 
 
-if (status!=="autheticated") {
+if (status!=="authenticated") {
   return(
     <div className="">
        <Image
@@ -320,8 +321,8 @@ if (status!=="autheticated") {
  if(user?.role!=="doctor"){
   return (
     <div className=" flex items-center gap-3">
-      {isMeetActive&&<Button variant={"secondary"} className={`capitalize  bg-green-500`} onClick={()=>{router.push(`/appointments/${appointment?.id}/meetup`)}}>
-        Meet
+      {isMeetActive&&<Button variant={"secondary"} className={`capitalize  dark:bg-green-500 dark:text-white flex items-center gap-2 dark:hover:bg-green-500/90 dark:active:bg-green-500/75`} onClick={()=>{router.push(`/appointments/${appointment?.id}/meetup`)}}>
+       <IoVideocamOutline /> <span className="">Meet</span>
       </Button>}
       <GeneralAppointmentView appointment={appointment}>
         <Button variant="default" className={`capitalize py-1 px-2 text-green-500`} >

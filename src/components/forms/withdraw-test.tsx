@@ -2,11 +2,10 @@
 
 import type React from "react"
 
-import { useCallback, useState } from "react"
-import Image from "next/image"
+import { useState } from "react"
 import Link from "next/link"
 import { CreditCard,  CheckCircle2, AlertCircle, History } from "lucide-react"
-import { E164Number, PhoneNumber } from "libphonenumber-js/core";
+import { E164Number } from "libphonenumber-js/core";
 import 'react-phone-number-input/style.css'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -21,12 +20,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { ScrollArea } from "../ui/scroll-area"
-import { CreateDepositSchema, CreateWithdrawSchema } from "@/lib/validation"
-import { z } from "zod"
-import CustomFormField, { FormFieldType } from "../CustomFormField"
-import { Form } from "../ui/form"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
 import { useCurrentUser } from "../providers/UserProvider"
 import { useBalance } from "@/stores/useBalance"
 import { Input } from "../ui/input"
@@ -50,14 +43,14 @@ export default function WithdrawalPage() {
     { id: 3, date: "Mar 05, 2025", amount: 1200, status: "completed" },
   ]
 
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    // Only allow numbers
-    if (/^\d*$/.test(value)) {
-      setAmount(value)
-      setError("")
-    }
-  }
+  // const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const value = e.target.value
+  //   // Only allow numbers
+  //   if (/^\d*$/.test(value)) {
+  //     setAmount(value)
+  //     setError("")
+  //   }
+  // }
 
  
 
