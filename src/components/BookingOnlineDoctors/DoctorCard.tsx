@@ -67,7 +67,7 @@ const OnlineDoctorCard=memo(({doctor}:{doctor:DoctorCard})=>{
 },[socket,doctor])
 
 
-
+console.log("first")
 
 
   return (
