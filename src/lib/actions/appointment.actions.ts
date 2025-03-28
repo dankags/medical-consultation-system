@@ -15,6 +15,7 @@ import {
 
 import { auth } from "@clerk/nextjs/server";
 import { parseStringify } from "../utils";
+import { CreateAppointmentParams, UpdateAppointmentParams } from "@/types";
 
 
 

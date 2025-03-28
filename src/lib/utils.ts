@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import stringToColor from "string-to-color";
+import { CalendarEvent } from "@/types";
 
 type OnlineDoctor={
   socketId:string;

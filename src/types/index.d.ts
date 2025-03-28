@@ -1,6 +1,10 @@
 
 /* eslint-disable no-unused-vars */
 
+export type TransactionType = "deposit" | "payment" | "withdrawal" | "refund"
+
+export type TransactionStatus = "completed" | "pending" | "failed"
+
 declare interface CalendarEvent {
   title: string;
   description: string;
@@ -126,4 +130,21 @@ declare type SearchParamProps = {
     image?:string;
     location?:string
     experience?:string
+  }
+ 
+  
+  export interface Transaction {
+    id: string
+    type: TransactionType
+    amount: number
+    date: string
+    status: TransactionStatus
+    description: string
+    counterparty?: {
+      id: string
+      name: string
+      avatar?: string
+    }
+    reference?: string
+    paymentMethod?: string
   }

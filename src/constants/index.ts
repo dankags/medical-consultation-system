@@ -1,3 +1,4 @@
+import { Gender } from "@/types";
 
 export const GenderOptions = ["Male", "Female", "Other"];
 

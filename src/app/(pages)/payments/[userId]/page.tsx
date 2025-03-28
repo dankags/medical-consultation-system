@@ -3,10 +3,12 @@ import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import React, { cache, Suspense } from 'react'
 import { getUserPayments } from '@/lib/actions/user.actions'
-import { MdOutlinePayment } from 'react-icons/md'
 import Loading from '@/app/loading'
-import { DataTable } from '@/components/table/DataTable'
-import { PaymentsColumns } from '@/components/table/Columns'
+import { CreditCard } from 'lucide-react'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import DoctorPaymentTabs from '@/components/payments/doctor/DoctorPaymentTabs'
+import UserPaymentTabs from '@/components/payments/patient/UserPaymentTabs'
+
 
 const getUser=cache(async()=>{
   const data=await fetchUserData()
@@ -35,11 +37,19 @@ export default async function Payments() {
     return redirect("/not-found")
   }
   const userPayments=await getUserPayments(user?.user.id)
+  console.log(userPayments)
   return (
-    <div className='w-full h-full '>
-      <div className="flex items-center w-full p-3 justify-start gap-3">
-        <div className="p-3 rounded-md text-white bg-dark-500"><MdOutlinePayment size={24}/></div>
-        <h4 className="text-3xl font-semibold">Payments</h4>
+    <div className='w-full h-[calc(100vh-80px)] '>
+      <ScrollArea className="w-full h-full pb-16 md:pb-5">
+        <div className="w-full ">
+       <div className='mx-auto px-4 py-6'>
+        <h1 className="text-3xl font-bold tracking-tight dark:text-white flex items-center gap-3">
+          <div className="flex items-center justify-center w-10 h-10 rounded-lg dark:bg-emerald-900/30">
+            <CreditCard className="h-5 w-5 dark:text-emerald-400" />
+          </div>
+          Payments
+        </h1>
+        <p className="mt-1.5 text-sm dark:text-neutral-400">Manage your payments and transaction history</p>
       </div>
       <Suspense fallback={<Loading/>}>
          {userPayments.error?
@@ -49,18 +59,16 @@ export default async function Payments() {
           </div>
          :
          <div className="w-full h-full p-3">
-         {userPayments.payments?.length>0
-         ?
-         <DataTable data={userPayments.payments} columns={PaymentsColumns}/>
+          {user.user.role==="doctor" ?
+        <DoctorPaymentTabs transactions={userPayments.payments}/>
          :
-         <div className="w-full h-[calc(100vh-80px)] flex flex-col gap-3 items-center justify-center ">
-          <span className="text-2xl font-semibold text-gray-500">Ooops!</span>
-          <p className="">You have not yet made any payment recently.</p>
-          </div>
-          }
+        <UserPaymentTabs transactions={userPayments.payments}/>
+        }
           </div>
          }
       </Suspense>
+      </div>
+      </ScrollArea>
     </div>
   )
 }

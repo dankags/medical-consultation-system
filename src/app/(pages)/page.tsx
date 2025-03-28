@@ -42,9 +42,13 @@ export default async function Home() {
       
       <section className={cn("w-full flex flex-col md:flex-row items-center justify-between gap-3 my-6")}>
         <div className={cn("w-full md:w-6/12 flex flex-col justify-cente gap-2 md:gap-3",user?.role === "doctor"&&"md:w-full md:flex-row justify-between ")}>
-        <h3 className="text-xl md:text-3xl font-semibold">
-        Good {getTimeOfDay()} {user?.name||"John Doe"}
-      </h3>
+
+        <div className="flex flex-col gap-2">
+          <h3 className="text-3xl font-bold tracking-tight">
+          Good {getTimeOfDay()}, {user?.name||"John Doe"}
+        </h3>
+        <p className="mt-1 dark:text-neutral-400">Welcome to your health home. How are you feeling today?</p>
+        </div>
       <Card className="mt-4 w-full md:w-fit md:mt-0  dark:border-neutral-600 dark:bg-dark-400">
             <CardContent className="flex items-center p-4">
               <DollarSign className="mr-2 h-5 w-5 text-primary" />

@@ -17,6 +17,7 @@ import { Label } from '../ui/label'
 import { useCallback } from 'react';
 import { toast } from 'sonner'
 import { MdOutlineCreditCard } from 'react-icons/md'
+import { User } from '@/types'
 
 
 

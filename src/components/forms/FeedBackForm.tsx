@@ -11,6 +11,7 @@ import Image from 'next/image'
 import { createUserFeedback } from '@/lib/actions/user.actions'
 import { useCurrentUser } from '../providers/UserProvider'
 import { toast } from 'sonner'
+import { Feedback } from '@/types'
 
 const FeedBackForm = ({userId}:{userId:string}) => {
     const [step, setStep] = useState(1)

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import '@livekit/components-styles';
 import LivekitRoomLayOut from './LivekitRoomLayOut';
 import { FaVideoSlash } from 'react-icons/fa';
+import { User } from '@/types';
 
 type VideoLayoutProps={
     appointmentId:string;

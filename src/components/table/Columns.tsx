@@ -24,6 +24,7 @@ import { Appointment, DoctorAppointments } from "@/types/appwrite.types";
 import PaymentStatusBadge from "../PaymentStatusBadge";
 import { AppointmentModal } from "../AppointmentModal";
 import { IoVideocamOutline } from "react-icons/io5";
+import { ProcessedPayment } from "@/types";
 
 type PaymentStatus = "paid" | "deposited" | "withdrew"
 

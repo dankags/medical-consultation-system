@@ -1,6 +1,7 @@
 import Deposit from '@/components/forms/Deposit';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { fetchUserData } from '@/lib/actions/user.actions';
+import { User } from '@/types';
 import { auth } from '@clerk/nextjs/server';
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';

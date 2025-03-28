@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useCurrentUser } from '../providers/UserProvider';
 import { GrTransaction } from "react-icons/gr";
+import { NavigationLink } from '@/types';
 
 
 const FooterMobileNavigation = () => {

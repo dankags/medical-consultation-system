@@ -14,6 +14,7 @@ import { formatNumber } from '@/lib/utils'
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import { Form } from '../ui/form'
 import { toast } from 'sonner'
+import { User } from '@/types'
 
 
 const Withdraw = ({user}:{user:User}) => {

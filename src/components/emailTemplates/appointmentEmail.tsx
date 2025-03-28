@@ -1,5 +1,6 @@
 import React from 'react'
 import { Body, Button,  Container, Head, Heading,  Html, Img, Preview,  Section, Text, Tailwind } from '@react-email/components';
+import { User } from '@/types';
 
 
 interface AppointmentEmailProps{

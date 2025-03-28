@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback} from "react";
 import { useAuth } from "@clerk/nextjs";
 import { fetchUserData } from "@/lib/actions/user.actions";
+import { User } from "@/types";
 
 interface UserContextType {
   user: User | null;

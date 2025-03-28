@@ -24,6 +24,7 @@ import emailjs from "@emailjs/browser";
 import { formatDateTime, generateCalendarLinks } from "@/lib/utils";
 import { useCurrentUser } from "../providers/UserProvider";
 import { toast } from "sonner";
+import { CalendarEvent, Status } from "@/types";
 
 
 type Doctor={

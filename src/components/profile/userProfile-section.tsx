@@ -23,6 +23,7 @@ import { extractInitials, nameColor } from "@/lib/utils"
 import { useSocket } from "@/stores/useSocket"
 import { useClerk } from "@clerk/nextjs"
 import Link from "next/link"
+import { DoctorCard } from "@/types"
 
 export default function UserProfilePage() {
     const {user}=useCurrentUser()

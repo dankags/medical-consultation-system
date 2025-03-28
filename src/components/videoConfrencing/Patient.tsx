@@ -13,6 +13,7 @@ import LivekitRoomLayOut from './LivekitRoomLayOut';
 import { Avatar, AvatarImage } from '../ui/avatar';
 import { AvatarFallback } from '@/components/ui/avatar';
 import { extractInitials, nameColor } from '@/lib/utils';
+import { User } from '@/types';
 
 
 

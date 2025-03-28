@@ -84,6 +84,9 @@ if(!callbackData.Body){
               user:user.$id,
               amount,
               status:"deposited",
+              type:"deposit",
+              description:"Account Topup",
+              paymentMethod:"M-Pesa",
               date:new Date(time)
             }
           )
@@ -96,7 +99,8 @@ if(!callbackData.Body){
             userId, 
             amount, 
             message: "Your Payment was processed successfully", 
-            status: "success" 
+            status: "completed", 
+          
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         }, (ack:any) => {
           console.log(ack.success ? "✅ Payment update sent successfully" : "❌ Failed to send payment update:");

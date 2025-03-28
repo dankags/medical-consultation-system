@@ -16,6 +16,7 @@ import {
 } from "../appwrite.config";
 import { parseStringify } from "../utils";
 import { auth } from '@clerk/nextjs/server';
+import { CreateUserParams, RegisterUserParams } from '@/types';
 
 
 

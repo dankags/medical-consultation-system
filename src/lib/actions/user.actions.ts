@@ -12,6 +12,7 @@ import {
     databases,
   } from "../appwrite.config";
 import { ID, Query } from "node-appwrite";
+import { Feedback, Transaction } from "@/types";
 
 interface MpesaTokenResponse {
     access_token: string;
@@ -275,7 +276,7 @@ export const getUserPayments=async(id:string)=>{
     if(!user) return parseStringify({error:"User does not exist"})
     if(userPayments.total===0) return parseStringify({payments:[]})
 
-      const filteredPayments: ProcessedPayment[] = [];
+      const filteredPayments: Transaction[] = [];
 
       for (const doc of userPayments.documents) {
         try {
@@ -288,28 +289,36 @@ export const getUserPayments=async(id:string)=>{
           
             filteredPayments.push({
               id: doc.$id,
+              type:doc.type,
               status: doc.status,
-              paidBy: {
+              counterparty: {
+                avatar:doctor?.image,
                 name: doctor.name,
                 id: doctor.$id,
-                role:doctor.role,
               },
+              description:doc.description,
               amount: doc.amount,
               date:doc.date,
+              paymentMethod:doc.paymentMethod,
+              reference:doc.reference
             });
             
           }else{
 
             filteredPayments.push({
               id: doc.$id,
+              type:doc.type,
               status: doc.status,
-              paidBy: {
+              counterparty: {
+                avatar:doc.user.image,
                 name: doc.user.name,
                 id: doc.user.$id,
-                role:doc.user.role,
               },
+              description:doc.description,
               amount: doc.amount,
               date:doc.date,
+              paymentMethod:doc.paymentMethod,
+              reference:doc.reference
             });
           }
         } catch (error) {
@@ -348,7 +357,10 @@ export const makeAppointmentPayment=async(doctorId:string,patientId:string,time:
       {
         amount: 500,
         date:new Date(time),
-        status: "paid",
+        status: "completed",
+        type:"payment",
+        description: "Urgent appointment payment",
+        paymentMethod:"CarePulse-App",
         user:patient.$id,
         doctor:doctor.$id
       })
