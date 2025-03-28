@@ -77,8 +77,9 @@ const Navbar = () => {
         }
   
         toast.success("Appointment created successfully");
-  
-        setBalance(balance + 500);
+        // eslint-disable-next-line prefer-const
+        let newBalance=balance+500
+        setBalance(newBalance);
   
         socket?.emit("sendBookingResponse", { patientId, doctorId: user.id, urlPath: `/appointments/${appointment}/meetup` });
         socket?.emit("updateStatus", { userId: user.id, status: "occupied" });
@@ -144,7 +145,9 @@ const Navbar = () => {
             description:`The doctor accepted your booking request. Now you will be redirected to meet the doctor.`,
           })
           if(user?.role==="user"){
-            setBalance((balance-500))
+            // eslint-disable-next-line prefer-const
+            let newBalance=balance-500
+            setBalance(newBalance)
           }
           router.push(data.urlPath);
         })

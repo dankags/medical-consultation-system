@@ -16,13 +16,13 @@ export async function GET() {
             ]
         );
 
-      const filteredDoctors=doctors.documents.map((item)=>{
-        return{
-            name:item.doctorInfo.name,
-            doctorId:item.doctorInfo.$id,
-            image:""
-        }
-      })
+      const filteredDoctors=doctors.documents
+      .filter(item => item.doctorInfo) // Remove items with null/undefined doctorInfo
+      .map(item => ({
+        name: item.doctorInfo.name,
+        doctorId: item.doctorInfo.$id,
+        image: ""
+      }));
 
         return NextResponse.json(filteredDoctors, { status: 200 });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

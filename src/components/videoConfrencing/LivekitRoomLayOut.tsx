@@ -30,7 +30,7 @@ const LivekitRoomLayOut = ({token,role}:LivekitProps) => {
                     }
                    }}
                  >
-                   <VideoConference />
+                   <VideoConference className='max-h-[calc(100vh-80px)]'/>
                    <RoomAudioRenderer />
                    {/* <ControlBar /> */}
                  </LiveKitRoom>

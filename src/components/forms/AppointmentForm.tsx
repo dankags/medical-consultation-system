@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -23,6 +23,8 @@ import { Form } from "../ui/form";
 import emailjs from "@emailjs/browser";
 import { formatDateTime, generateCalendarLinks } from "@/lib/utils";
 import { useCurrentUser } from "../providers/UserProvider";
+import { toast } from "sonner";
+
 
 type Doctor={
   doctorId:string,
@@ -44,9 +46,9 @@ export const AppointmentForm = ({
   setOpen?: Dispatch<SetStateAction<boolean>>;
 }) => {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
   const [doctors,setDoctors]=useState<Doctor[]>([])
   const {user}=useCurrentUser()
+  const [isPending,startTransition]=useTransition()
 
   const AppointmentFormValidation = getAppointmentSchema(type);
 
@@ -66,7 +68,7 @@ export const AppointmentForm = ({
   const onSubmit = async (
     values: z.infer<typeof AppointmentFormValidation>
   ) => {
-    setIsLoading(true);
+
 
     let status;
     switch (type) {
@@ -79,7 +81,7 @@ export const AppointmentForm = ({
       default:
         status = "pending";
     }
-
+startTransition(async()=>{
     try {
       if (type === "create" && patientId) {
         const appointment = {
@@ -100,11 +102,14 @@ export const AppointmentForm = ({
           );
         }
       } else {
+        if(!appointment) return
+        console.log(values.schedule)
         const appointmentToUpdate = {
           userId,
           appointmentId: appointment?.id as string,
           appointment: {
-            doctor: values.doctor,
+            reason: values.reason,
+            note: values.note,
             schedule: new Date(values.schedule),
             status: status as Status,
             cancellationReason: values.cancellationReason,
@@ -121,9 +126,16 @@ export const AppointmentForm = ({
         }
 
         const calenderAppointmentLink=generateCalendarLinks(appointmentObj)
+        console.log(calenderAppointmentLink)
 
         const updatedAppointment = await updateAppointment(appointmentToUpdate);
-
+        console.log(updateAppointment) 
+        if(updatedAppointment.error) {
+          toast.error("Error updating appointment", { 
+            description: updatedAppointment.error,
+          });
+          return
+        }
         if (updatedAppointment) {
           await emailjs.send(
             
@@ -146,17 +158,24 @@ export const AppointmentForm = ({
 
             }
           );
+          toast.success("Appointment Scheduled successfully", {
+            description: "Check your email for confirmation",
+          });
           if (setOpen) {
             setOpen(false);
           }
-
           form.reset();
         }
       }
     } catch (error) {
       console.log(error);
+      toast.error("Error updating appointment", { 
+        description: "Internal server error",
+      });
     }
-    setIsLoading(false);
+  })
+   
+
   };
 
   let buttonLabel;
@@ -249,7 +268,7 @@ export const AppointmentForm = ({
                 name="reason"
                 label="Appointment reason"
                 placeholder="Annual montly check-up"
-                disabled={type === "schedule"}
+                // disabled={type === "schedule"}
               />
 
               <CustomFormField
@@ -258,7 +277,7 @@ export const AppointmentForm = ({
                 name="note"
                 label="Comments/notes"
                 placeholder="Prefer afternoon appointments, if possible"
-                disabled={type === "schedule"}
+                // disabled={type === "schedule"}
               />
             </div>
           </>
@@ -275,7 +294,7 @@ export const AppointmentForm = ({
         )}
 
         <SubmitButton
-          isLoading={isLoading}
+          isLoading={isPending}
           className={`${type === "cancel" ? "shad-danger-btn" : "shad-primary-btn"} w-full`}
         >
           {buttonLabel}

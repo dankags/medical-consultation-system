@@ -142,21 +142,32 @@ export const updateAppointment = async ({
   appointmentId,
   appointment,
 }: UpdateAppointmentParams) => {
-
+  console.log(appointmentId,appointment)
   const {userId}=await auth()
   if(!userId){
     throw new Error("user has is not autheticated.")
   }
   try {
+    // Check if the appointment exists
+    const existingAppointment = await databases.getDocument(
+      DATABASE_ID!,
+      APPOINTMENT_COLLECTION_ID!,
+      appointmentId
+    );
+    if (!existingAppointment) {
+      return parseStringify({error:"Appointment not found"})
+    }
+    console.log("Existing Appointment:", existingAppointment);
     // Update appointment to scheduled -> https://appwrite.io/docs/references/cloud/server-nodejs/databases#updateDocument
     const updatedAppointment = await databases.updateDocument(
       DATABASE_ID!,
       APPOINTMENT_COLLECTION_ID!,
-      appointmentId,
-      appointment
+
+      existingAppointment.$id,
+     {...appointment}
     )
     
-    console.log(updateAppointment)
+    console.log(updatedAppointment)
 
     if (!updatedAppointment) throw Error;
 
@@ -165,9 +176,10 @@ export const updateAppointment = async ({
 
     // revalidatePath("/admin");
     return parseStringify(updatedAppointment);
-  } catch (error) {
-    console.error("An error occurred while scheduling an appointment:", error);
-    return
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error:any) {
+    console.error("An error occurred while scheduling an appointment:", error.response);
+    return parseStringify({error:"Internal server error"})
   }
 };
 
