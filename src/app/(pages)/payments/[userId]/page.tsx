@@ -37,10 +37,10 @@ export default async function Payments() {
     return redirect("/not-found")
   }
   const userPayments=await getUserPayments(user?.user.id)
-  console.log(userPayments)
+
   return (
     <div className='w-full h-[calc(100vh-80px)] '>
-      <ScrollArea className="w-full h-full pb-16 md:pb-5">
+      <ScrollArea className="w-full h-full pb-20 md:pb-0">
         <div className="w-full ">
        <div className='mx-auto px-4 py-6'>
         <h1 className="text-3xl font-bold tracking-tight dark:text-white flex items-center gap-3">

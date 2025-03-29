@@ -3,7 +3,7 @@ import React from 'react'
 import EarningSummary from './earning-summary'
 import { Transaction } from '@/types'
 import RecentTransactions from '../shared/RecentTransactions'
-import { CreditCard, TrendingDown } from 'lucide-react'
+import { CreditCard,  TrendingUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import EarningsGraphSummary from './EarningsGraphSummary'
@@ -38,7 +38,7 @@ const DoctorOverView = ({transactions}:{transactions:Transaction[]}) => {
         <EarningsGraphSummary />:
         <div className="w-full md:col-span-1 h-[500px] flex flex-col gap-3 items-center justify-center bg-slate-200 dark:bg-dark-400 rounded-md shadow-sm dark:shadow-slate-900/10 backdrop-blur-sm">
           <div className="flex items-center justify-center w-16 h-16 rounded-lg dark:bg-emerald-900/30">
-            <TrendingDown className="h-8 w-8 dark:text-emerald-400" />
+            <TrendingUp className="h-8 w-8 dark:text-emerald-400" />
           </div>
           <span className="text-2xl font-semibold">Earnings Growth Graph.</span>
           <span className="text-slate-500 dark:text-slate-400">Your earnings graph will be here.</span>

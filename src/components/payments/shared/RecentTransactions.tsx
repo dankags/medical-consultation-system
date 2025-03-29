@@ -28,7 +28,7 @@ const RecentTransactions = ({
     const limitedTransactions = transactions.slice(0, limit)
 
   return (
-    <Card className="border-slate-200 dark:border-slate-700 shadow-sm dark:shadow-slate-900/10 dark:bg-slate-800/50 backdrop-blur-sm">
+    <Card className="border-slate-200 dark:border-neutral-700 shadow-sm dark:shadow-slate-900/10 dark:bg-dark-400 backdrop-blur-sm">
     <CardHeader className="pb-2">
       <div className="flex items-center justify-between">
         <div>
@@ -39,7 +39,7 @@ const RecentTransactions = ({
           <Button
             variant="ghost"
             size="sm"
-            className="gap-1 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+            className="gap-1 text-sm text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white dark:hover:bg-green-500"
           >
             View all <ArrowRight className="h-3.5 w-3.5" />
           </Button>

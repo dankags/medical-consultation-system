@@ -1,7 +1,7 @@
 "use client"
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { extractInitials } from '@/lib/utils'
+import { extractInitials, formatDateTime, nameColor } from '@/lib/utils'
 import type { Transaction } from '@/types'
 import React from 'react'
 
@@ -9,19 +9,19 @@ const Transaction = ({transaction,doctorView}:{transaction:Transaction,doctorVie
   return (
         <div
           key={transaction.id}
-          className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/70 transition-colors"
+          className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-dark-500/50 transition-colors"
         >
           <div className="flex items-center gap-3">
             {transaction.counterparty ? (
-              <Avatar className="h-10 w-10 border border-slate-200 dark:border-slate-700">
+              <Avatar className="h-10 w-10 border border-slate-200 dark:border-white">
                 <AvatarImage src={transaction.counterparty.avatar} alt={transaction.counterparty.name} />
-                <AvatarFallback className="bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300">
+                <AvatarFallback style={{backgroundColor:`${nameColor(transaction.counterparty.name)}`}} className="dark:text-black">
                   {extractInitials(transaction.counterparty.name)}
                 </AvatarFallback>
               </Avatar>
             ) : (
               <div className="h-10 w-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700">
-                <span className="text-slate-500 dark:text-slate-300 text-xs font-medium">
+                <span className="text-slate-500 dark:text-neutral-300 text-xs font-medium">
                   {transaction.type === "deposit"
                     ? "DEP"
                     : transaction.type === "withdrawal"
@@ -34,7 +34,7 @@ const Transaction = ({transaction,doctorView}:{transaction:Transaction,doctorVie
             )}
             <div>
               <div className="font-medium">{transaction.description}</div>
-              <div className="text-sm text-slate-500 dark:text-slate-400">
+              <div className="text-sm text-slate-500 dark:text-neutral-400">
                 {transaction.counterparty
                   ? transaction.counterparty.name
                   : transaction.paymentMethod
@@ -76,7 +76,7 @@ const Transaction = ({transaction,doctorView}:{transaction:Transaction,doctorVie
               >
                 {transaction.status}
               </Badge>
-              <span className="text-xs text-slate-500 dark:text-slate-400">{transaction.date}</span>
+              <span className="text-xs text-slate-500 dark:text-neutral-400">{formatDateTime(transaction.date).dateOnly}</span>
             </div>
           </div>
         </div>

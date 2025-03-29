@@ -1,6 +1,4 @@
-"use client"
 import React from 'react'
-// import { useCurrentUser } from '../providers/UserProvider'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import DoctorOverView from './DoctorOverView'
 import TransactionHistory from './TransctionHistory'
@@ -12,7 +10,7 @@ const DoctorPaymentTabs = ({transactions}:{transactions:Transaction[]}) => {
   return (
     <div>
       <Tabs defaultValue="overview"  className="w-full ">
-        <div className="border-b border-neutral-200 dark:border-neutral-700 mb-6">
+        <div className="border-b border-neutral-700 dark:border-neutral-700 mb-6">
           <TabsList className="bg-transparent h-auto p-0 w-full justify-start  dark:bg-transparent">
             <TabsTrigger
               value="overview"
@@ -35,7 +33,7 @@ const DoctorPaymentTabs = ({transactions}:{transactions:Transaction[]}) => {
         </TabsContent>
 
         <TabsContent value="history" className="mt-0">
-          <TransactionHistory />
+          <TransactionHistory transactions={transactions}/>
         </TabsContent>
 
       </Tabs>

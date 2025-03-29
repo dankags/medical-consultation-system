@@ -5,7 +5,7 @@ import { ColumnDef, CoreRow } from "@tanstack/react-table";
 import Image from "next/image";
 
 import { Doctors } from "@/constants";
-import { formatDateTime } from "@/lib/utils";
+import { extractInitials, formatDateTime, nameColor } from "@/lib/utils";
 
 
 // import { AppointmentModal } from "../AppointmentModal";
@@ -24,7 +24,11 @@ import { Appointment, DoctorAppointments } from "@/types/appwrite.types";
 import PaymentStatusBadge from "../PaymentStatusBadge";
 import { AppointmentModal } from "../AppointmentModal";
 import { IoVideocamOutline } from "react-icons/io5";
-import { ProcessedPayment } from "@/types";
+import { ProcessedPayment, Transaction, TransactionType } from "@/types";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Badge } from "../ui/badge";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 type PaymentStatus = "paid" | "deposited" | "withdrew"
 
@@ -227,6 +231,369 @@ export const PaymentsColumns: ColumnDef<ProcessedPayment>[] = [
       const payment = row.original;
       return <p className="text-14-medium ">{payment.amount}</p>;
     },
+  },
+]
+
+export const DoctorsPaymentsColumns: ColumnDef<Transaction>[] = [
+  {
+    accessorKey: "id",
+    header: "ID",
+    cell: ({ row }) => <div className="text-slate-500 dark:text-neutral-400 font-mono text-xs">{row.original.id}</div>,
+  },
+  {
+    accessorKey: "date",
+    header: ({ column }) => (
+      <div className="flex items-center gap-2">
+        <span>Date</span>
+        <Button
+          variant="ghost"
+          size="sm"
+          className=" h-8 dark:data-[state=open]:bg-green-500 dark:hover:bg-green-500/50"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          <ArrowUpDown className="h-4 w-4" />
+        </Button>
+      </div>
+    ),
+    cell: ({ row }) => <div className="text-slate-500 dark:text-neutral-400">{formatDateTime(row.original.date).dateOnly}</div>,
+  },
+  {
+    accessorKey: "description",
+    header: "Description",
+    cell: ({ row }) => {
+      const transaction = row.original
+
+      return (
+        <div className="flex items-center gap-3">
+          {transaction.counterparty ? (
+            <>
+              <Avatar className="h-8 w-8 border border-slate-200 dark:border-slate-700">
+                <AvatarImage src={transaction.counterparty.avatar} alt={transaction.counterparty.name} />
+                <AvatarFallback style={{backgroundColor:`${nameColor(transaction.counterparty.name||"John Doe")}`}} className="dark:text-black">
+                  {extractInitials(transaction.counterparty.name||"John Doe")}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <div className="font-medium">{transaction.description}</div>
+                <div className="text-sm text-slate-500 dark:text-neutral-400">{transaction.counterparty.name}</div>
+              </div>
+            </>
+          ) : (
+            <div>
+              <div className="font-medium">{transaction.description}</div>
+              {transaction.reference && (
+                <div className="text-sm text-slate-500 dark:text-neutral-400">Ref: {transaction.reference}</div>
+              )}
+            </div>
+          )}
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: "type",
+    header: "Type",
+    cell: ({ row }) => {
+      const type: TransactionType = row.original.type
+
+      const typeConfig = {
+        payment: {
+          label: "Payment",
+          class:
+            "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900",
+        },
+        withdrawal: {
+          label: "Withdrawal",
+          class:
+            "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/30 dark:text-blue-400 dark:border-blue-900",
+        },
+        refund: {
+          label: "Refund",
+          class:
+            "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900",
+        },
+        deposit: {
+          label: "Deposit",
+          class:
+            "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/30 dark:text-purple-400 dark:border-purple-900",
+        },
+      }
+
+      return (
+        <Badge
+          variant="outline"
+          className={`px-2.5 py-0.5 rounded-full font-medium capitalize ${typeConfig[type].class}`}
+        >
+          {typeConfig[type].label}
+        </Badge>
+      )
+    },
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.original.status
+
+      return (
+        <Badge
+          variant="outline"
+          className={`px-2.5 py-0.5 rounded-full font-medium capitalize ${
+            status === "completed"
+              ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900"
+              : status === "pending"
+                ? "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900"
+                : "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-900"
+          }`}
+        >
+          <span
+            className={`mr-1.5 inline-block h-2 w-2 rounded-full ${
+              status === "completed" ? "bg-emerald-500" : status === "pending" ? "bg-amber-500" : "bg-red-500"
+            }`}
+          />
+          {status}
+        </Badge>
+      )
+    },
+  },
+  {
+    accessorKey: "amount",
+    header: ({ column }) => (
+      <div className="flex items-center justify-end gap-2">
+        <span>Amount</span>
+        <Button
+          variant="ghost"
+          size="sm"
+          className=" h-8 dark:data-[state=open]:bg-green-500 dark:hover:bg-green-500/50"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          <ArrowUpDown className="h-4 w-4" />
+        </Button>
+      </div>
+    ),
+    cell: ({ row }) => {
+      const type = row.original.type
+      const amount = row.original.amount
+
+      return (
+        <div
+          className={`text-right font-medium ${
+            type === "payment"
+              ? "text-emerald-600 dark:text-emerald-400"
+              : type === "refund"
+                ? "text-amber-600 dark:text-amber-400"
+                : ""
+          }`}
+        >
+          {type === "payment" ? "+" : type === "refund" ? "+" : "-"}
+          KSh {amount.toLocaleString()}
+        </div>
+      )
+    },
+  },
+  {
+    id: "actions",
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    cell: ({row}) => (
+      <div className="text-right">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8 dark:hover:bg-green-500/40 dark:text-white">
+              <MoreHorizontal className="h-4 w-4" />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="bg-white dark:bg-neutral-900 border-slate-200 dark:border-neutral-700"
+          >
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem className="cursor-pointer dark:hover:bg-neutral-800">View details</DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer dark:hover:bg-neutral-800">Download receipt</DropdownMenuItem>
+            <DropdownMenuSeparator className="bg-slate-200 dark:bg-neutral-700" />
+            <DropdownMenuItem className="cursor-pointer dark:hover:bg-neutral-800">Report issue</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    ),
+  },
+]
+
+export const PatientPaymentsColumns:ColumnDef<Transaction>[]=[
+  {
+    accessorKey: "id",
+    header: "ID",
+    cell: ({ row }) => <div className="text-slate-500 dark:text-neutral-400 font-mono text-xs">{row.original.id}</div>,
+  },
+  {
+    accessorKey: "date",
+    header: ({ column }) => (
+      <div className="flex items-center gap-2">
+        <span>Date</span>
+        <Button
+          variant="ghost"
+          size="sm"
+          className=" h-8 data-[state=open]:bg-accent dark:hover:bg-green-500/50"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          <ArrowUpDown className="h-4 w-4" />
+        </Button>
+      </div>
+    ),
+    cell: ({ row }) => <div className="text-slate-500 dark:text-neutral-400">{row.original.date}</div>,
+  },
+  {
+    accessorKey: "description",
+    header: "Description",
+    cell: ({ row }) => {
+      const transaction = row.original
+
+      return (
+        <div className="flex items-center gap-3">
+          {transaction.counterparty ? (
+            <>
+              <Avatar className="h-8 w-8 border border-slate-200 dark:border-slate-700">
+                <AvatarImage src={transaction.counterparty.avatar} alt={transaction.counterparty.name} />
+                <AvatarFallback style={{backgroundColor:`${nameColor(transaction.counterparty.name||"John Doe")}`}} className="dark:text-black">
+                  {extractInitials(transaction.counterparty.name||"John Doe")}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <div className="font-medium">{transaction.description}</div>
+                <div className="text-sm text-slate-500 dark:text-neutral-400">{transaction.counterparty.name}</div>
+              </div>
+            </>
+          ) : (
+            <div className="font-medium">{transaction.description}</div>
+          )}
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: "type",
+    header: "Type",
+    cell: ({ row }) => {
+      const type: TransactionType = row.original.type
+
+      const typeConfig = {
+        deposit: {
+          label: "Deposit",
+          class:
+            "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900",
+        },
+        payment: {
+          label: "Payment",
+          class:
+            "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/30 dark:text-blue-400 dark:border-blue-900",
+        },
+        withdrawal: {
+          label: "Withdrawal",
+          class:
+            "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900",
+        },
+        refund: {
+          label: "Refund",
+          class:
+            "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/30 dark:text-purple-400 dark:border-purple-900",
+        },
+      }
+
+      return (
+        <Badge
+          variant="outline"
+          className={`px-2.5 py-0.5 rounded-full font-medium capitalize ${typeConfig[type].class}`}
+        >
+          {typeConfig[type].label}
+        </Badge>
+      )
+    },
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.original.status
+
+      return (
+        <Badge
+          variant="outline"
+          className={`
+            px-2.5 py-0.5 rounded-full font-medium capitalize
+            ${
+              status === "completed"
+                ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900"
+                : status === "pending"
+                  ? "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900"
+                  : "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-900"
+            }
+          `}
+        >
+          <span
+            className={`mr-1.5 inline-block h-2 w-2 rounded-full ${
+              status === "completed" ? "bg-emerald-500" : status === "pending" ? "bg-amber-500" : "bg-red-500"
+            }`}
+          />
+          {status}
+        </Badge>
+      )
+    },
+  },
+  {
+    accessorKey: "amount",
+    header: ({ column }) => (
+      <div className="flex items-center justify-end gap-2">
+        <span>Amount</span>
+        <Button
+          variant="ghost"
+          size="sm"
+          className=" h-8 data-[state=open]:bg-accent dark:hover:bg-green-500/50"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          <ArrowUpDown className="h-4 w-4" />
+        </Button>
+      </div>
+    ),
+    cell: ({ row }) => {
+      const type = row.original.type
+      const amount = row.original.amount
+
+      return (
+        <div
+          className={`text-right font-medium ${
+            type === "deposit" || type === "refund" ? "text-emerald-600 dark:text-emerald-400" : ""
+          }`}
+        >
+          {type === "deposit" || type === "refund" ? "+" : "-"}
+          KSh {amount.toLocaleString()}
+        </div>
+      )
+    },
+  },
+  {
+    id: "actions",
+    cell: () => (
+      <div className="text-right">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8 dark:hover:bg-green-500/40 dark:text-white">
+              <MoreHorizontal className="h-4 w-4" />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="bg-white dark:bg-neutral-900 border-slate-200 dark:border-neutral-700"
+          >
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem className="cursor-pointer dark:hover:bg-neutral-800">View details</DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer dark:hover:bg-neutral-800">Download receipt</DropdownMenuItem>
+            <DropdownMenuSeparator className="bg-slate-200 dark:bg-neutral-700" />
+            <DropdownMenuItem className="cursor-pointer dark:hover:bg-neutral-800">Report issue</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    ),
   },
 ]
 
