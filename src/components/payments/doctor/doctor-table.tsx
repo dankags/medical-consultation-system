@@ -9,6 +9,7 @@ import { Transaction } from "@/types"
 import { flexRender, getCoreRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table"
 import { Search } from "lucide-react"
 import { memo, useMemo, useState } from "react"
+import MobileTransactionTable from "../shared/MobileTransaction"
 
 const DoctorTransactionTable= memo(({data}:{data:Transaction[]}) => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -81,7 +82,7 @@ const DoctorTransactionTable= memo(({data}:{data:Transaction[]}) => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="rounded-md border border-slate-200 dark:border-neutral-700 overflow-hidden">
+            <div className="hidden md:block rounded-md border border-slate-200 dark:border-neutral-700 overflow-hidden">
               <Table>
                 <TableHeader className="bg-slate-50 dark:bg-dark-500/90">
                   {table.getHeaderGroups().map((headerGroup) => (
@@ -120,6 +121,17 @@ const DoctorTransactionTable= memo(({data}:{data:Transaction[]}) => {
                 </TableBody>
               </Table>
             </div>
+
+              {/* Mobile view - card-based layout */}
+          <div className="md:hidden space-y-4">
+            {filteredData.length > 0 ? (
+              filteredData.map((transaction) => (
+                <MobileTransactionTable key={transaction.id} transaction={transaction} />
+              ))
+            ) : (
+              <div className="text-center py-8 text-slate-500 dark:text-slate-400">No results found.</div>
+            )}
+          </div>
   
             <div className="flex items-center justify-between mt-4">
               <div className="text-sm text-slate-500 dark:text-neutral-400">
@@ -153,4 +165,5 @@ const DoctorTransactionTable= memo(({data}:{data:Transaction[]}) => {
   },(prevProps, nextProps) => (prevProps.data.length === nextProps.data.length && prevProps.data.every((item, index) => item.id === nextProps.data[index].id)))
 
 DoctorTransactionTable.displayName = "DoctorTransactionTable"
-  export default DoctorTransactionTable
+
+export default DoctorTransactionTable

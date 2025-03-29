@@ -9,7 +9,7 @@ const Transaction = ({transaction,doctorView}:{transaction:Transaction,doctorVie
   return (
         <div
           key={transaction.id}
-          className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-dark-500/50 transition-colors"
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-500/50 transition-colors gap-3"
         >
           <div className="flex items-center gap-3">
             {transaction.counterparty ? (
@@ -45,7 +45,7 @@ const Transaction = ({transaction,doctorView}:{transaction:Transaction,doctorVie
               </div>
             </div>
           </div>
-          <div className="text-right">
+          <div className="flex items-center justify-between sm:justify-end sm:flex-col sm:items-end mt-2 sm:mt-0">
             <div
               className={`font-medium ${
                 (doctorView && transaction.type === "payment") ||
@@ -60,7 +60,7 @@ const Transaction = ({transaction,doctorView}:{transaction:Transaction,doctorVie
                 : "-"}
               KSh {transaction.amount}
             </div>
-            <div className="flex items-center justify-end gap-1.5 mt-1">
+            <div className="flex items-center gap-1.5 mt-1">
               <Badge
                 variant="outline"
                 className={`
