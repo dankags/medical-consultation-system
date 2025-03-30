@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { Transaction as TransactionType } from '@/types';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface RecentTransactionsProps {
     title: string;
@@ -28,7 +29,7 @@ const RecentTransactions = ({
     const limitedTransactions = transactions.slice(0, limit)
 
   return (
-    <Card className="border-slate-200 dark:border-neutral-700 shadow-sm dark:shadow-slate-900/10 dark:bg-dark-400 backdrop-blur-sm">
+    <Card className="max-h-[500px] border-slate-200 dark:border-neutral-700 shadow-sm dark:shadow-slate-900/10 dark:bg-dark-400 backdrop-blur-sm">
     <CardHeader className="pb-2">
       <div className="flex items-center justify-between">
         <div>
@@ -47,7 +48,8 @@ const RecentTransactions = ({
       </div>
     </CardHeader>
     <CardContent>
-      <div className="space-y-4">
+      <ScrollArea className='w-full h-full'>
+      <div className="w-full space-y-4">
         {limitedTransactions.map((transaction) => (
         <Transaction
           key={transaction.id}
@@ -56,6 +58,7 @@ const RecentTransactions = ({
           />
         ))}
       </div>
+      </ScrollArea>
     </CardContent>
   </Card>
   )

@@ -440,7 +440,7 @@ export const PatientPaymentsColumns:ColumnDef<Transaction>[]=[
         </Button>
       </div>
     ),
-    cell: ({ row }) => <div className="text-slate-500 dark:text-neutral-400">{row.original.date}</div>,
+    cell: ({ row }) => <div className="text-slate-500 dark:text-neutral-400">{formatDateTime(row.original.date).dateOnly}</div>,
   },
   {
     accessorKey: "description",

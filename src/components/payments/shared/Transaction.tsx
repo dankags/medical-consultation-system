@@ -9,7 +9,7 @@ const Transaction = ({transaction,doctorView}:{transaction:Transaction,doctorVie
   return (
         <div
           key={transaction.id}
-          className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-500/50 transition-colors gap-3"
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-dark-500/50 transition-colors gap-3"
         >
           <div className="flex items-center gap-3">
             {transaction.counterparty ? (

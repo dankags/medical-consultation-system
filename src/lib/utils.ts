@@ -111,8 +111,11 @@ export const formatDateTime = (dateString: Date | string) => {
     relativeDate = "Tomorrow";
   } else if (daysDifference > 1 && daysDifference <= 7) {
     relativeDate = inputDate.toLocaleString("en-US", { weekday: "long" }); // e.g., "Wednesday"
+  } else if (daysDifference > 7) {
+    relativeDate = `${daysDifference} days`;
   } else {
-    relativeDate = inputDate.toLocaleString("en-US", dateOptions); // Default format
+    // Fallback if needed
+    relativeDate = inputDate.toLocaleString("en-US", dateOptions);
   }
 
   // Format date and time
@@ -122,7 +125,7 @@ export const formatDateTime = (dateString: Date | string) => {
   const formattedTime: string = inputDate.toLocaleString("en-US", timeOptions);
 
   return {
-    relativeDate, // e.g., "Today", "Tomorrow", or "Wednesday"
+    relativeDate, // e.g., "Today", "Tomorrow", "Wednesday", or "129 days"
     dateTime: formattedDateTime, // e.g., "Dec 31, 2024, 4:31 PM"
     dateDay: formattedDateDay, // e.g., "Tue, 12/31/2024"
     dateOnly: formattedDate, // e.g., "Dec 31, 2024"
@@ -235,4 +238,10 @@ export function arraysHaveSameDoctors(arr1: OnlineDoctor[], arr2: OnlineDoctor[]
       doctor.status === otherDoctor.status
     );
   });
+}
+
+export function getOneMonthAgoISO(): string {
+  const oneMonthAgo = new Date();
+  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+  return oneMonthAgo.toISOString();
 }

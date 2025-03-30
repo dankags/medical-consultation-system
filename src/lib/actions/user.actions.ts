@@ -1,7 +1,7 @@
 "use server"
 
 import { auth } from "@clerk/nextjs/server";
-import { generateTimestamp, parseStringify } from '../utils';
+import { generateTimestamp, getOneMonthAgoISO, parseStringify } from '../utils';
 import {
     APPOINTMENT_COLLECTION_ID,
     DATABASE_ID,
@@ -12,14 +12,21 @@ import {
     databases,
   } from "../appwrite.config";
 import { ID, Query } from "node-appwrite";
-import { Feedback, Transaction } from "@/types";
+import { AppointmentDocument, Feedback, Transaction } from "@/types";
+import { startOfDay } from "date-fns";
+
+
 
 interface MpesaTokenResponse {
     access_token: string;
     expires_in: string;
   }
 
+  type GetAppointmentsResult =
+  | { success: true; data: AppointmentDocument[] }
+  | { success: false; error: string };
 
+type UserRole = "doctor"|"user"| "admin";
 
 //  GET user amount balance 
 export const getUserBalance=async()=>{
@@ -336,6 +343,173 @@ export const getUserPayments=async(id:string)=>{
     return parseStringify({error:"Internal Server Error"})
   }
 }  
+
+export async function getPaymentStats(
+  userId: string, 
+  role: UserRole
+) {
+  const {userId:authenticatedId}=await auth()
+  if(!authenticatedId) return parseStringify({error:"user not autheticated"})
+  // We want payments from the last 1 month
+  const oneMonthAgo = getOneMonthAgoISO();
+
+  // Build the base queries
+  // Query.greaterEqual('date', oneMonthAgo) => gets docs whose `date >= oneMonthAgo`
+  const queries = [ Query.greaterThanEqual('date', oneMonthAgo) ];
+
+  // If user is a doctor, filter by the `doctor` field
+  // If user is a patient, filter by the `user` field
+  if (role === 'doctor') {
+    queries.push(Query.equal('doctor', userId));
+  } else {
+    // role === 'patient'
+    queries.push(Query.equal('user', userId));
+  }
+
+  // Fetch all the relevant documents
+  try {
+    const now = new Date();
+    const response = await databases.listDocuments(
+      DATABASE_ID!,
+      PAYMENT_COLLECTION_ID!,
+      queries
+    );
+
+    const payments = response.documents;
+
+  // We will keep track of sums
+  let totalEarnings = 0;
+  let totalPending = 0;
+  let totalPaid = 0;
+  let transactionCount=0
+  let pendingTrnsactionCount=0
+  const latestPendingpayments=[]
+
+  for (const payment of payments) {
+    // Check the status
+    if (payment.status === 'completed') {
+      if (role === 'doctor') {
+        // For doctors, sum completed payments as "earnings"
+        if(payment.type==="payment"){
+        totalEarnings += payment.amount;
+        transactionCount+=1
+        }
+      } else {
+        // For patients, sum completed payments as "paid"
+        if(payment.type==="payment"){
+        totalPaid += payment.amount;
+        transactionCount+=1
+        }
+      }
+    } else if (payment.status === 'pending') {
+      // For doctors, you might want to track how much is pending
+      // If you also want to see future vs past pending, 
+      //   compare the `date` with the current date
+      if (role === 'doctor') {
+        totalPending += payment.amount;
+        pendingTrnsactionCount+=1
+      }
+
+      if( role === "user"){
+        const paymentDate = new Date(payment.date);
+        if(paymentDate > now){
+          totalPending += payment.amount;
+          pendingTrnsactionCount+=1
+          latestPendingpayments.push(payment)
+        }
+      }
+
+      // For patients, you might or might not need this; 
+      //   adapt as needed
+    }
+  }
+  const upcommingPendingPaymentDate=latestPendingpayments[0]?.date
+  // Return the computed stats
+  if (role === 'doctor') {
+    return {
+      totalEarnings,
+      totalPending,
+      transactionCount,
+      pendingTrnsactionCount
+    };
+  } else {
+    return {
+      totalPaid,
+      transactionCount,
+      totalPending,
+      pendingTrnsactionCount,
+      upcommingPayment:upcommingPendingPaymentDate,
+    };
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error:any) {
+    console.error("Error fetching payment stats:", error);
+    return parseStringify({error:"Internal server error"})
+    
+  }
+ 
+
+
+
+  // Iterate through the payments
+ 
+}
+
+// GET upcoming appointments for a user
+export async function getUpcomingAppointmentsForUser(
+  userId: string
+): Promise<GetAppointmentsResult> {
+
+  if (!userId) {
+    return { success: false, error: 'User ID is required.' };
+  }
+  const {userId:authenticatedId}=await auth()
+  if(!authenticatedId) return parseStringify({error:"user not autheticated"})
+  
+  try {
+
+    const todayStartISO = startOfDay(new Date()).toISOString();
+
+    const response = await databases.listDocuments(
+      DATABASE_ID!,
+      APPOINTMENT_COLLECTION_ID!,
+      [
+        Query.equal('user', userId), // Filter by the user ID
+        Query.greaterThanEqual('schedule', todayStartISO), // Filter for schedule >= start of today
+        Query.orderAsc('schedule'), // Order by schedule date, earliest first
+        Query.limit(10), // Add a limit to prevent fetching too much data (adjust as needed)
+        // Query.equal('status', 'scheduled'),
+      ]
+    );
+
+
+    const appointments:AppointmentDocument[] = response.documents.map((doc) => {
+      return{
+        appointmentId: doc.$id,
+        schedule: doc.schedule,
+        reason:doc.reason,
+        doctor:{
+          doctorUserId:doc.doctor.user.$id,
+          image:doc.doctor.user.image,
+          speciality:doc.doctor.speciality,
+          name:doc.doctor.name
+        }
+      }
+    })
+
+
+    return { success: true, data: appointments };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    console.error('Error fetching upcoming appointments:', error);
+    // Provide a generic error message to the client
+    return {
+      success: false,
+      error: `Failed to fetch appointments. ${error.message || ''}`,
+    };
+  }
+}
 
 // 
 export const makeAppointmentPayment=async(doctorId:string,patientId:string,time:Date)=>{

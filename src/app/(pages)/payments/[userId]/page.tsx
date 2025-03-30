@@ -1,4 +1,4 @@
-import { fetchUserData } from '@/lib/actions/user.actions'
+import { fetchUserData} from '@/lib/actions/user.actions'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import React, { cache, Suspense } from 'react'

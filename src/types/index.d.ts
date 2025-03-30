@@ -90,6 +90,18 @@ declare type SearchParamProps = {
     cancellationReason?: string | null;
   };
 
+  interface AppointmentDocument {
+    doctor:{
+      doctorUserId:string,
+      image?:string,
+      speciality:string[],
+      name:string,
+    }
+    reason?:string,
+    schedule:Date,
+    appointmentId:string
+  }
+
   declare type UpdateAppointmentParams = {
     appointmentId: string;
     userId: string;
