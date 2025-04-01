@@ -10,6 +10,7 @@ import { UserProvider } from "@/components/providers/UserProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { Suspense } from "react";
 import LoadingPage from "./loading";
+import DoctorAccountSetUp from "@/components/appointments/doctor/DoctorAccountSetUp";
 
 
 const fontSans = FontSans({
@@ -78,6 +79,7 @@ export default function RootLayout({
               <ThemeProvider attribute="class" defaultTheme="dark">
                 <Navbar />
                 {children}
+                <DoctorAccountSetUp/>
                 <FooterMobileNavigation />
                 <Toaster richColors />
               </ThemeProvider>

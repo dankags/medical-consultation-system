@@ -46,6 +46,7 @@ export interface Appointment extends Models.Document {
     status: Status;
     note?: string | undefined;
   cancellationReason?: string | null;
+  paymentStatus?:"paid"|"unpaid"
 }
 
 export interface DoctorAppointments {
@@ -58,3 +59,11 @@ export interface DoctorAppointments {
   cancellationReason?: string | null;
 }
 
+export interface DoctorInfo{
+  user:string
+  name: string
+  description: string
+  title?: string
+  speciality:string[]
+  rating?:number
+}

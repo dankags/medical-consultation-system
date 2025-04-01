@@ -68,6 +68,7 @@ const Navbar = () => {
             status: "scheduled",
             reason: "Urgent appointment",
             note: "",
+            paymentStatus:"paid"
           }),
         ]);
   

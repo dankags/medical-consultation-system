@@ -14,6 +14,7 @@ import {
 import { ID, Query } from "node-appwrite";
 import { AppointmentDocument, Feedback, Transaction } from "@/types";
 import { startOfDay } from "date-fns";
+import { DoctorInfo } from "@/types/appwrite.types";
 
 
 
@@ -47,6 +48,47 @@ export const getUserBalance=async()=>{
         return parseStringify({error:"Internal Server Error"})
     }
 }
+
+// Get doctors patients
+export const getDoctorsPatients=async(doctorUserId:string,role:UserRole)=>{
+  const {userId}=await auth()
+
+    if(!userId)  return parseStringify({error:"Not Autheticated"});
+    if(!doctorUserId) return parseStringify({error:"There are some parameters missing"})
+      if(role !== "doctor") return parseStringify({error:"You are not authorized to make this request."})
+
+    try {
+      const doctor=await databases.listDocuments(
+        DATABASE_ID!,
+        DOCTOR_COLLECTION_ID!,
+        [Query.equal("user",doctorUserId) ]
+      );
+      if(doctor.total===0) return parseStringify({error:"This doctor does not exist"})
+
+      const appointments=await databases.listDocuments(
+        DATABASE_ID!,
+       APPOINTMENT_COLLECTION_ID!,
+       [Query.equal("doctor",doctor.documents[0].$id)]
+      )
+      if(appointments.total===0) return parseStringify({error:"This doctor does not have any patient"})
+      const doctorsPatients=appointments.documents.map((item)=>{
+    
+        return {
+            id: item.user.$id,
+            name: item.user.name,
+            email: item.user.email,
+            avatar: item.user.image,
+          }
+        
+    })
+    return parseStringify({patients:doctorsPatients,doctorId:doctor.documents[0].$id})
+    } catch (error) {
+      console.log("Appointments Error: ",error)
+        return parseStringify({error:"internal server error"})
+    }  
+}
+
+
 
 // GET users appointments
 export const getUserAppointments=async()=>{
@@ -562,3 +604,39 @@ export const createUserFeedback=async(userFeedback:Feedback)=>{
     return parseStringify({error:"Internal Server."})
   }
 }
+
+export const getDoctor=async()=>{
+  const {userId}=await auth()
+  if(!userId) return parseStringify({error:"user not autheticated"})
+  try {
+const user=await databases.listDocuments(DATABASE_ID!,USER_COLLECTION_ID!,[Query.equal("clerkId",userId)])
+if(user.total===0) return parseStringify({error:"User does not exist."})
+if(user.documents[0].role!=="doctor") return parseStringify({error:"You are not a doctor."})
+    const doctor=await databases.listDocuments(DATABASE_ID!,DOCTOR_COLLECTION_ID!,[Query.equal("user",user.documents[0].$id)])
+    if(doctor.total===0) return parseStringify({error:"Doctor does not exist."})
+    return parseStringify({doctor:doctor.documents[0]})
+  } catch (error) {
+    console.log(error)
+    return parseStringify({error:"Internal server error."})
+  }
+}
+
+export const createDoctor=async(doctorInfo:DoctorInfo)=>{
+  const {userId}=await auth()
+  if(!userId) return parseStringify({error:"user not autheticated"})
+    if(!doctorInfo) return parseStringify({error:"Please provide doctor info"})
+  try {
+    const doctorExist=await databases.listDocuments(DATABASE_ID!,DOCTOR_COLLECTION_ID!,[Query.equal("user",doctorInfo.user)])
+    if(doctorExist.total!==0) return parseStringify({error:"Doctor already exist."})
+     const doctor=await databases.createDocument(DATABASE_ID!,DOCTOR_COLLECTION_ID!,
+      ID.unique(),
+      {
+      ...doctorInfo
+     })
+     if(!doctor) return parseStringify({error:"Please provide doctor info"})
+      return parseStringify({success:true})
+  } catch (error) {
+    console.log(error)
+    return parseStringify({error:"Internal server error."})
+  }
+} 

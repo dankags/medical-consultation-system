@@ -74,9 +74,10 @@ declare type SearchParamProps = {
     doctor: string;
     user: string;
     reason: string;
-    schedule: Date;
+    schedule: Date|string;
     status: Status;
     note: string | undefined;
+    paymentStatus?:"paid"|"unpaid"
   };
     
   declare type Appointment = {

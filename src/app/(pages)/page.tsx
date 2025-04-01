@@ -27,7 +27,7 @@ export const revalidate = 300
 
 
 export default async function Home() {
-  const [{userId},{user},res,appointments]=await Promise.all([auth(),fetchUserData(),getUserBalance(),getUserAppointments()])
+  const [{userId},user,res,appointments]=await Promise.all([auth(),fetchUserData(),getUserBalance(),getUserAppointments()])
   
  
   if(!userId||res?.error==="Not Autheticated"){
@@ -41,11 +41,11 @@ export default async function Home() {
     <div className="w-full min-h-screen flex-col px-3  xl:px-12 2xl:px-32 pb-16 pt-3">
       
       <section className={cn("w-full flex flex-col md:flex-row items-center justify-between gap-3 my-6")}>
-        <div className={cn("w-full md:w-6/12 flex flex-col justify-cente gap-2 md:gap-3",user?.role === "doctor"&&"md:w-full md:flex-row justify-between ")}>
+        <div className={cn("w-full md:w-6/12 flex flex-col justify-cente gap-2 md:gap-3",user?.user.role === "doctor"&&"md:w-full md:flex-row justify-between ")}>
 
         <div className="flex flex-col gap-2">
           <h3 className="text-3xl font-bold tracking-tight">
-          Good {getTimeOfDay()}, {user?.name||"John Doe"}
+          Good {getTimeOfDay()}, {user?.user.name||"John Doe"}
         </h3>
         <p className="mt-1 dark:text-neutral-400">Welcome to your health home. How are you feeling today?</p>
         </div>
@@ -104,7 +104,7 @@ export default async function Home() {
           {appointments?.appointments?.length >= 0 ? (
             <>
               {" "}
-              {user.role !== "doctor" ? (
+              {user.user.role !== "doctor" ? (
                 <DataTable
                   data={appointments?.appointments}
                   columns={userAppointmentColumns}
