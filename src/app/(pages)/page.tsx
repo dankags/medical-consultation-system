@@ -59,7 +59,7 @@ export default async function Home() {
             </CardContent>
           </Card>
           </div>
-        {user?.role === "user" && (
+        {user?.user.role === "user" && (
            <Card className="w-full md:w-4/12 dark:bg-dark-400 dark:border-neutral-600">
            <CardHeader className="flex-row items-center gap-3">
             <div className="p-2 rounded-md dark:bg-dark-500 dark:text-neutral-100"><FaUserDoctor  size={35}/></div>

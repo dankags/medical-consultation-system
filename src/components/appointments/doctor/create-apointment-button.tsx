@@ -16,12 +16,12 @@ const CreateAppointmentButton = ({patients}:{patients:Patient[]}) => {
     if(!user||user?.role!=="doctor") return null
   return (
     <>
-        <CreateAppointmentDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} patients={patients} >
+       {user?.role==="doctor" &&<CreateAppointmentDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} patients={patients} >
           <Button className="dark:bg-emerald-600 dark:hover:bg-emerald-700 dark:text-white" onClick={()=>setIsCreateDialogOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
             Create Appointment
           </Button>
-        </CreateAppointmentDialog>
+        </CreateAppointmentDialog>}
         </>
   )
 }

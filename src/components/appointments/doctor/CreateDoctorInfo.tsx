@@ -158,7 +158,7 @@ const CreateDoctorInfo = ({open,onOpenChange}:CreateDoctorInfoProps) => {
                     <Input type="text" id="name" name='name' onChange={handleChange} className="border border-gray-300 rounded-md p-2 dark:bg-dark-200 dark:focus:bg-dark-500/40 dark:focus-visible:ring-green-500 dark:focus-visible:ring-offset-dark-400" placeholder="Enter your full name" required/>
                 </div>
                 <div className="w-full  mx-auto">
-      <label className="block text-sm font-medium mb-2">Tags</label>
+      <label className="block text-sm font-medium mb-2">Enter Specialty.</label>
       <div className="flex flex-wrap items-center gap-2 p-2 border rounded-md bg-background focus-within:ring-2 dark:border-neutral-700 focus-within:ring-ring focus-within:ring-offset-2 dark:focus-within:ring-offset-dark-300 dark:focus-within:ring-green-500">
         {tags.map((tag, index) => (
           <div
@@ -203,7 +203,7 @@ const CreateDoctorInfo = ({open,onOpenChange}:CreateDoctorInfoProps) => {
     </div>
                
                 <div className="flex flex-col gap-2">
-                    <Label htmlFor="contact" className="text-sm font-semibold">Contact Number</Label>
+                    <Label htmlFor="contact" className="text-sm font-semibold">Description.</Label>
                     <Textarea
                   id="description"
                   placeholder="Add any additional information about this appointment..."
