@@ -3,7 +3,7 @@ import React, { Suspense, useEffect, useState } from 'react'
 import { useCurrentUser } from '../../providers/UserProvider';
 import { getDoctor } from '@/lib/actions/user.actions';
 import dynamic from 'next/dynamic';
-import { toast } from 'sonner';
+// import { toast } from 'sonner';
 
 
 const CreateDoctorInfo=dynamic(()=>import('./CreateDoctorInfo'),{ssr:false})
@@ -21,7 +21,7 @@ const DoctorAccountSetUp = () => {
                 setIsDoctorInfoExist(false)
                 return
             }
-            toast.error("this doctor already exist")
+            // toast.error("this doctor already exist")
             setIsDoctorInfoExist(true)
            return 
             } catch (error) {

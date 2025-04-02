@@ -71,16 +71,20 @@ export const getDoctorsPatients=async(doctorUserId:string,role:UserRole)=>{
        [Query.equal("doctor",doctor.documents[0].$id)]
       )
       if(appointments.total===0) return parseStringify({error:"This doctor does not have any patient"})
-      const doctorsPatients=appointments.documents.map((item)=>{
-    
-        return {
+     
+    const doctorsPatients=Array.from(
+      new Map(
+        appointments.documents.map((item) => [
+          item.user.$id,
+          {
             id: item.user.$id,
             name: item.user.name,
             email: item.user.email,
             avatar: item.user.image,
-          }
-        
-    })
+          },
+        ])
+      ).values()
+    );
     return parseStringify({patients:doctorsPatients,doctorId:doctor.documents[0].$id})
     } catch (error) {
       console.log("Appointments Error: ",error)

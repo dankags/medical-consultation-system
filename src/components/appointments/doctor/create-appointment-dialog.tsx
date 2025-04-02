@@ -19,10 +19,12 @@ import { Calendar, Clock,  AlertCircle, Search, User, Plus,  Check } from "lucid
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { extractInitials, nameColor } from "@/lib/utils"
+import { extractInitials, formatDateTime, generateCalendarLinks, nameColor } from "@/lib/utils"
 import { createAppointment } from "@/lib/actions/appointment.actions"
 import { toast } from "sonner"
 import { useCurrentUser } from "@/components/providers/UserProvider"
+import emailjs from "@emailjs/browser";
+import { CalendarEvent } from "@/types"
 
 type Patient= {
   id: string,
@@ -70,12 +72,15 @@ export function CreateAppointmentDialog({ open, onOpenChange,children,patients }
 
   const handleCreateAppointment = async() => {
     if(!selectedPatient || !appointmentDate || !reason ||!user){
-      toast.error("Error Occured",{description:"You need to provide a patient, doctor, reason or date in order to create an appointment."})
+      toast.error("Error Occured",{description:"You need to provide a patient, doctor, reason,note or date in order to create an appointment."})
       return
     }
     // Here you would typically submit the appointment data to your backend
   
     try {
+       
+      
+              
       const createdAppointment=await createAppointment({
                   doctor: user?.id,
                   user: selectedPatient.id,
@@ -88,9 +93,60 @@ export function CreateAppointmentDialog({ open, onOpenChange,children,patients }
 
       if(createdAppointment.error){
         throw new Error(createdAppointment.error)
-      }          
+      }  
+      const appointmentObj:CalendarEvent={
+        title:reason,
+        description:note,
+        locationUrl:`${process.env.NEXT_PUBLIC_URL}/appointments/${createdAppointment}/meetup`,
+        startDate:appointmentDate,
+        endDate:appointmentDate
+      }
+      const calenderAppointmentLink=generateCalendarLinks(appointmentObj)
+     
+         await emailjs.send(
+                  
+                  process.env.NEXT_PUBLIC_SERVICE_ID!,
+                  process.env.NEXT_PUBLIC_TEMPLATE_TWO_ID!,
+                  {
+                    from_email:user?.email,
+                    // remember to update this to patient email.
+                    to_email:selectedPatient?.email,
+                    doctor_name:user?.name,
+                    // remember to update this to patient name.
+                    patient_name:user?.name,
+                    schedule_date:formatDateTime(appointmentDate).dateOnly,
+                    google_calendar:calenderAppointmentLink?.googleCalendarLink,
+                    outlook_calendar:calenderAppointmentLink?.outlookCalendarLink,
+                    apple_calendar:calenderAppointmentLink?.icalFileLink
+                  },
+                  {
+                    publicKey: process.env.NEXT_PUBLIC_PUBLIC_KEY!,
+      
+                  }
+                );      
+                await emailjs.send(
+                  
+                  process.env.NEXT_PUBLIC_SERVICE_ID!,
+                  process.env.NEXT_PUBLIC_TEMPLATE_TWO_ID!,
+                  {
+                    from_email:user?.email,
+                    // remember to update this to patient email.
+                    to_email:user?.email,
+                    doctor_name:user?.name,
+                    // remember to update this to patient name.
+                    patient_name:user?.name,
+                    schedule_date:formatDateTime(appointmentDate).dateOnly,
+                    google_calendar:calenderAppointmentLink?.googleCalendarLink,
+                    outlook_calendar:calenderAppointmentLink?.outlookCalendarLink,
+                    apple_calendar:calenderAppointmentLink?.icalFileLink
+                  },
+                  {
+                    publicKey: process.env.NEXT_PUBLIC_PUBLIC_KEY!,
+      
+                  }
+                );    
       setStep("confirmation")
-      toast.success("appointment was created successfully.")
+      toast.success("appointment was created successfully.",{description:"The patient was notified via email and you as well."})
     } catch (error) {
       console.log(error)
       toast.error("internal server error",{description:`${error?error:"Could ot createyour appointment."}`})
