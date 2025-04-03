@@ -39,6 +39,7 @@ export default async function Home() {
  const filteredAppointments=await getUpcomingAppointmentsForUser(user.user.id)
  const userPayments=await getUserPayments(user?.user.id)
   return (
+<<<<<<< HEAD
     <div className="w-full h-[calc(100vh-80px)] flex-col ">
       <ScrollArea className="w-full h-full px-3 pb-24 md:pb-4">
         <main className="w-full">
@@ -173,6 +174,84 @@ export default async function Home() {
                     </div>
                   )}
                 </>
+=======
+    <div className="w-full min-h-screen flex-col px-3  xl:px-12 2xl:px-32 pb-16 pt-3">
+      
+      <section className={cn("w-full flex flex-col md:flex-row items-center justify-between gap-3 my-6")}>
+        <div className={cn("w-full md:w-6/12 flex flex-col justify-cente gap-2 md:gap-3",user?.user.role === "doctor"&&"md:w-full md:flex-row justify-between ")}>
+
+        <div className="flex flex-col gap-2">
+          <h3 className="text-3xl font-bold tracking-tight">
+          Good {getTimeOfDay()}, {user?.user.name||"John Doe"}
+        </h3>
+        <p className="mt-1 dark:text-neutral-400">Welcome to your health home. How are you feeling today?</p>
+        </div>
+      <Card className="mt-4 w-full md:w-fit md:mt-0  dark:border-neutral-600 dark:bg-dark-400">
+            <CardContent className="flex items-center p-4">
+              <DollarSign className="mr-2 h-5 w-5 text-primary" />
+              <div>
+                <p className="text-sm font-medium text-nowrap">Account Balance</p>
+                <p className="text-2xl font-bold text-nowrap">KSh {formatNumber(res?.balance)}</p>
+              </div>
+            </CardContent>
+          </Card>
+          </div>
+        {user?.user.role === "user" && (
+           <Card className="w-full md:w-4/12 dark:bg-dark-400 dark:border-neutral-600">
+           <CardHeader className="flex-row items-center gap-3">
+            <div className="p-2 rounded-md dark:bg-dark-500 dark:text-neutral-100"><FaUserDoctor  size={35}/></div>
+            <div className="flex flex-col gap-3">
+             <CardTitle>Book a Doctor</CardTitle>
+             <CardDescription>Schedule a consultation with our specialists</CardDescription>
+             </div>
+           </CardHeader>
+          
+           <CardFooter>
+             <Link href="/book-doctor" className="w-full">
+               <Button className="w-full dark:text-white dark:bg-green-500 dark:hover:bg-green-500/90">Book Appointment</Button>
+             </Link>
+           </CardFooter>
+         </Card>
+         
+        )}
+      </section>
+
+      <div className=" w-full flex items-center justify-center ">
+        <section className="-z-10 relative  w-full h-[200px] md:w-10/12  md:h-[320px] lg:h-[400px] xl:h-[400px]  rounded-md bg-neutral-500">
+          <Image
+            src={"/assets/images/heroImage2.jpg"}
+            alt=""
+            fill
+            className=" w-full aspect-video object-fit"
+          />
+        </section>
+      </div>
+
+      <section className="my-6 flex flex-col gap-3">
+       <div className="flex items-center w-full p-3 justify-between gap-3">
+                     <div className="flex items-center gap-3">
+                       <div className="p-2 md:p-3 rounded-md dark:text-emerald-500 dark:bg-green-500/20"><BiGroup size={24}/></div>
+                       <h4 className="text-lg md:text-2xl font-bold tracking-tight">Upcomming Appointments.</h4>
+                     </div>
+                     <Link href="/appointments" className="">
+               <Button variant="outline" size={"sm"} className="w-fit dark:text-white dark:bg-transparent dark:border-neutral-500 dark:hover:border-neutral-100 dark:hover:bg-green-500">View All</Button>
+             </Link>
+        </div>
+        <Suspense fallback={<AppointmentsSkeleton />}>
+          {appointments?.appointments?.length >= 0 ? (
+            <>
+              {" "}
+              {user.user.role !== "doctor" ? (
+                <DataTable
+                  data={appointments?.appointments}
+                  columns={userAppointmentColumns}
+                />
+              ) : (
+                <DataTable
+                  data={appointments?.appointments}
+                  columns={doctorAppointmentscolumns}
+                />
+>>>>>>> b5887d2a5f63ec5400fce2c9f2f2390e95c3a827
               )}
             </div>
             
