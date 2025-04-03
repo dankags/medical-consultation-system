@@ -9,7 +9,7 @@ import dynamic from 'next/dynamic';
 const CreateDoctorInfo=dynamic(()=>import('./CreateDoctorInfo'),{ssr:false})
 
 const DoctorAccountSetUp = () => {
-    const {user}=useCurrentUser()
+    const {user,status}=useCurrentUser()
     const [isDoctorInfoExist,setIsDoctorInfoExist]=useState(true)
     
     useEffect(()=>{
@@ -32,6 +32,7 @@ const DoctorAccountSetUp = () => {
         fetchDoctorInfo()
     },[user])
     // console.log(isDoctorInfoExist)
+    if(status!=="authenticated"||!user||user.role!=="doctor") return null
   return (
     <div>
         <Suspense fallback={<div></div>}>

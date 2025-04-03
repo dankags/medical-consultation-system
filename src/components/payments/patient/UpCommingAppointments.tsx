@@ -1,6 +1,6 @@
 "use client"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { AppointmentDocument } from '@/types'
+import {  PatientAppointmentDocument } from '@/types'
 import React, { useEffect, useState } from 'react'
 import UpcommingAppointment from './UpcommingAppointment'
 import { useCurrentUser } from '@/components/providers/UserProvider'
@@ -11,7 +11,7 @@ import { Calendar } from 'lucide-react'
 
 const UpCommingAppointments = () => {
   const {user}=useCurrentUser()
-  const [upcomingPayments, setUpcomingPayments] = useState<AppointmentDocument[]>([])
+  const [upcomingPayments, setUpcomingPayments] = useState<PatientAppointmentDocument[]>([])
 
  useEffect(()=>{
   if(!user) return
@@ -23,7 +23,7 @@ const UpCommingAppointments = () => {
         toast.error(response.error)
         return
       }
-      setUpcomingPayments(response.data)
+      setUpcomingPayments(response.data as PatientAppointmentDocument[])
     } catch (error) {
       console.error(error)
       toast.error("Something went wrong")

@@ -12,7 +12,7 @@ import {
     databases,
   } from "../appwrite.config";
 import { ID, Query } from "node-appwrite";
-import { AppointmentDocument, Feedback, Transaction } from "@/types";
+import { DoctorAppointmentDocument, Feedback, PatientAppointmentDocument, Transaction } from "@/types";
 import { startOfDay } from "date-fns";
 import { DoctorInfo } from "@/types/appwrite.types";
 
@@ -24,7 +24,7 @@ interface MpesaTokenResponse {
   }
 
   type GetAppointmentsResult =
-  | { success: true; data: AppointmentDocument[] }
+  | { success: true; data: PatientAppointmentDocument[]|DoctorAppointmentDocument[] }
   | { success: false; error: string };
 
 type UserRole = "doctor"|"user"| "admin";
@@ -313,82 +313,93 @@ export const generateSTKPassword = async (time:Date): Promise<{ password: string
     return { password, timestamp };
   };
 
-export const getUserPayments=async(id:string)=>{
-  const {userId}=await auth()
-
-  if(!userId)  return parseStringify({error:"Not Autheticated"});
-  if(!id) return parseStringify({error:"User Id is required"});
-  try {
-    const [user,userPayments]=await Promise.all([databases.getDocument(
-      DATABASE_ID!,
-      USER_COLLECTION_ID!,
-     id
-  ),
-  databases.listDocuments(DATABASE_ID!,PAYMENT_COLLECTION_ID!,[Query.or([Query.equal("user",id),Query.equal("doctor",id)])])
-]) 
-    if(!user) return parseStringify({error:"User does not exist"})
-    if(userPayments.total===0) return parseStringify({payments:[]})
-
+  export const getUserPayments = async (id: string) => {
+    const { userId } = await auth();
+  
+    if (!userId) return parseStringify({ error: "Not Authenticated" });
+    if (!id) return parseStringify({ error: "User ID is required" });
+  
+    try {
+      // Fetch user and payments concurrently
+      const [user, userPayments] = await Promise.all([
+        databases.getDocument(DATABASE_ID!, USER_COLLECTION_ID!, id),
+        databases.listDocuments(DATABASE_ID!, PAYMENT_COLLECTION_ID!, [
+          Query.or([Query.equal("user", id), Query.equal("doctor", id)]),
+        ]),
+      ]);
+  
+      if (!user) return parseStringify({ error: "User does not exist" });
+      if (userPayments.total === 0) return parseStringify({ payments: [] });
+  
       const filteredPayments: Transaction[] = [];
-
+  
       for (const doc of userPayments.documents) {
         try {
-          if (doc.user.$id === id && doc.doctor!==null) {
-            const doctor = await databases.getDocument(
-              DATABASE_ID!,
-              USER_COLLECTION_ID!,
-              doc.doctor
-            );
-          
-            filteredPayments.push({
-              id: doc.$id,
-              type:doc.type,
-              status: doc.status,
-              counterparty: {
-                avatar:doctor?.image,
-                name: doctor.name,
-                id: doctor.$id,
-              },
-              description:doc.description,
-              amount: doc.amount,
-              date:doc.date,
-              paymentMethod:doc.paymentMethod,
-              reference:doc.reference
-            });
-            
-          }else{
-
-            filteredPayments.push({
-              id: doc.$id,
-              type:doc.type,
-              status: doc.status,
-              counterparty: {
-                avatar:doc.user.image,
-                name: doc.user.name,
-                id: doc.user.$id,
-              },
-              description:doc.description,
-              amount: doc.amount,
-              date:doc.date,
-              paymentMethod:doc.paymentMethod,
-              reference:doc.reference
-            });
+          let counterparty;
+  
+          // Check if it's a doctor payment and the doctor ID exists
+          if (doc.user.$id === id && doc.doctor) {
+            try {
+              // Fetch doctor document safely
+              const doctor = await databases.getDocument(
+                DATABASE_ID!,
+                USER_COLLECTION_ID!,
+                doc.doctor
+              );
+  
+              counterparty = {
+                avatar: doctor?.image ?? "", // Ensure no undefined error
+                name: doctor?.name ?? "Unknown",
+                id: doctor?.$id ?? "N/A",
+              };
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+            } catch (error:any) {
+              console.warn(`Doctor document not found: ${doc.doctor}`);
+              counterparty = {
+                avatar: "",
+                name: "Unknown",
+                id: "N/A",
+              };
+            }
+          } else {
+            // Default to user data
+            counterparty = {
+              avatar: doc.user.image ?? "",
+              name: doc.user.name ?? "Unknown",
+              id: doc.user.$id ?? "N/A",
+            };
           }
+  
+          // Push transaction data
+          filteredPayments.push({
+            id: doc.$id,
+            type: doc.type,
+            status: doc.status,
+            counterparty,
+            description: doc.description,
+            amount: doc.amount,
+            date: doc.date,
+            paymentMethod: doc.paymentMethod,
+            reference: doc.reference,
+          });
         } catch (error) {
-          console.error('Error processing payment:', error);
-          throw error;
+          console.error("Error processing payment:", error);
+          continue; // Skip the current iteration instead of stopping the entire function
         }
       }
-    
-    
-    
-    return parseStringify({payments:filteredPayments.sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime())})
-
-  } catch (error) {
-    console.log(error)
-    return parseStringify({error:"Internal Server Error"})
-  }
-}  
+  
+      // Return sorted payments
+      return parseStringify({
+        payments: filteredPayments.sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        ),
+      });
+    } catch (error) {
+      console.error("Internal Server Error:", error);
+      return parseStringify({ error: "Internal Server Error" });
+    }
+  };
+  
 
 export async function getPaymentStats(
   userId: string, 
@@ -516,11 +527,22 @@ export async function getUpcomingAppointmentsForUser(
 
     const todayStartISO = startOfDay(new Date()).toISOString();
 
+    const user=await databases.getDocument(DATABASE_ID!,USER_COLLECTION_ID!,userId)
+    if(!user) {return {
+      success: false,
+      error: `User with given id doesnot exist`,
+    }}
+    const queries:string[]=[]
+    if(user.role==="user"){
+      queries.push(Query.equal('user', userId))
+    }else if(user.role==="doctor"){
+      queries.push(Query.equal('doctor', user.doctorInfo.$id))
+    }
     const response = await databases.listDocuments(
       DATABASE_ID!,
       APPOINTMENT_COLLECTION_ID!,
       [
-        Query.equal('user', userId), // Filter by the user ID
+        ...queries,
         Query.greaterThanEqual('schedule', todayStartISO), // Filter for schedule >= start of today
         Query.orderAsc('schedule'), // Order by schedule date, earliest first
         Query.limit(10), // Add a limit to prevent fetching too much data (adjust as needed)
@@ -528,23 +550,55 @@ export async function getUpcomingAppointmentsForUser(
       ]
     );
 
+    if(user.role==="user"){
+      const appointments:PatientAppointmentDocument[] = response.documents.map((doc) => {
+       
+          return{
+            appointmentId: doc.$id,
+            schedule: doc.schedule,
+            reason:doc.reason,
+            paymentStatus:doc.paymentStatus,
+            status:doc.status,
+            doctor:{
+              doctorUserId:doc.doctor.user.$id,
+              image:doc.doctor.user.image,
+              speciality:doc.doctor.speciality,
+              name:doc.doctor.name
+            }
+          }
+        
+        
+      })
+      return { success: true, data: appointments };
 
-    const appointments:AppointmentDocument[] = response.documents.map((doc) => {
-      return{
-        appointmentId: doc.$id,
-        schedule: doc.schedule,
-        reason:doc.reason,
-        doctor:{
-          doctorUserId:doc.doctor.user.$id,
-          image:doc.doctor.user.image,
-          speciality:doc.doctor.speciality,
-          name:doc.doctor.name
-        }
-      }
-    })
+    }else if(user.role==="doctor"){
+      const appointments:DoctorAppointmentDocument[] = response.documents.map((doc) => {
+        
+          return{
+            appointmentId: doc.$id,
+            schedule: doc.schedule,
+            reason:doc.reason,
+            paymentStatus:doc.paymentStatus,
+            status:doc.status,
+            patient:{
+              patientUserId:doc.doctor.user.$id,
+              image:doc.doctor.user.image,
+              name:doc.doctor.name
+            }
+          }
+        
+        
+      })
+      return { success: true, data: appointments };
 
+    }
+   
 
-    return { success: true, data: appointments };
+    return {
+      success: false,
+      error: `Failed to fetch appointments. `,
+    };
+    
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {

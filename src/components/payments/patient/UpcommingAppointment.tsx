@@ -2,11 +2,11 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { extractInitials, formatDateTime, nameColor } from '@/lib/utils'
-import { AppointmentDocument } from '@/types'
+import {  PatientAppointmentDocument } from '@/types'
 import { Calendar } from 'lucide-react'
 import React from 'react'
 
-const UpcommingAppointment = ({payment}:{payment:AppointmentDocument}) => {
+const UpcommingAppointment = ({payment}:{payment:PatientAppointmentDocument}) => {
   return (
     <div key={payment.appointmentId} className="rounded-lg border border-slate-200 dark:border-neutral-700 dark:hover:bg-dark-500/50 p-4">
     <div className="flex items-start justify-between">

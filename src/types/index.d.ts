@@ -91,7 +91,7 @@ declare type SearchParamProps = {
     cancellationReason?: string | null;
   };
 
-  interface AppointmentDocument {
+  declare interface PatientAppointmentDocument {
     doctor:{
       doctorUserId:string,
       image?:string,
@@ -100,7 +100,26 @@ declare type SearchParamProps = {
     }
     reason?:string,
     schedule:Date,
-    appointmentId:string
+    appointmentId:string,
+    status:"scheduled"| "pending" | "cancelled" | "meetedup"
+    note?:string,
+    cancellationReason?:string,
+    paymentStatus:"paid"|"unpaid"
+  }
+
+  declare interface DoctorAppointmentDocument{
+    patient:{
+      patientUserId:string,
+      image?:string,
+      name:string,
+    }
+    status:"scheduled"| "pending" | "cancelled" | "meetedup"
+    note?:string,
+    cancellationReason?:string,
+    reason?:string,
+    schedule:Date,
+    appointmentId:string,
+    paymentStatus:"paid"|"unpaid"
   }
 
   declare type UpdateAppointmentParams = {

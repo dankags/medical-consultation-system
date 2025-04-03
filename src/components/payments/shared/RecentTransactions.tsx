@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { Transaction as TransactionType } from '@/types';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { usePathname, useRouter } from 'next/navigation';
+import { useCurrentUser } from '@/components/providers/UserProvider';
 
 interface RecentTransactionsProps {
     title: string;
@@ -25,7 +27,9 @@ const RecentTransactions = ({
     showViewAll = false,
     doctorView = false,
   }: RecentTransactionsProps) => {
-
+    const pathname=usePathname()
+    const router=useRouter()
+    const {user}=useCurrentUser()
     const limitedTransactions = transactions.slice(0, limit)
 
   return (
@@ -38,6 +42,7 @@ const RecentTransactions = ({
         </div>
         {showViewAll && (
           <Button
+          onClick={()=>pathname==="/"&&router.push(`/payments/${user?.id}`)}
             variant="ghost"
             size="sm"
             className="gap-1 text-sm text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white dark:hover:bg-green-500"
